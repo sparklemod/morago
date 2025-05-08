@@ -1,0 +1,22 @@
+spring:
+#  TODO после Security
+#  app:
+#    jwtSecret: ${JWT_SECRET}
+#    jwtExpirationMs: ${JWT_EXPIRATION}
+#    refreshTokenExpirationMs: ${REFRESH_TOKEN_EXPIRATION}
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: morago-backend
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        format_sql: true
+    show-sql: true
