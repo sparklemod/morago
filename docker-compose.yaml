@@ -4,11 +4,12 @@ services:
     container_name: morago-mysql
     restart: on-failure
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-      MYSQL_USER: ${DB_USER}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: morago
+      MYSQL_ROOT_PASSWORD: root
+    command: --init-file /docker-entrypoint-initdb.d/init.sql
     volumes:
       - db_data:/var/lib/mysql
+      - ./init:/docker-entrypoint-initdb.d
     ports:
       - "33060:3306"
 
