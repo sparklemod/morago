@@ -87,7 +87,7 @@
 			<plugin>
 				<groupId>org.flywaydb</groupId>
 				<configuration>
-					<url>jdbc:mysql://localhost:33060/morago</url>
+					<url>jdbc:mysql://localhost:33066/morago</url>
 					<user>root</user>
 					<password>root</password>
 					<schemas>morago</schemas>
