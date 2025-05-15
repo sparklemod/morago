@@ -9,7 +9,7 @@ spring:
   application:
     name: morago-backend
   datasource:
-    url: jdbc:mysql://localhost:33060/morago
+    url: jdbc:mysql://localhost:33066/morago
     username: root
     password: root
   jpa:
@@ -23,7 +23,7 @@ spring:
 
   flyway:
     enabled: true
-    url: jdbc:mysql://localhost:33060/morago
+    url: jdbc:mysql://localhost:33066/morago
     user: root
     password: root
     baselineOnMigrate: true
