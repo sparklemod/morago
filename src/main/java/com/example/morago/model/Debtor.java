@@ -1,15 +1,15 @@
 package com.example.morago.model;
 
+import com.example.morago.entity.base.Auditable;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.*;
 
 @Entity
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Debtor {
+public class Debtor extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,6 +18,4 @@ public class Debtor {
     private String nameOfBank;
     private Boolean isPaid;
     private Long userId;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 }
