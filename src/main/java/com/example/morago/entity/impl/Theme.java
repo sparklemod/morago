@@ -2,10 +2,16 @@ package com.example.morago.entity.impl;
 
 import com.example.morago.entity.base.Auditable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "themes")
@@ -13,39 +19,63 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Themes extends Auditable {
+public class Theme extends Auditable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "theme_id")
-    private long id;
+    private Long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 100)
+    @NotBlank(message = "Name cannot be empty")
+    @Size(max = 100, message = "Name must be less than 100 characters")
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 150)
+    @NotBlank(message = "Title cannot be empty")
+    @Size(max = 100, message = "Title must be less than 100 characters")
     private String title;
 
     @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
-    private int price;
+    @Min(value = 0, message = "Price cannot be negative")
+    private Integer price;
 
     @Column(nullable = false)
-    private int nightPrice;
+    @Min(value = 0, message = "Night price cannot be negative")
+    private Integer nightPrice;
 
     @Column(nullable = false)
-    private boolean isPopular = false;
+    private Boolean isPopular = false;
 
     @Column(nullable = false)
-    private boolean isActive = true;
+    private Boolean isActive = true;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "icon_id")
-    private Icon iconId;
+    private File icon;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category categoryId;
+    private Category category;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "translator_themes",
+            joinColumns = @JoinColumn(name = "theme_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private Set<Translator> translators = new HashSet<>();
+
+    public void addTranslator(Translator translator) {
+        translators.add(translator);
+        translator.getThemes().add(this);
+    }
+
+    public void removeTranslator(Translator translator) {
+        translators.remove(translator);
+        translator.getThemes().remove(this);
+    }
 }
