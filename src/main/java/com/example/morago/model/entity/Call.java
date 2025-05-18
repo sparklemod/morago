@@ -9,6 +9,7 @@ import java.time.*;
 @Entity
 @Table(name = "calls")
 @Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
