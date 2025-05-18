@@ -1,5 +1,7 @@
 package com.example.morago.model.dto;
 
 public enum RoleEnum {
-    ADMIN, USER, TRANSLATOR
+    ROLE_ADMIN,
+    ROLE_USER,
+    ROLE_TRANSLATOR
 }

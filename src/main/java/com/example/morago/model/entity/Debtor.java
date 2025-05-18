@@ -1,6 +1,7 @@
 package com.example.morago.model.entity;
 
 import com.example.morago.model.entity.base.Auditable;
+import com.example.morago.model.entity.base.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,5 +18,7 @@ public class Debtor extends Auditable {
     private String accountHolder;
     private String nameOfBank;
     private Boolean isPaid;
-    private Long userId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    private User user;
 }

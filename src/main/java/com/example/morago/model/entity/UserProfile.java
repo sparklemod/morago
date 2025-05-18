@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -30,6 +31,9 @@ public class UserProfile extends User {
             inverseJoinColumns = @JoinColumn(name = "theme_id")
     )
     private Set<Theme> favoriteThemes = new HashSet<>();
+
+    @OneToMany(mappedBy = "caller")
+    private List<Call> calls;
 
     public void addFavoriteTheme(Theme theme) {
         favoriteThemes.add(theme);

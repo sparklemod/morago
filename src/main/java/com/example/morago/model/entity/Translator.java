@@ -1,10 +1,7 @@
 package com.example.morago.model.entity;
 
 import com.example.morago.model.entity.base.User;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -16,6 +13,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -44,5 +42,6 @@ public class Translator extends User {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "languageTranslators")
     private Set<Language> languages = new HashSet<>();
 
-
+    @OneToMany(mappedBy = "recipient")
+    private List<Call> calls;
 }

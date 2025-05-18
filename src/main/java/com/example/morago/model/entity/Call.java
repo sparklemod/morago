@@ -1,11 +1,13 @@
 package com.example.morago.model.entity;
 
+import com.example.morago.model.dto.CallStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.*;
 
 @Entity
+@Table(name = "calls")
 @Getter
 @Builder
 @NoArgsConstructor
@@ -23,10 +25,22 @@ public class Call {
     private Boolean translatorHasRated;
     private Boolean userHasRated;
     private LocalDateTime updatedAt;
-    private Long callerId;
-    private Long recipientId;
-    private Long themeId;
-    private String channelName;
-    private Integer callStatus;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "caller_id")
+    private UserProfile caller;
     private Boolean isEndCall;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "recipient_id")
+    private Translator recipient;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "theme_id")
+    private Theme theme;
+
+    private String channelName;
+
+    @Enumerated(EnumType.STRING)
+    private CallStatusEnum callStatus;
 }
