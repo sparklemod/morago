@@ -1,9 +1,9 @@
 spring:
-#  TODO после Security
-#  app:
-#    jwtSecret: ${JWT_SECRET}
-#    jwtExpirationMs: ${JWT_EXPIRATION}
-#    refreshTokenExpirationMs: ${REFRESH_TOKEN_EXPIRATION}
+  #  TODO после Security
+  #  app:
+  #    jwtSecret: ${JWT_SECRET}
+  #    jwtExpirationMs: ${JWT_EXPIRATION}
+  #    refreshTokenExpirationMs: ${REFRESH_TOKEN_EXPIRATION}
   config:
     import: optional:file:.env[.properties]
   application:
@@ -28,3 +28,7 @@ spring:
     password: root
     baselineOnMigrate: true
     validateMigrationNaming: true
+
+  jwt:
+    secret: your-very-secure-secret-key-1234567890
+    expiration: 86400000 }
