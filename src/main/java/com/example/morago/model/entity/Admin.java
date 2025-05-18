@@ -1,6 +1,5 @@
-package com.example.morago.entity.impl;
-
-import com.example.morago.entity.base.User;
+package com.example.morago.model.entity;
+import com.example.morago.model.entity.base.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;

@@ -1,20 +1,15 @@
 spring:
-  #  TODO после Security
-  #  app:
-  #    jwtSecret: ${JWT_SECRET}
-  #    jwtExpirationMs: ${JWT_EXPIRATION}
-  #    refreshTokenExpirationMs: ${REFRESH_TOKEN_EXPIRATION}
   config:
     import: optional:file:.env[.properties]
   application:
     name: morago-backend
   datasource:
-    url: jdbc:mysql://localhost:33066/morago
-    username: root
-    password: root
+    url: ${DATABASE_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
@@ -22,10 +17,10 @@ spring:
     show-sql: true
 
   flyway:
-    enabled: true
-    url: jdbc:mysql://localhost:33066/morago
-    user: root
-    password: root
+    enabled: false
+    url: ${DATABASE_URL}
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
     baselineOnMigrate: true
     validateMigrationNaming: true
 
