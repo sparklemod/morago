@@ -1,8 +1,8 @@
 package com.example.morago.controller;
 
-import com.example.morago.entity.base.User;
-import com.example.morago.model.Dto.AuthRequest;
-import com.example.morago.model.Dto.AuthResponse;
+import com.example.morago.model.entity.base.User;
+import com.example.morago.controller.dto.auth.AuthRequest;
+import com.example.morago.controller.dto.auth.AuthResponse;
 import com.example.morago.service.UserService;
 import com.example.morago.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,5 +1,6 @@
-package com.example.morago.model;
+package com.example.morago.model.entity;
 
+import com.example.morago.model.dto.RoleEnum;
 import jakarta.persistence.*;
 import lombok.*;
 

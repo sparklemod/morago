@@ -1,6 +1,6 @@
-package com.example.morago.repositories;
+package com.example.morago.repository;
 
-import com.example.morago.entity.impl.File;
+import com.example.morago.model.entity.File;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
