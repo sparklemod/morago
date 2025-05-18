@@ -1,6 +1,6 @@
-package com.example.morago.entity.impl;
+package com.example.morago.model.entity;
 
-import com.example.morago.entity.base.User;
+import com.example.morago.model.entity.base.User;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,12 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity

@@ -1,6 +1,6 @@
-package com.example.morago.model;
+package com.example.morago.model.entity;
 
-import com.example.morago.entity.base.Auditable;
+import com.example.morago.model.entity.base.Auditable;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
@@ -10,15 +10,15 @@ import java.math.BigDecimal;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Deposit extends Auditable {
+public class Withdrawal extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String accountNumber;
     private String accountHolder;
     private String nameOfBank;
-    private BigDecimal coin;
-    private BigDecimal won;
+    private BigDecimal sum;
     private String status;
     private Long userId;
 }

@@ -1,6 +1,6 @@
-package com.example.morago.entity.base;
+package com.example.morago.model.entity.base;
 
-import com.example.morago.entity.impl.File;
+import com.example.morago.model.entity.File;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

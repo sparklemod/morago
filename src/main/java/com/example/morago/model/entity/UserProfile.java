@@ -1,6 +1,6 @@
-package com.example.morago.entity.impl;
+package com.example.morago.model.entity;
 
-import com.example.morago.entity.base.User;
+import com.example.morago.model.entity.base.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,4 @@
-package com.example.morago.model;
+package com.example.morago.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

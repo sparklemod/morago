@@ -1,4 +1,4 @@
-package com.example.morago;
+package com.example.morago.config;
 
 import jakarta.servlet.MultipartConfigElement;
 import jakarta.servlet.annotation.MultipartConfig;
