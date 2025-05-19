@@ -1,7 +1,7 @@
 package com.example.morago.service;
 
-import com.example.morago.entity.base.User;
-import com.example.morago.repositories.UserRepository;
+import com.example.morago.model.entity.base.User;
+import com.example.morago.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
