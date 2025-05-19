@@ -69,13 +69,14 @@ public class Theme extends Auditable {
     )
     private Set<Translator> translators = new HashSet<>();
 
-    public void addTranslator(Translator translator) {
-        translators.add(translator);
-        translator.getThemes().add(this);
-    }
-
-    public void removeTranslator(Translator translator) {
-        translators.remove(translator);
-        translator.getThemes().remove(this);
-    }
+//    TODO не знаю почему но тесты ломаются при использовании этого
+//    public void addTranslator(Translator translator) {
+//        translators.add(translator);
+//        translator.getThemes().add(this);
+//    }
+//
+//    public void removeTranslator(Translator translator) {
+//        translators.remove(translator);
+//        translator.getThemes().remove(this);
+//    }
 }

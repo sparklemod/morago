@@ -1,4 +1,4 @@
-package morago_backend;
+package com.example.morago;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
