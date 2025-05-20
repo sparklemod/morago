@@ -17,6 +17,6 @@ import lombok.Setter;
 public class Admin extends User {
 
     @Column(name = "is_super_admin", nullable = false)
-    private boolean isSuperAdmin = false;
+    private Boolean isSuperAdmin = false;
 
 }

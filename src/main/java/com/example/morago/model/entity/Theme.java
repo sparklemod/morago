@@ -61,12 +61,7 @@ public class Theme extends Auditable {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "translator_themes",
-            joinColumns = @JoinColumn(name = "theme_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
+    @ManyToMany(mappedBy = "themes")
     private Set<Translator> translators = new HashSet<>();
 
 //    TODO не знаю почему но тесты ломаются при использовании этого

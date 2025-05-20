@@ -27,10 +27,10 @@ import java.util.List;
 public abstract class User extends Auditable implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false, unique = true)
-    private int phone;
+    private Integer phone;
 
     @Column(nullable = false)
     @NotBlank(message = "Password cannot be empty")
@@ -51,11 +51,11 @@ public abstract class User extends Auditable implements UserDetails {
     private String email;
 
     @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+    private Boolean isActive;
 
     @Column(nullable = false)
     @Min(0)
-    private long balance;
+    private Long balance;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")

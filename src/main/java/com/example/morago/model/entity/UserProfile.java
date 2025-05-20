@@ -19,10 +19,10 @@ import java.util.Set;
 @AllArgsConstructor
 public class UserProfile extends User {
     @Column(name = "is_debtor", nullable = false)
-    private boolean isDebtor = false;
+    private Boolean isDebtor = false;
 
     @Column(name = "is_free_call_made", nullable = false)
-    private boolean isFreeCallMade = false;
+    private Boolean isFreeCallMade = false;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
