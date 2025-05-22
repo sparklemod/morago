@@ -1,7 +1,6 @@
 package com.example.morago.model.entity;
 
 import com.example.morago.model.entity.base.User;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -54,5 +53,5 @@ public class Translator extends User {
     private Set<Language> languages = new HashSet<>();
 
     @OneToMany(mappedBy = "recipient")
-    private List<Call> calls;
+    private Set<Call> calls;
 }
