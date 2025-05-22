@@ -26,11 +26,12 @@ public class Call {
     private Boolean translatorHasRated;
     private Boolean userHasRated;
     private LocalDateTime updatedAt;
+    private Boolean isEndCall;
+    private String channelName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "caller_id")
     private UserProfile caller;
-    private Boolean isEndCall;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipient_id")
@@ -39,8 +40,6 @@ public class Call {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")
     private Theme theme;
-
-    private String channelName;
 
     @Enumerated(EnumType.STRING)
     private CallStatusEnum callStatus;

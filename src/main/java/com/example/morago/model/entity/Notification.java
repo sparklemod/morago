@@ -21,6 +21,6 @@ public class Notification {
     private LocalDate date;
     private LocalTime time;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 }

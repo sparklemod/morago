@@ -1,10 +1,12 @@
 package com.example.morago.model.entity.base;
 
 import com.example.morago.model.entity.File;
+import com.example.morago.model.entity.Notification;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +32,7 @@ public abstract class User extends Auditable implements UserDetails {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private Integer phone;
+    private String phone;
 
     @Column(nullable = false)
     @NotBlank(message = "Password cannot be empty")
@@ -60,6 +62,9 @@ public abstract class User extends Auditable implements UserDetails {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "image_id")
     private File imageId;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Notification> notifications;
 
     @Override
     public String getUsername() {

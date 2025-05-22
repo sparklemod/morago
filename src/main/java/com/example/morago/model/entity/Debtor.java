@@ -20,6 +20,6 @@ public class Debtor extends Auditable {
     private String nameOfBank;
     private Boolean isPaid;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 }

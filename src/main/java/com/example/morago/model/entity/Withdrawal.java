@@ -1,6 +1,6 @@
 package com.example.morago.model.entity;
 
-import com.example.morago.model.dto.WithdrawalStatusEnum;
+import com.example.morago.model.dto.PaymentStatusEnum;
 import com.example.morago.model.entity.base.Auditable;
 import com.example.morago.model.entity.base.User;
 import jakarta.persistence.*;
@@ -24,8 +24,8 @@ public class Withdrawal extends Auditable {
     private BigDecimal sum;
 
     @Enumerated(EnumType.STRING)
-    private WithdrawalStatusEnum status;
+    private PaymentStatusEnum status;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 }
