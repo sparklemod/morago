@@ -1,7 +1,7 @@
 package com.example.morago.controller;
 
-import com.example.morago.controller.dto.requests.TranslatorGetRequest;
-import com.example.morago.model.entity.Translator;
+import com.example.morago.controller.dto.requests.translator.TranslatorGetRequest;
+import com.example.morago.controller.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.service.TranslatorService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class TranslatorController {
     @Operation(
         description = "<strong>Позволяет получить список переводчиков по различным параметрам.</strong>"
     )
-    public ResponseEntity<Page<Translator>> getTranslators(@ModelAttribute TranslatorGetRequest request) {
+    public ResponseEntity<Page<TranslatorGetResponse>> getTranslators(@ModelAttribute TranslatorGetRequest request) {
         return ResponseEntity.ok(translatorService.searchTranslators(request));
     }
 }

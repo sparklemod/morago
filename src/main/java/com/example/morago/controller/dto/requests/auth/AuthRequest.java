@@ -1,4 +1,4 @@
-package com.example.morago.controller.dto;
+package com.example.morago.controller.dto.requests.auth;
 
 import lombok.Data;
 

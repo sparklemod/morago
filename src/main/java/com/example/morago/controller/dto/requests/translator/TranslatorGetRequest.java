@@ -1,4 +1,4 @@
-package com.example.morago.controller.dto.requests;
+package com.example.morago.controller.dto.requests.translator;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;

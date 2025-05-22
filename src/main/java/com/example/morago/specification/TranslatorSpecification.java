@@ -1,5 +1,6 @@
-package com.example.morago.controller.dto.requests;
+package com.example.morago.specification;
 
+import com.example.morago.controller.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.entity.Translator;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;

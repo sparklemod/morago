@@ -2,8 +2,8 @@ package com.example.morago.controller;
 
 import com.example.morago.model.dto.UserResponse;
 import com.example.morago.model.entity.base.User;
-import com.example.morago.controller.dto.AuthRequest;
-import com.example.morago.controller.dto.AuthResponse;
+import com.example.morago.controller.dto.requests.auth.AuthRequest;
+import com.example.morago.controller.dto.response.auth.AuthResponse;
 import com.example.morago.service.UserService;
 import com.example.morago.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
