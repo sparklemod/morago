@@ -21,7 +21,7 @@ public class TranslatorController {
 
     @GetMapping
     @Operation(
-        description = "<strong>Позволяет получить список переводчиков по различным параметрам.</strong>"
+        description = "<strong>Get a list of translators by request body parameters</strong>"
     )
     public ResponseEntity<Page<TranslatorGetResponse>> getTranslators(@ModelAttribute TranslatorGetRequest request) {
         return ResponseEntity.ok(translatorService.searchTranslators(request));

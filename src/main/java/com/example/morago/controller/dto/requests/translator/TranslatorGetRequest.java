@@ -26,13 +26,13 @@ public class TranslatorGetRequest {
     @Schema(description = "Email переводчика", example = "ivan1@example.com")
     private String email;
 
-    @Schema(description = "Онлайн статус", example = "true")
+    @Schema(description = "Онлайн статус", example = "false")
     private Boolean isOnline;
 
-    @Schema(description = "Уровень владения корейским (от 1 до 5)", example = "3")
+    @Schema(description = "Уровень владения корейским (от 1 до 5)", example = "4")
     private Integer levelOfKorean;
 
-    @Schema(description = "Дата рождения (с) переводчика", example = "1990-01-01")
+    @Schema(description = "Дата рождения (с) переводчика", example = "1985-05-12")
     private LocalDate dateOfBirthFrom;
 
     @Schema(description = "Дата рождения (до) переводчика", example = "2004-01-01")
