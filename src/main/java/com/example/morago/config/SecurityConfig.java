@@ -31,15 +31,18 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
+//    TODO спросить про доступы по ролям
+//    временно открытый доступ для тестирования api
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/register").permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/translator/**").hasRole("TRANSLATOR")
-                        .requestMatchers("/user/**").hasRole("USER")
+                        .requestMatchers("/**").permitAll()
+//                        .requestMatchers("/login", "/register", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+//                        .requestMatchers("/translator/**").hasRole("TRANSLATOR")
+//                        .requestMatchers("/user/**").hasRole("USER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

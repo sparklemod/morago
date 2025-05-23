@@ -33,14 +33,14 @@ public class AuthController {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            String.valueOf(authRequest.getPhone()),
+                            authRequest.getPhone(),
                             authRequest.getPassword()
                     )
             );
         } catch (BadCredentialsException e) {
             throw new BadCredentialsException("Invalid phone or password.");
         }
-        UserDetails userDetails = userDetailsService.loadUserByUsername(String.valueOf(authRequest.getPhone()));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getPhone());
         String token = jwtUtil.generateToken(userDetails);
         return new AuthResponse(token);
     }
