@@ -61,9 +61,6 @@ public class Theme extends Auditable {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToMany(mappedBy = "themes")
-    private Set<Translator> translators = new HashSet<>();
-
 //    TODO не знаю почему но тесты ломаются при использовании этого
 //    public void addTranslator(Translator translator) {
 //        translators.add(translator);

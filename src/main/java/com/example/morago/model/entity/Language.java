@@ -33,9 +33,6 @@ public class Language extends Auditable {
     @Column(nullable = false)
     private Boolean isActive = true;
 
-    @ManyToMany(mappedBy = "languages")
-    private Set<Translator> languageTranslators = new HashSet<>();
-
     //    TODO не знаю почему но тесты ломаются при использовании этого
 //    public void addTranslator(Translator translator) {
 //        languageTranslators.add(translator);
