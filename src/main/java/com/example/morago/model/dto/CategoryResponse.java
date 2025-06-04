@@ -1,6 +1,5 @@
 package com.example.morago.model.dto;
 
-import com.example.morago.model.entity.Category;
 import lombok.Data;
 
 @Data

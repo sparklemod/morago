@@ -1,6 +1,5 @@
 package com.example.morago.model.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
