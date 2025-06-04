@@ -11,6 +11,8 @@ import java.util.Optional;
 @Repository
 public interface ThemeRepository extends JpaRepository<Theme, Long> {
     Optional<Theme> findByName(String name);
+
     boolean existsByName(String name);
+
     Page<Theme> findAll(Pageable pageable);
 }
