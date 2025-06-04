@@ -1,12 +1,10 @@
 package com.example.morago.controller;
 
-import com.example.morago.model.dto.CategoryResponse;
-import com.example.morago.model.dto.PageRequest;
-import com.example.morago.model.dto.PageResponse;
+import com.example.morago.controller.dto.requests.PageRequest;
+import com.example.morago.controller.dto.response.CategoryResponse;
+import com.example.morago.controller.dto.response.PageResponse;
 import com.example.morago.service.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

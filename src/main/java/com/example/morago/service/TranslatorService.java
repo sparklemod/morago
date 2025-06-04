@@ -1,10 +1,10 @@
 package com.example.morago.service;
 
 import com.example.morago.controller.dto.requests.translator.TranslatorGetRequest;
-import com.example.morago.specification.TranslatorSpecification;
 import com.example.morago.controller.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.repository.TranslatorRepository;
+import com.example.morago.specification.TranslatorSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

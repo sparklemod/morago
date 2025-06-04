@@ -1,6 +1,6 @@
 package com.example.morago.repository;
 
-import com.example.morago.model.dto.CallStatusEnum;
+import com.example.morago.enums.CallStatusEnum;
 import com.example.morago.model.entity.Call;
 import com.example.morago.model.entity.Theme;
 import jakarta.transaction.Transactional;

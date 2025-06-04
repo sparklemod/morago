@@ -3,7 +3,9 @@ package com.example.morago.model.entity;
 import com.example.morago.model.entity.base.User;
 import jakarta.persistence.*;
 import lombok.*;
-import java.time.*;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Getter

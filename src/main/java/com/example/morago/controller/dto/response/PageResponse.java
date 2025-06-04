@@ -1,4 +1,4 @@
-package com.example.morago.model.dto;
+package com.example.morago.controller.dto.response;
 
 import lombok.Data;
 import org.springframework.data.domain.Page;

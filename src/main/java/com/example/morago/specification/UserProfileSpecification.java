@@ -3,9 +3,10 @@ package com.example.morago.specification;
 import com.example.morago.controller.dto.requests.user.UserGetRequest;
 import com.example.morago.model.entity.UserProfile;
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.data.jpa.domain.Specification;
 
 public class UserProfileSpecification {
 

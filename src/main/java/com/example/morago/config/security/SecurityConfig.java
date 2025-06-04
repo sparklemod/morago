@@ -1,6 +1,5 @@
-package com.example.morago.config;
+package com.example.morago.config.security;
 
-import com.example.morago.security.JwtRequestFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

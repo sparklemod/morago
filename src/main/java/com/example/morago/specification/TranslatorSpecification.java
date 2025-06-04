@@ -3,10 +3,10 @@ package com.example.morago.specification;
 import com.example.morago.controller.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.entity.Translator;
 import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.springframework.data.jpa.domain.Specification;
 
 public class TranslatorSpecification {
 

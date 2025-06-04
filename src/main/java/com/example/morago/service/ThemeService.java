@@ -1,8 +1,8 @@
 package com.example.morago.service;
 
-import com.example.morago.model.dto.PageRequest;
-import com.example.morago.model.dto.PageResponse;
-import com.example.morago.model.dto.ThemeResponse;
+import com.example.morago.controller.dto.requests.PageRequest;
+import com.example.morago.controller.dto.response.PageResponse;
+import com.example.morago.controller.dto.response.ThemeResponse;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.repository.ThemeRepository;
 import lombok.RequiredArgsConstructor;
