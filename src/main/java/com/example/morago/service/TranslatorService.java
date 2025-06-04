@@ -1,10 +1,10 @@
 package com.example.morago.service;
 
 import com.example.morago.controller.dto.requests.translator.TranslatorGetRequest;
-import com.example.morago.specification.TranslatorSpecification;
 import com.example.morago.controller.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.repository.TranslatorRepository;
+import com.example.morago.specification.TranslatorSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,10 +19,7 @@ public class TranslatorService {
     private final TranslatorRepository translatorRepository;
 
     public Page<TranslatorGetResponse> searchTranslators(TranslatorGetRequest request) {
-        Sort sort = Sort.by(
-            request.getSortDirection().equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC,
-            request.getSortBy()
-        );
+        Sort sort = Sort.by(Sort.Direction.fromString(request.getSortDirection()), request.getSortBy());
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
         Page<Translator> translators = translatorRepository.findAll(

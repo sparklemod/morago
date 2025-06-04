@@ -1,11 +1,14 @@
 package com.example.morago.service;
 
-import com.example.morago.model.dto.ThemeResponse;
+import com.example.morago.controller.dto.requests.PageRequest;
+import com.example.morago.controller.dto.response.PageResponse;
+import com.example.morago.controller.dto.response.ThemeResponse;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.repository.ThemeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -13,8 +16,23 @@ import org.springframework.stereotype.Service;
 public class ThemeService {
     private final ThemeRepository themeRepository;
 
-    public Page<ThemeResponse> getAllThemes(Pageable pageable) {
+    public PageResponse<ThemeResponse> getThemes(PageRequest pageRequest) {
+        Sort sort = Sort.by(Sort.Direction.fromString(pageRequest.getSortDirection()), pageRequest.getSortBy());
+        Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
+
         Page<Theme> themePage = themeRepository.findAll(pageable);
-        return themePage.map(ThemeResponse::new);
+
+        Page<ThemeResponse> responsePage = themePage.map(theme -> {
+            ThemeResponse response = new ThemeResponse();
+            response.setId(theme.getId());
+            response.setName(theme.getName());
+            response.setIsActive(theme.getIsActive());
+            response.setIconName(theme.getIcon().getOriginalTitle());
+            response.setCategoryName(theme.getCategory().getName());
+            response.setIsPopular(theme.getIsPopular());
+            return response;
+        });
+
+        return new PageResponse<>(responsePage);
     }
 }

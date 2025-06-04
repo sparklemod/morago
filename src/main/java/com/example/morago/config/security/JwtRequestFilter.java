@@ -1,6 +1,5 @@
-package com.example.morago.security;
+package com.example.morago.config.security;
 
-import com.example.morago.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

@@ -1,6 +1,5 @@
 package com.example.morago.service;
 
-import com.example.morago.model.entity.base.User;
 import com.example.morago.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

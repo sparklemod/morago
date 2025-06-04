@@ -10,9 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.HashSet;
-import java.util.Set;
-
 @Entity
 @Table(name = "themes")
 @Getter
@@ -60,9 +57,6 @@ public class Theme extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-
-    @ManyToMany(mappedBy = "themes")
-    private Set<Translator> translators = new HashSet<>();
 
 //    TODO не знаю почему но тесты ломаются при использовании этого
 //    public void addTranslator(Translator translator) {

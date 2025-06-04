@@ -4,13 +4,10 @@ import com.example.morago.model.entity.base.Auditable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-
-import java.util.HashSet;
-import java.util.Set;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "languages")
@@ -32,9 +29,6 @@ public class Language extends Auditable {
 
     @Column(nullable = false)
     private Boolean isActive = true;
-
-    @ManyToMany(mappedBy = "languages")
-    private Set<Translator> languageTranslators = new HashSet<>();
 
     //    TODO не знаю почему но тесты ломаются при использовании этого
 //    public void addTranslator(Translator translator) {

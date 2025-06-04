@@ -1,10 +1,11 @@
 package com.example.morago.model.entity;
 
-import com.example.morago.model.dto.CallStatusEnum;
+import com.example.morago.enums.CallStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.math.BigDecimal;
-import java.time.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "calls")

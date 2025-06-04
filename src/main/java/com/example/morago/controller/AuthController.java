@@ -1,15 +1,15 @@
 package com.example.morago.controller;
 
-import com.example.morago.model.dto.UserResponse;
-import com.example.morago.model.entity.base.User;
+import com.example.morago.config.security.JwtUtil;
 import com.example.morago.controller.dto.requests.auth.AuthRequest;
 import com.example.morago.controller.dto.response.auth.AuthResponse;
+import com.example.morago.model.entity.base.User;
 import com.example.morago.service.UserService;
-import com.example.morago.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -31,30 +31,39 @@ public class AuthController {
     private final UserService userService;
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody AuthRequest authRequest) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            authRequest.getPhone(),
-                            authRequest.getPassword()
-                    )
-            );
-        } catch (BadCredentialsException e) {
-            throw new BadCredentialsException("Invalid phone or password.");
-        }
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {
+
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        authRequest.getPhone(),
+                        authRequest.getPassword()
+                )
+        );
+
         UserDetails userDetails = userDetailsService.loadUserByUsername(authRequest.getPhone());
-        String token = jwtUtil.generateToken(userDetails);
-        return new AuthResponse(token);
+        User user = (User) userDetails;
+        String token = jwtUtil.generateToken((User) userDetails);
+        AuthResponse response = AuthResponse.builder()
+                .token(token)
+                .id(user.getId())
+                .phone(user.getPhone())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/register")
-    public UserResponse register(@RequestBody User user) {
+    public ResponseEntity<AuthResponse> register(@RequestBody User user) {
         User createdUser = userService.createUser(user);
-        UserResponse userResponse = new UserResponse();
-        userResponse.setId(createdUser.getId());
-        userResponse.setPhone(createdUser.getPhone());
-        userResponse.setFirstName(createdUser.getFirstName());
-        userResponse.setLastName(createdUser.getLastName());
-        return userResponse;
+        String token = jwtUtil.generateToken(createdUser);
+        AuthResponse response = AuthResponse.builder()
+                .token(token)
+                .id(user.getId())
+                .phone(user.getPhone())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }
