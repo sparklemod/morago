@@ -61,21 +61,17 @@ public class Theme extends Auditable {
     @JoinColumn(name = "category_id")
     private Category category;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "translator_themes",
-            joinColumns = @JoinColumn(name = "theme_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
+    @ManyToMany(mappedBy = "themes")
     private Set<Translator> translators = new HashSet<>();
 
-    public void addTranslator(Translator translator) {
-        translators.add(translator);
-        translator.getThemes().add(this);
-    }
-
-    public void removeTranslator(Translator translator) {
-        translators.remove(translator);
-        translator.getThemes().remove(this);
-    }
+//    TODO не знаю почему но тесты ломаются при использовании этого
+//    public void addTranslator(Translator translator) {
+//        translators.add(translator);
+//        translator.getThemes().add(this);
+//    }
+//
+//    public void removeTranslator(Translator translator) {
+//        translators.remove(translator);
+//        translator.getThemes().remove(this);
+//    }
 }

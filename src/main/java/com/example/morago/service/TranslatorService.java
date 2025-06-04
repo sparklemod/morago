@@ -1,0 +1,48 @@
+package com.example.morago.service;
+
+import com.example.morago.controller.dto.requests.translator.TranslatorGetRequest;
+import com.example.morago.specification.TranslatorSpecification;
+import com.example.morago.controller.dto.response.translator.TranslatorGetResponse;
+import com.example.morago.model.entity.Translator;
+import com.example.morago.repository.TranslatorRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class TranslatorService {
+
+    private final TranslatorRepository translatorRepository;
+
+    public Page<TranslatorGetResponse> searchTranslators(TranslatorGetRequest request) {
+        Sort sort = Sort.by(
+            request.getSortDirection().equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC,
+            request.getSortBy()
+        );
+        Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
+
+        Page<Translator> translators = translatorRepository.findAll(
+            TranslatorSpecification.build(request),
+            pageable
+        );
+
+        return translators.map(this::mapToDto);
+    }
+
+    public TranslatorGetResponse mapToDto(Translator t) {
+        return new TranslatorGetResponse(
+            t.getId(),
+            t.getFirstName(),
+            t.getLastName(),
+            t.getPhone(),
+            t.getEmail(),
+            t.getIsOnline(),
+            t.getLevelOfKorean(),
+            t.getDateOfBirth()
+        );
+    }
+}

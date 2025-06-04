@@ -18,10 +18,10 @@ import java.util.Set;
 @AllArgsConstructor
 public class UserProfile extends User {
     @Column(name = "is_debtor", nullable = false)
-    private boolean isDebtor = false;
+    private Boolean isDebtor = false;
 
     @Column(name = "is_free_call_made", nullable = false)
-    private boolean isFreeCallMade = false;
+    private Boolean isFreeCallMade = false;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -30,6 +30,18 @@ public class UserProfile extends User {
             inverseJoinColumns = @JoinColumn(name = "theme_id")
     )
     private Set<Theme> favoriteThemes = new HashSet<>();
+
+    @OneToMany(mappedBy = "caller")
+    private Set<Call> calls;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Debtor> debtors;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Deposit> deposits;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Withdrawal> withdrawals;
 
     public void addFavoriteTheme(Theme theme) {
         favoriteThemes.add(theme);

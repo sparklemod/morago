@@ -33,21 +33,17 @@ public class Language extends Auditable {
     @Column(nullable = false)
     private Boolean isActive = true;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "translator_languages",
-            joinColumns = @JoinColumn(name = "language_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
+    @ManyToMany(mappedBy = "languages")
     private Set<Translator> languageTranslators = new HashSet<>();
 
-    public void addTranslator(Translator translator) {
-        languageTranslators.add(translator);
-        translator.getLanguages().add(this);
-    }
-
-    public void removeTranslator(Translator translator) {
-        languageTranslators.remove(translator);
-        translator.getLanguages().remove(this);
-    }
+    //    TODO не знаю почему но тесты ломаются при использовании этого
+//    public void addTranslator(Translator translator) {
+//        languageTranslators.add(translator);
+//        translator.getLanguages().add(this);
+//    }
+//
+//    public void removeTranslator(Translator translator) {
+//        languageTranslators.remove(translator);
+//        translator.getLanguages().remove(this);
+//    }
 }
