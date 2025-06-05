@@ -1,5 +1,6 @@
 package com.example.morago.service;
 
+import com.example.morago.controller.dto.websocket.CallPayload;
 import com.example.morago.enums.CallStatusEnum;
 import com.example.morago.model.entity.Call;
 import com.example.morago.model.entity.Theme;
@@ -14,6 +15,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -24,6 +26,7 @@ public class CallService {
     private final UserProfileRepository userProfileRepository;
     private final TranslatorRepository translatorRepository;
     private final ThemeRepository themeRepository;
+    private final SimpMessagingTemplate messagingTemplate;
 
     public Call createCall(Long callerId, Long recipientId, Long themeId, String channelName) {
         UserProfile caller = userProfileRepository.findById(callerId).orElseThrow(()->new EntityNotFoundException("Caller not found"));
@@ -40,7 +43,22 @@ public class CallService {
             .recipient(recipient)
             .theme(theme)
             .build();
-        return callRepository.save(call);
+
+        Call saved = callRepository.save(call);
+
+        CallPayload payload = new CallPayload(
+            caller.getId().toString(),
+            recipient.getId().toString(),
+            channelName
+        );
+
+        messagingTemplate.convertAndSendToUser(
+            payload.getTo(),
+            "/topic/incoming-call",
+            payload
+        );
+
+        return saved;
     }
 
     public Call endCall(Long callId) {
