@@ -5,6 +5,7 @@ import com.example.morago.controller.dto.response.user.UserGetResponse;
 import com.example.morago.model.entity.UserProfile;
 import com.example.morago.repository.UserProfileRepository;
 import com.example.morago.specification.UserProfileSpecification;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserProfileService {
 
-    private final UserProfileRepository translatorRepository;
+    private final UserProfileRepository userProfileRepository;
 
     public Page<UserGetResponse> searchUsers(UserGetRequest request) {
         Sort sort = Sort.by(
@@ -25,12 +26,16 @@ public class UserProfileService {
         );
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
-        Page<UserProfile> users = translatorRepository.findAll(
+        Page<UserProfile> users = userProfileRepository.findAll(
             UserProfileSpecification.build(request),
             pageable
         );
 
         return users.map(this::mapToDto);
+    }
+
+    public UserProfile searchUserById(Long id) {
+        return userProfileRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
     }
 
     public UserGetResponse mapToDto(UserProfile userProfile) {

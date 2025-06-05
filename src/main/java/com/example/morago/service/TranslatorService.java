@@ -5,6 +5,7 @@ import com.example.morago.controller.dto.response.translator.TranslatorGetRespon
 import com.example.morago.model.entity.Translator;
 import com.example.morago.repository.TranslatorRepository;
 import com.example.morago.specification.TranslatorSpecification;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,10 @@ public class TranslatorService {
         );
 
         return translators.map(this::mapToDto);
+    }
+
+    public Translator searchUserById(Long id) {
+        return translatorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
     }
 
     public TranslatorGetResponse mapToDto(Translator t) {
