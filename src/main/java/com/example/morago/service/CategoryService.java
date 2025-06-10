@@ -17,7 +17,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public PageResponse<CategoryResponse> getCategories(PageRequest pageRequest) {
-        Sort sort = Sort.by(Sort.Direction.fromString(pageRequest.getSortDirection()), pageRequest.getSortBy());
+        Sort sort = Sort.by(pageRequest.getSortDirection(), pageRequest.getSortBy());
         Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
 
         Page<Category> categoryPage = categoryRepository.findAll(pageable);
