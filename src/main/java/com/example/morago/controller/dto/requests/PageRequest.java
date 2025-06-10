@@ -3,6 +3,7 @@ package com.example.morago.controller.dto.requests;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @Data
 public class PageRequest {
@@ -21,5 +22,10 @@ public class PageRequest {
 
     public Pageable toPageableWithoutSort() {
         return org.springframework.data.domain.PageRequest.of(page, size);
+    }
+
+    public  Pageable toPageable() {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDirection), sortBy);
+        return org.springframework.data.domain.PageRequest.of(page, size, sort);
     }
 }

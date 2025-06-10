@@ -4,6 +4,7 @@ import com.example.morago.controller.dto.requests.PageRequest;
 import com.example.morago.controller.dto.response.PageResponse;
 import com.example.morago.controller.dto.response.ThemeResponse;
 import com.example.morago.model.entity.Theme;
+import com.example.morago.model.entity.base.User;
 import com.example.morago.repository.ThemeRepository;
 import com.example.morago.repository.specification.ThemeSpecifications;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,7 @@ public class ThemeService {
             pageable = pageRequest.toPageable();
         } else if (isAuthenticated) {
             // Авторизованный: фильтр по имени + сортировка по звонкам
-            Long userId = ((CustomUserDetails) auth.getPrincipal()).getId();
+            Long userId = ((User) auth.getPrincipal()).getId();
             spec = ThemeSpecifications.forAuthenticated(keyword, userId);
             pageable = pageRequest.toPageableWithoutSort(); // Сортировка в Specification
         } else {
