@@ -24,10 +24,9 @@ public class CallController {
 
     @PostMapping
     public ResponseEntity<Call> createCall(@RequestBody CallCreateRequest request) {
-        return ResponseEntity.ok(callService.createCall(
-            request.getCallerId(), request.getRecipientId(), request.getThemeId(),
-            request.getChannelName()
-        ));
+        Call call = callService.createCall(request);
+
+        return ResponseEntity.ok(call);
     }
 
     @PostMapping("/{id}/end")
