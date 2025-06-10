@@ -1,6 +1,7 @@
 package com.example.morago.controller.dto.requests.user;
 
 import com.example.morago.controller.dto.requests.PageRequest;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,9 +15,6 @@ import lombok.Setter;
 @Schema(description = "Фильтры и параметры пагинации для получения пользователей")
 public class UserGetRequest extends PageRequest {
 
-    @Schema(description = "Имя пользователя для фильтрации", example = "Svetlana")
-    private String firstName;
-
-    @Schema(description = "Фамилия пользователя для фильтрации", example = "Popova")
-    private String lastName;
+    @Parameter(description = "Имя пользователя или компании", example = "sve")
+    private String NameUserOrCompany;
 }

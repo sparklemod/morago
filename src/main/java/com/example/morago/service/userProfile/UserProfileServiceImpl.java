@@ -66,11 +66,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     public Page<UserGetResponse> searchUsers(UserGetRequest request) {
         Sort sort = Sort.by(request.getSortDirection(), request.getSortBy());
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
-
-        Page<UserProfile> users = repository.findByName(
-            request.getFirstName(),
-            pageable
-        );
+        Page<UserProfile> users = repository.findByName(request.getNameUserOrCompany(), pageable);
 
         return users.map(this::mapToDto);
     }
