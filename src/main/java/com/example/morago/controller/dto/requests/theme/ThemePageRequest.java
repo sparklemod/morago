@@ -1,5 +1,6 @@
-package com.example.morago.controller.dto.requests;
+package com.example.morago.controller.dto.requests.theme;
 
+import com.example.morago.controller.dto.requests.PageRequest;
 import lombok.Data;
 
 @Data

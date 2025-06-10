@@ -1,4 +1,4 @@
-package com.example.morago.controller.dto.response;
+package com.example.morago.controller.dto.response.theme;
 
 import lombok.Data;
 
