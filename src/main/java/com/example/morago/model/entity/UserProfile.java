@@ -9,11 +9,13 @@ import lombok.Setter;
 
 import java.util.HashSet;
 import java.util.Set;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @DiscriminatorValue("USER")
 @Setter
 @Getter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserProfile extends User {

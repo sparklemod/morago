@@ -19,10 +19,4 @@ public class UserGetRequest extends PageRequest {
 
     @Schema(description = "Фамилия пользователя для фильтрации", example = "Popova")
     private String lastName;
-
-    @Schema(description = "Телефон пользователя", example = "+70000000008")
-    private String phone;
-
-    @Schema(description = "Email пользователя", example = "sveta8@example.com")
-    private String email;
 }

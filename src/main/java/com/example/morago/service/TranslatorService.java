@@ -20,7 +20,7 @@ public class TranslatorService {
     private final TranslatorRepository translatorRepository;
 
     public Page<TranslatorGetResponse> searchTranslators(TranslatorGetRequest request) {
-        Sort sort = Sort.by(Sort.Direction.fromString(request.getSortDirection()), request.getSortBy());
+        Sort sort = Sort.by(request.getSortDirection(), request.getSortBy());
         Pageable pageable = PageRequest.of(request.getPage(), request.getSize(), sort);
 
         Page<Translator> translators = translatorRepository.findAll(

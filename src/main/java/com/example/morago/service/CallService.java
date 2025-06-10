@@ -1,5 +1,6 @@
 package com.example.morago.service;
 
+import com.example.morago.controller.dto.requests.call.CallCreateRequest;
 import com.example.morago.controller.dto.websocket.CallPayload;
 import com.example.morago.enums.CallStatusEnum;
 import com.example.morago.model.entity.Call;
@@ -28,16 +29,16 @@ public class CallService {
     private final ThemeRepository themeRepository;
     private final SimpMessagingTemplate messagingTemplate;
 
-    public Call createCall(Long callerId, Long recipientId, Long themeId, String channelName) {
-        UserProfile caller = userProfileRepository.findById(callerId).orElseThrow(()->new EntityNotFoundException("Caller not found"));
-        Translator recipient = translatorRepository.findById(recipientId).orElseThrow(()->new EntityNotFoundException("Translator not found"));
-        Theme theme = themeRepository.findById(themeId).orElseThrow(()->new EntityNotFoundException("Theme not found"));
+    public Call createCall(CallCreateRequest request) {
+        UserProfile caller = userProfileRepository.findById(request.getCallerId()).orElseThrow(()->new EntityNotFoundException("Caller not found"));
+        Translator recipient = translatorRepository.findById(request.getRecipientId()).orElseThrow(()->new EntityNotFoundException("Translator not found"));
+        Theme theme = themeRepository.findById(request.getThemeId()).orElseThrow(()->new EntityNotFoundException("Theme not found"));
 
         Call call = Call.builder()
             .createdAt(LocalDateTime.now())
             .isEndCall(false)
             .status(false)
-            .channelName(channelName)
+            .channelName(request.getChannelName())
             .callStatus(CallStatusEnum.CONNECT_NOT_SET)
             .caller(caller)
             .recipient(recipient)
@@ -49,7 +50,7 @@ public class CallService {
         CallPayload payload = new CallPayload(
             caller.getId().toString(),
             recipient.getId().toString(),
-            channelName
+            request.getChannelName()
         );
 
         messagingTemplate.convertAndSendToUser(

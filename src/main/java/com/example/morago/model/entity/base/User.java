@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import org.springframework.security.core.CredentialsContainer;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,9 +26,10 @@ import java.util.Set;
 @DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class User extends Auditable implements UserDetails {
+public abstract class User extends Auditable implements UserDetails, CredentialsContainer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -60,11 +63,14 @@ public abstract class User extends Auditable implements UserDetails {
     private Long balance;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "image_id")
-    private File imageId;
+    private File imageFile;
 
     @OneToMany(mappedBy = "user")
     private Set<Notification> notifications;
+
+    public String getFullName(){
+        return getFirstName() + " " + getLastName();
+    }
 
     @Override
     public String getUsername() {
@@ -99,5 +105,10 @@ public abstract class User extends Auditable implements UserDetails {
     @Override
     public boolean isEnabled() {
         return this.isActive;
+    }
+
+    @Override
+    public void eraseCredentials() {
+        this.password = null;
     }
 }

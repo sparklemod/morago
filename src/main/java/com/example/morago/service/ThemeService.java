@@ -17,7 +17,7 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
 
     public PageResponse<ThemeResponse> getThemes(PageRequest pageRequest) {
-        Sort sort = Sort.by(Sort.Direction.fromString(pageRequest.getSortDirection()), pageRequest.getSortBy());
+        Sort sort = Sort.by(pageRequest.getSortDirection(), pageRequest.getSortBy());
         Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
 
         Page<Theme> themePage = themeRepository.findAll(pageable);
