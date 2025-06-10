@@ -30,6 +30,7 @@ public class UserProfileCreateRequest {
     @Schema(description = "Coins", example = "1000")
     private Long coins;
 
+    @Schema(description = "Image URL")
     private String imageUrl;
 
     public UserProfile build(File image)

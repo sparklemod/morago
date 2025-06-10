@@ -1,6 +1,7 @@
 package com.example.morago.repository;
 
 import com.example.morago.model.entity.UserProfile;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,7 @@ public interface UserProfileRepository
 
     @Query("SELECT o FROM UserProfile o WHERE LOWER(o.firstName) LIKE LOWER(CONCAT('%', :name, '%')) OR LOWER(o.lastName) LIKE LOWER(CONCAT('%', :name, '%'))")
     Page<UserProfile> findByName(@Param("name") String name, Pageable pageable);
+
+    Optional<UserProfile> findByPhoneAndFirstNameIgnoreCaseAndLastNameIgnoreCase(String phone, String firstName, String lastName);
 }
 
