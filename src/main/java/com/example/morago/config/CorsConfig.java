@@ -15,7 +15,6 @@ import java.util.List;
 
 @Configuration
 @PropertySource("classpath:cors.properties")
-@MultipartConfig
 public class CorsConfig {
 
     @Value("${cors.allowed-origins}")
