@@ -1,6 +1,6 @@
 package com.example.morago.model.entity;
 
-import com.example.morago.enums.CallStatusEnum;
+import com.example.morago.model.enums.CallStatusEnum;
 import jakarta.persistence.*;
 import lombok.*;
 

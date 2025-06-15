@@ -2,7 +2,7 @@ package com.example.morago.service;
 
 import com.example.morago.controller.dto.requests.call.CallCreateRequest;
 import com.example.morago.controller.dto.websocket.CallPayload;
-import com.example.morago.enums.CallStatusEnum;
+import com.example.morago.model.enums.CallStatusEnum;
 import com.example.morago.model.entity.Call;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.model.entity.Translator;

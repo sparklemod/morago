@@ -1,4 +1,4 @@
-package com.example.morago.enums;
+package com.example.morago.model.enums;
 
 public enum CallStatusEnum {
     COMPLETED,
