@@ -15,6 +15,6 @@ import lombok.Setter;
 @Schema(description = "Фильтры и параметры пагинации для получения пользователей")
 public class UserGetRequest extends PageRequest {
 
-    @Parameter(description = "Имя пользователя или компании", example = "sve")
-    private String NameUserOrCompany;
+    @Parameter(description = "Firstname | Lastname | phone | email", example = "sve")
+    private String keyword;
 }

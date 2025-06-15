@@ -14,9 +14,14 @@ import org.springframework.stereotype.Repository;
 public interface UserProfileRepository
     extends JpaRepository<UserProfile, Long>, JpaSpecificationExecutor<UserProfile> {
 
-    @Query("SELECT o FROM UserProfile o WHERE LOWER(o.firstName) LIKE LOWER(CONCAT('%', :name, '%')) OR LOWER(o.lastName) LIKE LOWER(CONCAT('%', :name, '%'))")
-    Page<UserProfile> findByName(@Param("name") String name, Pageable pageable);
+    @Query("SELECT o FROM UserProfile o WHERE "
+        + "LOWER(o.firstName) LIKE LOWER(CONCAT('%', :name, '%')) "
+        + "OR LOWER(o.lastName) LIKE LOWER(CONCAT('%', :name, '%'))"
+        + "OR LOWER(o.phone) LIKE LOWER(CONCAT('%', :name, '%'))"
+        + "OR LOWER(o.email) LIKE LOWER(CONCAT('%', :name, '%'))")
+    Page<UserProfile> findByKeyword(@Param("name") String name, Pageable pageable);
 
     Optional<UserProfile> findByPhoneAndFirstNameIgnoreCaseAndLastNameIgnoreCase(String phone, String firstName, String lastName);
+    Optional<UserProfile> findByPhone(String phone);
 }
 

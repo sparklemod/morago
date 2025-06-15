@@ -3,11 +3,14 @@ package com.example.morago.controller;
 import com.example.morago.controller.dto.requests.user.UserProfileCreateRequest;
 import com.example.morago.controller.dto.requests.user.UserGetRequest;
 import com.example.morago.controller.dto.requests.user.UserProfileUpdateBalanceRequest;
+import com.example.morago.controller.dto.response.user.UserGetResponse;
+import com.example.morago.model.entity.UserProfile;
 import com.example.morago.service.userProfile.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,63 +32,38 @@ public class UserController {
 
     @GetMapping()
     @Operation(description = "Get list of users with filters")
-    public ResponseEntity<?> getUserProfiles(@ModelAttribute UserGetRequest request) {
-        try {
-            return ResponseEntity.ok(service.searchUsers(request));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Page<UserGetResponse>> getUserProfiles(
+        @ModelAttribute UserGetRequest request) {
+        return ResponseEntity.ok(service.searchUsers(request));
     }
 
     @GetMapping("/{id}")
     @Operation(description = "Get user by id")
-    public ResponseEntity<?> getUserProfile(
+    public ResponseEntity<UserProfile> getUserProfile(
         @PathVariable("id")
         @Parameter(description = "User Id", example = "6")
         Long id) {
-        try {
-            return ResponseEntity.ok(service.findById(id));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(service.findById(id));
     }
 
     @PostMapping()
     @Operation(description = "Create user")
-    public ResponseEntity<?> createUserProfile(@RequestBody UserProfileCreateRequest request) {
-        try {
-            return ResponseEntity.ok(service.create(request));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<UserProfile> createUserProfile(
+        @RequestBody UserProfileCreateRequest request) {
+        return ResponseEntity.ok(service.create(request));
     }
 
     @PatchMapping()
     @Operation(description = "Update user balance")
-    public ResponseEntity<?> updateBalance(@RequestBody UserProfileUpdateBalanceRequest request) {
-        try {
-            return ResponseEntity.ok(service.updateBalance(request));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<UserProfile> updateBalance(@RequestBody UserProfileUpdateBalanceRequest request) {
+        return ResponseEntity.ok(service.updateBalance(request));
     }
 
     @DeleteMapping("/{id}")
     @Operation(description = "Delete user by id")
-    public ResponseEntity<?> deleteUserProfile(
-        @PathVariable("id")
-        @Parameter(description = "User Id", example = "6")
-        Long id) {
-        try {
-            service.delete(id);
-            return ResponseEntity.ok("Successfully deleted");
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<Void> deleteUserProfile(
+        @PathVariable("id") @Parameter(description = "User Id", example = "6") Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

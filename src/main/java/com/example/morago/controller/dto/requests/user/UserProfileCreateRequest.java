@@ -21,7 +21,7 @@ public class UserProfileCreateRequest {
     @Schema(description = "User lastname", example = "Prokhorova")
     private String lastName;
 
-    @Schema(description = "User lastname", example = "Prokhorova")
+    @Schema(description = "User password", example = "password")
     private String password;
 
     @Schema(description = "Phone number", example = "+82000000008")
