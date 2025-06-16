@@ -20,8 +20,6 @@ public interface UserProfileRepository
         + "OR LOWER(o.phone) LIKE LOWER(CONCAT('%', :name, '%'))"
         + "OR LOWER(o.email) LIKE LOWER(CONCAT('%', :name, '%'))")
     Page<UserProfile> findByKeyword(@Param("name") String name, Pageable pageable);
-
-    Optional<UserProfile> findByPhoneAndFirstNameIgnoreCaseAndLastNameIgnoreCase(String phone, String firstName, String lastName);
     Optional<UserProfile> findByPhone(String phone);
 }
 

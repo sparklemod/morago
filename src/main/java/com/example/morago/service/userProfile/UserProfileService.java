@@ -1,20 +1,14 @@
 package com.example.morago.service.userProfile;
 
-
 import com.example.morago.controller.dto.requests.user.UserGetRequest;
-import com.example.morago.controller.dto.requests.user.UserProfileCreateRequest;
-import com.example.morago.controller.dto.requests.user.UserProfileUpdateBalanceRequest;
+import com.example.morago.controller.dto.requests.user.UserProfileUpdateRequest;
 import com.example.morago.controller.dto.response.user.UserGetResponse;
 import com.example.morago.model.entity.UserProfile;
 import org.springframework.data.domain.Page;
 
 public interface UserProfileService {
 
-    UserProfile create(UserProfileCreateRequest request);
-
-//    UserProfile update(UserProfileUpdateRequest request);
-
-    UserProfile updateBalance(UserProfileUpdateBalanceRequest request);
+    UserProfile update(UserProfileUpdateRequest request);
 
     void delete(Long id);
 

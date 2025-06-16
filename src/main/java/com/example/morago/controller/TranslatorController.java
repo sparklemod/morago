@@ -1,6 +1,7 @@
 package com.example.morago.controller;
 
 import com.example.morago.controller.dto.requests.translator.TranslatorGetRequest;
+import com.example.morago.controller.dto.requests.translator.TranslatorUpdateRequest;
 import com.example.morago.controller.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.service.TranslatorService;
@@ -12,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +24,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class TranslatorController {
 
     private final TranslatorService translatorService;
+
+    @PutMapping()
+    @Operation(description = "Update translator")
+    public ResponseEntity<Translator> updateTranslator(
+        @RequestBody TranslatorUpdateRequest request) {
+        return ResponseEntity.ok(translatorService.update(request));
+    }
 
     @GetMapping
     @Operation(

@@ -4,8 +4,6 @@ import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.Notification;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,18 +36,10 @@ public abstract class User extends Auditable implements UserDetails, Credentials
     private String phone;
 
     @Column(nullable = false)
-    @NotBlank(message = "Password cannot be empty")
-    @Size(min = 8,  message = "Password must be at least 8 characters")
     private String password;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Can not be empty")
-    @Size(max = 50, message = "Must be less than 50 characters")
     private String firstName;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Can not be empty")
-    @Size(max = 50, message = "Must be less than 50 characters")
     private String lastName;
 
     @Column(unique = true)

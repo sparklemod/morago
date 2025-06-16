@@ -2,9 +2,13 @@ package com.example.morago.controller;
 
 import com.example.morago.config.security.JwtUtil;
 import com.example.morago.controller.dto.requests.auth.AuthRequest;
+import com.example.morago.controller.dto.requests.auth.UserCreateRequest;
 import com.example.morago.controller.dto.response.auth.AuthResponse;
+import com.example.morago.model.entity.Translator;
+import com.example.morago.model.entity.UserProfile;
 import com.example.morago.model.entity.base.User;
 import com.example.morago.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -53,17 +57,28 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody User user) {
-        User createdUser = userService.createUser(user);
+    @PostMapping("/register/user")
+    public ResponseEntity<AuthResponse> registerUser(@RequestBody UserCreateRequest user) {
+        UserProfile createdUser = userService.createUserProfile(user);
         String token = jwtUtil.generateToken(createdUser);
         AuthResponse response = AuthResponse.builder()
                 .token(token)
-                .id(user.getId())
-                .phone(user.getPhone())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
+                .id(createdUser.getId())
+                .phone(createdUser.getPhone())
                 .build();
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    @PostMapping("/register/translator")
+    @Operation(description = "Create translator")
+    public ResponseEntity<AuthResponse> registerTranslator(@RequestBody UserCreateRequest user) {
+        Translator createdUser = userService.createTranslator(user);
+        String token = jwtUtil.generateToken(createdUser);
+        AuthResponse response = AuthResponse.builder()
+            .token(token)
+            .id(createdUser.getId())
+            .phone(user.getPhone())
+            .build();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

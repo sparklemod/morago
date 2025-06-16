@@ -13,6 +13,8 @@ import com.example.morago.repository.FileRepository;
 import com.example.morago.repository.ThemeRepository;
 import com.example.morago.repository.specification.ThemeSpecifications;
 import jakarta.persistence.EntityNotFoundException;
+import java.util.Collection;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,9 @@ public class ThemeService {
     private final CategoryRepository categoryRepository;
     private final FileRepository iconRepository;
 
+    public Collection<Theme> getByIds(Set<Long> ids) {
+        return themeRepository.findAllByIdIn(ids);
+    }
 
     public PageResponse<ThemeResponse> getThemes(PageRequest pageRequest, String keyword, Boolean isActive, Long categoryId) {
         Specification<Theme> spec;
