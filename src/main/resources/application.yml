@@ -24,10 +24,10 @@ spring:
     baselineOnMigrate: true
     validateMigrationNaming: true
 
-    servlet:
-      multipart:
-        max-file-size: 20MB
-        max-request-size: 20MB
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
 
 jwt:
   secret: your-very-secure-secret-key-1234567890
