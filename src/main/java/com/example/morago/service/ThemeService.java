@@ -1,11 +1,9 @@
 package com.example.morago.service;
 
-import com.example.morago.controller.dto.requests.PageRequest;
+import com.example.morago.controller.dto.requests.theme.ThemePageRequest;
 import com.example.morago.controller.dto.requests.theme.ThemeRequest;
 import com.example.morago.controller.dto.response.PageResponse;
 import com.example.morago.controller.dto.response.theme.ThemeResponse;
-import com.example.morago.model.entity.Category;
-import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.model.entity.base.User;
 import com.example.morago.repository.CategoryRepository;
@@ -13,8 +11,6 @@ import com.example.morago.repository.FileRepository;
 import com.example.morago.repository.ThemeRepository;
 import com.example.morago.repository.specification.ThemeSpecifications;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.Collection;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +19,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class ThemeService {
@@ -30,65 +29,46 @@ public class ThemeService {
     private final CategoryRepository categoryRepository;
     private final FileRepository iconRepository;
 
+    // Получение тем по переводчику
     public Collection<Theme> getByIds(Set<Long> ids) {
         return themeRepository.findAllByIdIn(ids);
     }
 
-    public PageResponse<ThemeResponse> getThemes(PageRequest pageRequest, String keyword, Boolean isActive, Long categoryId) {
+    // Публичный список тем
+    public PageResponse<ThemeResponse> getPublicThemes(ThemePageRequest themePageRequest) {
         Specification<Theme> spec;
         Pageable pageable;
-
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAdmin = auth != null && auth.getAuthorities().stream()
-                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
         boolean isAuthenticated = auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String);
 
-        if (isAdmin) {
-            // Админ: фильтры + сортировка по id
-            spec = ThemeSpecifications.combineForAdmin(keyword, isActive, categoryId);
-            pageable = pageRequest.toPageable();
-        } else if (isAuthenticated) {
+        if (isAuthenticated) {
             // Авторизованный: фильтр по имени + сортировка по звонкам
             Long userId = ((User) auth.getPrincipal()).getId();
-            spec = ThemeSpecifications.forAuthenticated(keyword, userId);
-            pageable = pageRequest.toPageableWithoutSort(); // Сортировка в Specification
+            spec = ThemeSpecifications.forAuthenticated(themePageRequest.getKeyword(), userId);
+            pageable = themePageRequest.toPageableWithoutSort(); // Сортировка в Specification
         } else {
             // Неавторизованный: сортировка по isPopular и id
             spec = ThemeSpecifications.forAnonymous();
-            pageable = pageRequest.toPageableWithoutSort(); // Сортировка в Specification
+            pageable = themePageRequest.toPageableWithoutSort(); // Сортировка в Specification
         }
-
-        Page<Theme> themePage = themeRepository.findAll(spec, pageable);
-
-        Page<ThemeResponse> responsePage = themePage.map(theme -> {
-            ThemeResponse response = new ThemeResponse();
-            response.setId(theme.getId());
-            response.setName(theme.getName());
-            response.setIsActive(theme.getIsActive());
-            response.setIconName(theme.getIcon() != null ? theme.getIcon().getOriginalTitle() : null);
-            response.setCategoryName(theme.getCategory() != null ? theme.getCategory().getName() : null);
-            response.setIsPopular(theme.getIsPopular());
-            return response;
-        });
-
-        return new PageResponse<>(responsePage);
+        //Список тем для Админа
+        Page<Theme> page = themeRepository.findAll(spec, pageable);
+        return mapToPageResponse(page);
     }
 
-    public ThemeResponse createTheme(ThemeRequest themeRequest) {
-        Category category = categoryRepository.findById(themeRequest.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found: " + themeRequest.getCategoryId()));
-        File icon = null;
-        if (themeRequest.getIconId() != null) {
-            icon = iconRepository.findById(themeRequest.getIconId())
-                    .orElseThrow(() -> new EntityNotFoundException("Icon not found: " + themeRequest.getIconId()));
-        }
+    //Список тем для Админа
+    public PageResponse<ThemeResponse> getAdminThemes(ThemePageRequest themePageRequest) {
+        Specification<Theme> spec = ThemeSpecifications.combineForAdmin(
+                themePageRequest.getKeyword(), themePageRequest.getIsActive(), themePageRequest.getCategoryId());
+        Pageable pageable = themePageRequest.toPageable();
 
-        Theme theme = new Theme();
-        theme.setName(themeRequest.getName());
-        theme.setIsActive(themeRequest.getIsActive());
-        theme.setIsPopular(themeRequest.getIsPopular());
-        theme.setCategory(category);
-        theme.setIcon(icon);
+        Page<Theme> themePage = themeRepository.findAll(spec, pageable);
+        return mapToPageResponse(themePage);
+    }
+
+    // Создание Theme
+    public ThemeResponse createTheme(ThemeRequest themeRequest) {
+        Theme theme = mapToEntity(themeRequest);
         Theme savedTheme = themeRepository.save(theme);
         return toThemeResponse(savedTheme);
     }
@@ -99,25 +79,16 @@ public class ThemeService {
         return toThemeResponse(theme);
     }
 
+    // Обновление Theme
     public ThemeResponse updateTheme(Long id, ThemeRequest themeRequest) {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + id));
-        Category category = categoryRepository.findById(themeRequest.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found: " + themeRequest.getCategoryId()));
-        File icon = null;
-        if (themeRequest.getIconId() != null) {
-            icon = iconRepository.findById(themeRequest.getIconId())
-                    .orElseThrow(() -> new EntityNotFoundException("Icon not found: " + themeRequest.getIconId()));
-        }
-        theme.setName(themeRequest.getName());
-        theme.setIsActive(themeRequest.getIsActive());
-        theme.setIsPopular(themeRequest.getIsPopular());
-        theme.setCategory(category);
-        theme.setIcon(icon);
-        Theme updatedTheme = themeRepository.save(theme);
-        return toThemeResponse(updatedTheme);
+        updateThemeFromRequest(theme, themeRequest);
+        themeRepository.save(theme);
+        return toThemeResponse(theme);
     }
 
+    // Удаление Theme
     public void deleteTheme(Long id) {
         if (!themeRepository.existsById(id)) {
             throw new EntityNotFoundException("Theme not found: " + id);
@@ -125,14 +96,49 @@ public class ThemeService {
         themeRepository.deleteById(id);
     }
 
+    // Маппинг Page<Theme> в PageResponse<ThemeResponse>
+    private PageResponse<ThemeResponse> mapToPageResponse(Page<Theme> themePage) {
+        Page<ThemeResponse> responsePage = themePage.map(this::toThemeResponse);
+        return new PageResponse<>(responsePage);
+    }
+
+    // Маппинг ThemeRequest в Theme
+    private Theme mapToEntity(ThemeRequest themeRequest) {
+        Theme theme = new Theme();
+        theme.setName(themeRequest.getName());
+        theme.setIsActive(themeRequest.getIsActive() != null ? themeRequest.getIsActive() : false);
+        theme.setIsPopular(themeRequest.getIsPopular() != null ? themeRequest.getIsPopular() : false);
+        theme.setCategory(categoryRepository.findById(themeRequest.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found: " + themeRequest.getCategoryId())));
+        if (themeRequest.getIconId() != null) {
+            theme.setIcon(iconRepository.findById(themeRequest.getIconId())
+                    .orElseThrow(() -> new EntityNotFoundException("Icon not found: " + themeRequest.getIconId())));
+        }
+        return theme;
+    }
+
+    // Обновление Theme из ThemeRequest
+    private void updateThemeFromRequest(Theme theme, ThemeRequest themeRequest) {
+        theme.setName(themeRequest.getName());
+        theme.setIsActive(themeRequest.getIsActive() != null ? themeRequest.getIsActive() : false);
+        theme.setIsPopular(themeRequest.getIsPopular() != null ? themeRequest.getIsPopular() : false);
+        theme.setCategory(categoryRepository.findById(themeRequest.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found: " + themeRequest.getCategoryId())));
+        if (themeRequest.getIconId() != null) {
+            theme.setIcon(iconRepository.findById(themeRequest.getIconId())
+                    .orElseThrow(() -> new EntityNotFoundException("Icon not found: " + themeRequest.getIconId())));
+        }
+    }
+
+    // Маппинг Theme в ThemeResponse
     private ThemeResponse toThemeResponse(Theme theme) {
         ThemeResponse response = new ThemeResponse();
         response.setId(theme.getId());
         response.setName(theme.getName());
         response.setIsActive(theme.getIsActive());
-        response.setCategoryName(theme.getCategory() != null ? theme.getCategory().getName() : null);
-        response.setIconName(theme.getIcon() != null ? theme.getIcon().getOriginalTitle() : null);
         response.setIsPopular(theme.getIsPopular());
+        response.setCategoryId(theme.getCategory() != null ? theme.getCategory().getId() : null);
+        response.setIconId(theme.getIcon() != null ? theme.getIcon().getId() : null);
         return response;
     }
 }

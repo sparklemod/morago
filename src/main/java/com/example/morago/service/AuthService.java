@@ -56,7 +56,7 @@ public class AuthService {
         Translator translator = new Translator();
         translator.setPhone(authRequest.getPhone());
         translator.setPassword(passwordEncoder.encode(authRequest.getPassword()));
-        translator.setIsActive(true);
+        translator.setIsActive(false);
         translator.setBalance(0L);
         // firstName, lastName, email, imageId, notifications остаются null
         User savedUser = userRepository.save(translator);

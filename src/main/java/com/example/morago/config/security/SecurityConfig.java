@@ -31,25 +31,29 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-//    TODO спросить про доступы по ролям
+    //    TODO спросить про доступы по ролям
 //    временно открытый доступ для тестирования api
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
+                                .requestMatchers("/**").permitAll()
+                                // Публичные эндпоинты
 //                        .requestMatchers("/auth/login", "/auth/register/user", "/auth/register/translator", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+//                                .requestMatchers("/api/themes", "/api/themes/{id}").permitAll()
+//                        // Админские эндпоинты
+//                        .requestMatchers("/admin/**", "/api/admin/themes/**).hasRole("ADMIN")
+                                // Остальные
 //                        .requestMatchers("/translator/**").hasRole("TRANSLATOR")
 //                        .requestMatchers("/user/**").hasRole("USER")
-                        .anyRequest().authenticated()
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 );
-    http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
-    return http.build();
+        return http.build();
     }
 }

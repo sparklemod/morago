@@ -7,7 +7,7 @@ public class ThemeResponse {
     private Long id;
     private String name;
     private Boolean isActive;
-    private String iconName;
-    private String categoryName;
+    private Long iconId;
+    private Long categoryId;
     private Boolean isPopular;
 }
