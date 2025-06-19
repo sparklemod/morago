@@ -2,7 +2,6 @@ package com.example.morago.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +12,8 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Slf4j
@@ -80,14 +79,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(new ErrorResponse(errorMessage));
     }
 
-    // Обработка неверных аргументов (например, пустой файл)
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
-        ErrorResponse error = new ErrorResponse(ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
-    }
-
     // Обработка ненайденных сущностей (например, файл по ID)
     @ExceptionHandler(EntityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
@@ -96,12 +87,11 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
     }
 
-    // Обработка ошибок ввода-вывода (например, проблемы с сохранением файла)
-    @ExceptionHandler(IOException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorResponse> handleIOException(IOException ex) {
-        ErrorResponse error = new ErrorResponse("Error processing file: " + ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    // Обработка ошибок файлов (например, проблемы с сохранением файла)
+    @ExceptionHandler(FileUploadException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<ErrorResponse> handleFileUploadException(FileUploadException ex) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     // Общий обработчик для всех остальных исключений
@@ -111,4 +101,6 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse("Internal server error: " + ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+
 }

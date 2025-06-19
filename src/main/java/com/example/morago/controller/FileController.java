@@ -1,13 +1,12 @@
 package com.example.morago.controller;
 
-import com.example.morago.controller.dto.response.file.FileResponse;
-import com.example.morago.service.FileService;
+import com.example.morago.model.entity.File;
+import com.example.morago.model.enums.FileType;
+import com.example.morago.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 
 
 @RestController
@@ -19,13 +18,12 @@ public class FileController {
 
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.CREATED)
-    public FileResponse uploadFile(@RequestParam("file") MultipartFile file) throws IOException {
-        return fileService.uploadFile(file);
+    public File uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("type")FileType type) {
+        return fileService.uploadFile(file, type);
     }
 
-    @GetMapping("/id")
-    public FileResponse getFileById(@RequestParam("id") long id) {
-        return fileService.getFileById(id);
+    @GetMapping("/{id}")
+    public String getFileUrl(@PathVariable Long id) {
+        return fileService.getFileUrl(id);
     }
-
 }

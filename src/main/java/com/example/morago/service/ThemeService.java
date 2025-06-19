@@ -10,6 +10,7 @@ import com.example.morago.repository.CategoryRepository;
 import com.example.morago.repository.FileRepository;
 import com.example.morago.repository.ThemeRepository;
 import com.example.morago.repository.specification.ThemeSpecifications;
+import com.example.morago.service.file.FileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final CategoryRepository categoryRepository;
     private final FileRepository iconRepository;
+    private final FileService fileService;
 
     // Получение тем по переводчику
     public Collection<Theme> getByIds(Set<Long> ids) {
@@ -83,6 +85,10 @@ public class ThemeService {
     public ThemeResponse updateTheme(Long id, ThemeRequest themeRequest) {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + id));
+        // Удаляем старый файл, если iconId меняется
+        if (theme.getIcon() != null && !theme.getIcon().equals(themeRequest.getIconId())) {
+            fileService.deleteFile(theme.getIcon().getId());
+        }
         updateThemeFromRequest(theme, themeRequest);
         themeRepository.save(theme);
         return toThemeResponse(theme);
@@ -90,8 +96,11 @@ public class ThemeService {
 
     // Удаление Theme
     public void deleteTheme(Long id) {
-        if (!themeRepository.existsById(id)) {
-            throw new EntityNotFoundException("Theme not found: " + id);
+        Theme theme = themeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Not found theme with id " + id));
+        // Удаляем связанный файл, если есть
+        if (theme.getIcon() != null) {
+            fileService.deleteFile(theme.getIcon().getId());
         }
         themeRepository.deleteById(id);
     }

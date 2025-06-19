@@ -39,12 +39,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/**").permitAll()
-                                // Публичные эндпоинты
+ //                               // Публичные эндпоинты
 //                        .requestMatchers("/auth/login", "/auth/register/user", "/auth/register/translator", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
 //                                .requestMatchers("/api/themes", "/api/themes/{id}").permitAll()
 //                        // Админские эндпоинты
 //                        .requestMatchers("/admin/**", "/api/admin/themes/**).hasRole("ADMIN")
-                                // Остальные
+  //                              .requestMatchers("/files/upload").authenticated()
+ //                               // Пользовательские эндпоинты
+    //                            .requestMatchers("/user/profile/image").hasAnyRole("USER", "TRANSLATOR")
 //                        .requestMatchers("/translator/**").hasRole("TRANSLATOR")
 //                        .requestMatchers("/user/**").hasRole("USER")
                                 .anyRequest().authenticated()

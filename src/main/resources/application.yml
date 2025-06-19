@@ -34,4 +34,13 @@ jwt:
   expiration: 86400000
 
 file:
-  upload-dir: uploads
+  upload-dir: ./uploads
+  storage:
+    type: local
+    # Для S3 (раскомментировать и настроить):
+    # aws:
+    #   s3:
+    #     bucket: morago-bucket
+    #     region: us-east-1
+    #     access-key: your-access-key
+    #     secret-key: your-secret-key
