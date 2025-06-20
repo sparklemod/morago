@@ -3,7 +3,6 @@ package com.example.morago.service;
 import com.example.morago.config.security.JwtUtil;
 import com.example.morago.controller.dto.requests.auth.AuthRequest;
 import com.example.morago.controller.dto.response.auth.AuthResponse;
-import com.example.morago.exception.UserAlreadyExistsException;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.model.entity.UserProfile;
 import com.example.morago.model.entity.base.User;
@@ -23,6 +22,7 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
 
     public AuthResponse login(AuthRequest authRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -34,9 +34,7 @@ public class AuthService {
     }
 
     public AuthResponse registerUser(AuthRequest authRequest) {
-        if (userRepository.findByPhone(authRequest.getPhone()).isPresent()) {
-            throw new UserAlreadyExistsException("Phone already exists" +  authRequest.getPhone());
-        }
+        userService.checkIsExistByPhone(authRequest.getPhone());
 
         UserProfile userProfile = new UserProfile();
         userProfile.setPhone(authRequest.getPhone());
@@ -49,9 +47,7 @@ public class AuthService {
     }
 
     public AuthResponse registerTranslator(AuthRequest authRequest) {
-        if (userRepository.findByPhone(authRequest.getPhone()).isPresent()) {
-            throw new UserAlreadyExistsException("Phone already exists" +  authRequest.getPhone());
-        }
+        userService.checkIsExistByPhone(authRequest.getPhone());
 
         Translator translator = new Translator();
         translator.setPhone(authRequest.getPhone());
