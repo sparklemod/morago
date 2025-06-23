@@ -8,7 +8,6 @@ import com.example.morago.service.file.storage.FileStorage;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,22 +23,19 @@ public class FileService {
     @Qualifier("localFileStorage")
     private final FileStorage fileStorage;
 
-    @Value("${file.upload-dir}")
-    private String uploadDir;
-
-    public File uploadFile(MultipartFile file, FileType type) {
-        validateFile(file, type);
+    // Загрузка нового файла или обновление предущего
+    public File uploadFile(MultipartFile file, FileType type, Long existingField) {
+        validateFile(file);
         String key = generateKey(file.getOriginalFilename(), type);
-        String path = fileStorage.saveFile(file, key);
 
+        if (existingField != null) {
+            File existingFile = fileRepository.findById(existingField)
+                    .orElseThrow(() -> new EntityNotFoundException("File not found with id: " + existingField));
+            return saveFile(file, key, existingFile);
+        }
 
-        File fileEntity = new File();
-        fileEntity.setOriginalTitle(file.getOriginalFilename());
-        fileEntity.setPath(path);
-        fileEntity.setSize(file.getSize());
-        fileEntity.setType(file.getContentType());
-
-        return fileRepository.save(fileEntity);
+        File newFile = new File();
+        return saveFile(file, key, newFile);
     }
 
     public File getFile(Long id) {
@@ -65,29 +61,30 @@ public class FileService {
     }
 
     // Валидация
-    private void validateFile(MultipartFile file, FileType type) {
+    private void validateFile(MultipartFile file) {
         if (file.isEmpty()) {
             throw new FileUploadException("File cannot be empty");
         }
-
-        if (type == FileType.AVATAR) {
-            if (file.getContentType().matches("image/jpeg|image/jpg|image/png")) {
-                throw new FileUploadException("File type is image/jpeg or image/jpg");
-            }
-            if (file.getSize() > 10 * 1024 * 1024) { // 10 MB
-                throw new FileUploadException("File size is too large, should be less than 10MB");
-            }
-        }
-        // TODO: Добавить валидацию для DOCUMENT, CALL, ICON
     }
 
     private String generateKey(String originalFilename, FileType type) {
         String prefix = switch (type) {
             case AVATAR -> "avatars/";
-            case DOCUMENT -> "documents/";
-            case CALL -> "calls/";
             case ICON -> "icons/";
         };
         return prefix + UUID.randomUUID() + "-" + originalFilename;
+    }
+
+    // Сохранение файла
+    private File saveFile(MultipartFile file, String key, File fileEntity) {
+        if (fileEntity.getPath() != null) {
+            fileStorage.deleteFile(fileEntity.getPath());
+        }
+        String path = fileStorage.saveFile(file, key);
+        fileEntity.setOriginalTitle(file.getOriginalFilename());
+        fileEntity.setPath(path);
+        fileEntity.setSize(file.getSize());
+        fileEntity.setType(file.getContentType());
+        return fileRepository.save(fileEntity);
     }
 }

@@ -1,4 +1,4 @@
-package com.example.morago.controller;
+package com.example.morago.controller.adminController;
 
 import com.example.morago.controller.dto.requests.theme.ThemePageRequest;
 import com.example.morago.controller.dto.requests.theme.ThemeRequest;

@@ -60,11 +60,12 @@ public class TranslatorController {
     @Operation(description = "Upload avatar image")
     public File uploadAvatarImage(@RequestParam("file") MultipartFile file, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        // Удалить старый файл если есть
+        File uploadedFile;
         if (user.getImageFile() != null) {
-            fileService.deleteFile(user.getImageFile().getId());
+            uploadedFile = fileService.uploadFile(file, FileType.AVATAR, user.getImageFile().getId());
+        } else {
+            uploadedFile = fileService.uploadFile(file, FileType.AVATAR, null);
         }
-        File uploadedFile = fileService.uploadFile(file, FileType.AVATAR);
         user.setImageFile(uploadedFile);
         userRepository.save(user);
         return uploadedFile;

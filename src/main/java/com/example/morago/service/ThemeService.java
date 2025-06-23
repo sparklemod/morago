@@ -4,10 +4,10 @@ import com.example.morago.controller.dto.requests.theme.ThemePageRequest;
 import com.example.morago.controller.dto.requests.theme.ThemeRequest;
 import com.example.morago.controller.dto.response.PageResponse;
 import com.example.morago.controller.dto.response.theme.ThemeResponse;
+import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.model.entity.base.User;
 import com.example.morago.repository.CategoryRepository;
-import com.example.morago.repository.FileRepository;
 import com.example.morago.repository.ThemeRepository;
 import com.example.morago.repository.specification.ThemeSpecifications;
 import com.example.morago.service.file.FileService;
@@ -28,7 +28,6 @@ import java.util.Set;
 public class ThemeService {
     private final ThemeRepository themeRepository;
     private final CategoryRepository categoryRepository;
-    private final FileRepository iconRepository;
     private final FileService fileService;
 
     // Получение тем по переводчику
@@ -85,13 +84,9 @@ public class ThemeService {
     public ThemeResponse updateTheme(Long id, ThemeRequest themeRequest) {
         Theme theme = themeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + id));
-        // Удаляем старый файл, если iconId меняется
-        if (theme.getIcon() != null && !theme.getIcon().equals(themeRequest.getIconId())) {
-            fileService.deleteFile(theme.getIcon().getId());
-        }
-        updateThemeFromRequest(theme, themeRequest);
-        themeRepository.save(theme);
-        return toThemeResponse(theme);
+        fillThemeFields(theme, themeRequest);
+        Theme updatedTheme = themeRepository.save(theme);
+        return toThemeResponse(updatedTheme);
     }
 
     // Удаление Theme
@@ -102,7 +97,7 @@ public class ThemeService {
         if (theme.getIcon() != null) {
             fileService.deleteFile(theme.getIcon().getId());
         }
-        themeRepository.deleteById(id);
+        themeRepository.delete(theme);
     }
 
     // Маппинг Page<Theme> в PageResponse<ThemeResponse>
@@ -114,29 +109,8 @@ public class ThemeService {
     // Маппинг ThemeRequest в Theme
     private Theme mapToEntity(ThemeRequest themeRequest) {
         Theme theme = new Theme();
-        theme.setName(themeRequest.getName());
-        theme.setIsActive(themeRequest.getIsActive() != null ? themeRequest.getIsActive() : false);
-        theme.setIsPopular(themeRequest.getIsPopular() != null ? themeRequest.getIsPopular() : false);
-        theme.setCategory(categoryRepository.findById(themeRequest.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found: " + themeRequest.getCategoryId())));
-        if (themeRequest.getIconId() != null) {
-            theme.setIcon(iconRepository.findById(themeRequest.getIconId())
-                    .orElseThrow(() -> new EntityNotFoundException("Icon not found: " + themeRequest.getIconId())));
-        }
+        fillThemeFields(theme, themeRequest);
         return theme;
-    }
-
-    // Обновление Theme из ThemeRequest
-    private void updateThemeFromRequest(Theme theme, ThemeRequest themeRequest) {
-        theme.setName(themeRequest.getName());
-        theme.setIsActive(themeRequest.getIsActive() != null ? themeRequest.getIsActive() : false);
-        theme.setIsPopular(themeRequest.getIsPopular() != null ? themeRequest.getIsPopular() : false);
-        theme.setCategory(categoryRepository.findById(themeRequest.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found: " + themeRequest.getCategoryId())));
-        if (themeRequest.getIconId() != null) {
-            theme.setIcon(iconRepository.findById(themeRequest.getIconId())
-                    .orElseThrow(() -> new EntityNotFoundException("Icon not found: " + themeRequest.getIconId())));
-        }
     }
 
     // Маппинг Theme в ThemeResponse
@@ -149,5 +123,22 @@ public class ThemeService {
         response.setCategoryId(theme.getCategory() != null ? theme.getCategory().getId() : null);
         response.setIconId(theme.getIcon() != null ? theme.getIcon().getId() : null);
         return response;
+    }
+
+    // Обновление полей
+    private void fillThemeFields(Theme theme, ThemeRequest themeRequest) {
+        theme.setName(themeRequest.getName());
+        theme.setIsActive(themeRequest.getIsActive() != null ? themeRequest.getIsActive() : false);
+        theme.setIsPopular(themeRequest.getIsPopular() != null ? themeRequest.getIsPopular() : false);
+        theme.setCategory(categoryRepository.findById(themeRequest.getCategoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Category not found: " + themeRequest.getCategoryId())));
+        // Обработка иконки: если iconId тот же, обновление картинки через FileService
+        if (themeRequest.getIconId() != null) {
+            File icon = fileService.getFile(themeRequest.getIconId()); // Проверяем через FileService
+            theme.setIcon(icon);
+        } else if (theme.getIcon() != null) {
+            fileService.deleteFile(theme.getIcon().getId());
+            theme.setIcon(null);
+        }
     }
 }

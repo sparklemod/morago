@@ -1,7 +1,6 @@
-package com.example.morago.config;
+package com.example.morago.config.web;
 
 import jakarta.servlet.MultipartConfigElement;
-import jakarta.servlet.annotation.MultipartConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.MultipartConfigFactory;
 import org.springframework.context.annotation.Bean;

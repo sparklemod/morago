@@ -19,7 +19,7 @@ public class FileController {
     @PostMapping("/upload")
     @ResponseStatus(HttpStatus.CREATED)
     public File uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("type")FileType type) {
-        return fileService.uploadFile(file, type);
+        return fileService.uploadFile(file, type, null);
     }
 
     @GetMapping("/{id}")
