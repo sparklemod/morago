@@ -2,6 +2,7 @@ package com.example.morago.service.file.storage;
 
 import com.example.morago.exception.FileUploadException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,6 +12,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Component
+@Primary
 public class LocalFileStorage implements FileStorage {
     private final Path uploadDir;
 
