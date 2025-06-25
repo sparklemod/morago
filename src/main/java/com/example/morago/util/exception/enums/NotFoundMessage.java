@@ -1,4 +1,4 @@
-package com.example.morago.exception;
+package com.example.morago.util.exception.enums;
 
 public enum NotFoundMessage {
     USER("User"),

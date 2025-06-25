@@ -1,6 +1,6 @@
 package com.example.morago.service;
 
-import com.example.morago.exception.HandledException;
+import com.example.morago.util.exception.HandledException;
 import com.example.morago.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,8 +1,8 @@
 package com.example.morago.service.file;
 
-import com.example.morago.exception.FileUploadException;
-import com.example.morago.exception.HandledException;
-import com.example.morago.exception.NotFoundMessage;
+import com.example.morago.util.exception.FileUploadException;
+import com.example.morago.util.exception.HandledException;
+import com.example.morago.util.exception.enums.NotFoundMessage;
 import com.example.morago.model.entity.File;
 import com.example.morago.model.enums.FileType;
 import com.example.morago.repository.FileRepository;

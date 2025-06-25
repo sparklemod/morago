@@ -1,5 +1,6 @@
-package com.example.morago.exception;
+package com.example.morago.util.exception;
 
+import com.example.morago.util.exception.dto.ErrorResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;

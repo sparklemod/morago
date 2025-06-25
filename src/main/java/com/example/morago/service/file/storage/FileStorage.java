@@ -1,6 +1,6 @@
 package com.example.morago.service.file.storage;
 
-import com.example.morago.exception.FileUploadException;
+import com.example.morago.util.exception.FileUploadException;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface FileStorage {
