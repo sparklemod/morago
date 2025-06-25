@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
-
+// Публичный список категорий
     public PageResponse<CategoryResponse> getCategories(PageRequest pageRequest) {
         Sort sort = Sort.by(pageRequest.getSortDirection(), pageRequest.getSortBy());
         Pageable pageable = org.springframework.data.domain.PageRequest.of(pageRequest.getPage(), pageRequest.getSize(), sort);
