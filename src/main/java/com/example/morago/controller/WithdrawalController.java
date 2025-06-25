@@ -1,6 +1,6 @@
 package com.example.morago.controller;
 
-import com.example.morago.controller.dto.requests.deposit.DepositCreateRequest;
+import com.example.morago.controller.dto.requests.transaction.TransactionCreateRequest;
 import com.example.morago.model.entity.Withdrawal;
 import com.example.morago.service.WithdrawalService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ public class WithdrawalController {
 
     @PostMapping("/create/{userId}")
     public ResponseEntity<Withdrawal> createDeposit(@PathVariable Long userId,
-        @RequestBody DepositCreateRequest request) {
+        @RequestBody TransactionCreateRequest request) {
         Withdrawal deposit = withdrawalService.createWithdrawal(userId, request);
         return ResponseEntity.ok(deposit);
     }

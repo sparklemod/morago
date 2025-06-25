@@ -1,6 +1,6 @@
 package com.example.morago.service;
 
-import com.example.morago.controller.dto.requests.deposit.DepositCreateRequest;
+import com.example.morago.controller.dto.requests.transaction.TransactionCreateRequest;
 import com.example.morago.model.entity.Deposit;
 import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.PaymentStatusEnum;
@@ -21,7 +21,7 @@ public class DepositService {
     private final UserProfileService userService;
 
     @Transactional
-    public Deposit createDeposit(Long userId, DepositCreateRequest request) {
+    public Deposit createDeposit(Long userId, TransactionCreateRequest request) {
         User user = userService.findById(userId);
 
         BigDecimal coins = CoinConverter.convertWonToCoins(request.getWon());

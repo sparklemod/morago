@@ -1,6 +1,6 @@
 package com.example.morago.controller;
 
-import com.example.morago.controller.dto.requests.deposit.DepositCreateRequest;
+import com.example.morago.controller.dto.requests.transaction.TransactionCreateRequest;
 import com.example.morago.model.entity.Deposit;
 import com.example.morago.service.DepositService;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class DepositController {
 
     @PostMapping("/create/{userId}")
     public ResponseEntity<Deposit> createDeposit(@PathVariable Long userId,
-        @RequestBody DepositCreateRequest request) {
+        @RequestBody TransactionCreateRequest request) {
         Deposit deposit = depositService.createDeposit(userId, request);
         return ResponseEntity.ok(deposit);
     }
