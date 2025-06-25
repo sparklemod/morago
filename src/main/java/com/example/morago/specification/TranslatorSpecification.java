@@ -14,6 +14,18 @@ public class TranslatorSpecification {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
+            if (request.getKeyword() != null && !request.getKeyword().isBlank()) {
+                String keyword = "%" + request.getKeyword().toLowerCase() + "%";
+
+                Predicate keywordPredicate = cb.or(
+                    cb.like(cb.lower(root.get("firstName")), keyword),
+                    cb.like(cb.lower(root.get("lastName")), keyword),
+                    cb.like(cb.lower(root.get("phone")), keyword),
+                    cb.like(cb.lower(root.get("email")), keyword)
+                );
+                predicates.add(keywordPredicate);
+            }
+
             if (request.getFirstName() != null) {
                 predicates.add(cb.like(
                     cb.lower(root.get("firstName")),
