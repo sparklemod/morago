@@ -1,4 +1,4 @@
-package com.example.morago.specification;
+package com.example.morago.repository.specification;
 
 import com.example.morago.controller.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.entity.Translator;

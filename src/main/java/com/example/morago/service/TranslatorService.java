@@ -9,7 +9,7 @@ import com.example.morago.model.entity.Theme;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.repository.TranslatorRepository;
 import com.example.morago.service.file.FileService;
-import com.example.morago.specification.TranslatorSpecification;
+import com.example.morago.repository.specification.TranslatorSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.HashSet;
 import java.util.Set;
