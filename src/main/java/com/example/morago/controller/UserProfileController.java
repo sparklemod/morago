@@ -9,7 +9,7 @@ import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.FileType;
 import com.example.morago.repository.UserRepository;
 import com.example.morago.service.file.FileService;
-import com.example.morago.service.userProfile.UserProfileService;
+import com.example.morago.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;

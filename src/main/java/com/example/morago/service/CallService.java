@@ -12,6 +12,8 @@ import com.example.morago.repository.ThemeRepository;
 import com.example.morago.repository.TranslatorRepository;
 import com.example.morago.repository.UserProfileRepository;
 import jakarta.persistence.EntityNotFoundException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -66,12 +68,43 @@ public class CallService {
         Call call = callRepository.findById(callId)
             .orElseThrow(() -> new RuntimeException("Call not found"));
         LocalDateTime endTime = LocalDateTime.now();
-        call.setUpdatedAt(endTime);
+
         call.setIsEndCall(true);
         call.setStatus(true);
         call.setCallStatus(CallStatusEnum.COMPLETED);
         call.setDuration((int) Duration.between(call.getCreatedAt(), endTime).getSeconds());
+
+        applyCallPayment(call);
+
         return callRepository.save(call);
+    }
+
+    private void applyCallPayment(Call call)
+    {
+        BigDecimal pricePerMinute = BigDecimal.valueOf(call.getTheme().getPrice());
+        BigDecimal totalPrice = pricePerMinute
+            .multiply(BigDecimal.valueOf(call.getDuration()))
+            .divide(BigDecimal.valueOf(60), RoundingMode.CEILING);
+
+        BigDecimal commission = totalPrice.multiply(BigDecimal.valueOf(0.1));
+        BigDecimal toTranslator = totalPrice.subtract(commission);
+
+        UserProfile caller = call.getCaller();
+        Translator recipient = call.getRecipient();
+
+        //TODO спросить что делать в таком случае
+        if (caller.getBalance() < totalPrice.longValue()) {
+            throw new IllegalStateException("Insufficient balance");
+        }
+
+        caller.setBalance(caller.getBalance() - totalPrice.longValue());
+        recipient.setBalance(recipient.getBalance() + toTranslator.longValue());
+
+        userProfileRepository.save(caller);
+        translatorRepository.save(recipient);
+
+        call.setSum(totalPrice);
+        call.setCommission(commission);
     }
 
     public Optional<Call> getCall(Long id) {

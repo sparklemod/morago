@@ -1,6 +1,7 @@
 package com.example.morago.controller;
 
 import com.example.morago.controller.dto.requests.auth.AuthRequest;
+import com.example.morago.controller.dto.requests.auth.UserCreateRequest;
 import com.example.morago.controller.dto.response.auth.AuthResponse;
 import com.example.morago.service.AuthService;
 import jakarta.validation.Valid;
@@ -23,13 +24,13 @@ public class AuthController {
 
     @PostMapping("/register/user")
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthResponse registerUser(@Valid @RequestBody AuthRequest request) {
+    public AuthResponse registerUser(@Valid @RequestBody UserCreateRequest request) {
         return authService.registerUser(request);
     }
 
     @PostMapping("/register/translator")
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthResponse registerTranslator(@Valid @RequestBody AuthRequest request) {
+    public AuthResponse registerTranslator(@Valid @RequestBody UserCreateRequest request) {
         return authService.registerTranslator(request);
     }
 }

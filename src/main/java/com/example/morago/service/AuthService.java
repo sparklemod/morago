@@ -2,6 +2,7 @@ package com.example.morago.service;
 
 import com.example.morago.config.security.JwtUtil;
 import com.example.morago.controller.dto.requests.auth.AuthRequest;
+import com.example.morago.controller.dto.requests.auth.UserCreateRequest;
 import com.example.morago.controller.dto.response.auth.AuthResponse;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.model.entity.UserProfile;
@@ -33,7 +34,7 @@ public class AuthService {
         return buildAuthResponse(user);
     }
 
-    public AuthResponse registerUser(AuthRequest authRequest) {
+    public AuthResponse registerUser(UserCreateRequest authRequest) {
         userService.checkIsExistByPhone(authRequest.getPhone());
 
         UserProfile userProfile = new UserProfile();
@@ -46,7 +47,7 @@ public class AuthService {
         return buildAuthResponse(savedUser);
     }
 
-    public AuthResponse registerTranslator(AuthRequest authRequest) {
+    public AuthResponse registerTranslator(UserCreateRequest authRequest) {
         userService.checkIsExistByPhone(authRequest.getPhone());
 
         Translator translator = new Translator();

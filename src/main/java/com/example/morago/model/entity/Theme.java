@@ -57,15 +57,4 @@ public class Theme extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
-
-//    TODO не знаю почему но тесты ломаются при использовании этого
-//    public void addTranslator(Translator translator) {
-//        translators.add(translator);
-//        translator.getThemes().add(this);
-//    }
-//
-//    public void removeTranslator(Translator translator) {
-//        translators.remove(translator);
-//        translator.getThemes().remove(this);
-//    }
 }

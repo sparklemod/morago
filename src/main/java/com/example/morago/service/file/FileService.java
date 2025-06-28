@@ -1,6 +1,8 @@
 package com.example.morago.service.file;
 
-import com.example.morago.exception.FileUploadException;
+import com.example.morago.util.exception.FileUploadException;
+import com.example.morago.util.exception.HandledException;
+import com.example.morago.util.exception.enums.NotFoundMessage;
 import com.example.morago.model.entity.File;
 import com.example.morago.model.enums.FileType;
 import com.example.morago.repository.FileRepository;
@@ -36,6 +38,16 @@ public class FileService {
 
         File newFile = new File();
         return saveFile(file, key, newFile);
+    }
+
+    public File getFileByUrl(String url) {
+        File image = null;
+        if (url != null && !url.isEmpty()) {
+            image = fileRepository.findByPath(url)
+                .orElseThrow(() -> new HandledException(NotFoundMessage.IMAGE.format()));
+        }
+
+        return image;
     }
 
     public File getFile(Long id) {
