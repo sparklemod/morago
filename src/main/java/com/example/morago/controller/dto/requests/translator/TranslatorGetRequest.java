@@ -16,6 +16,9 @@ import java.time.LocalDate;
 @Schema(description = "Фильтры и параметры пагинации для получения переводчиков")
 public class TranslatorGetRequest extends PageRequest {
 
+    @Schema(description = "Firstname | Lastname | phone | email", example = "sve")
+    private String keyword;
+
     @Schema(description = "Translator's first name", example = "Ivan")
     private String firstName;
 

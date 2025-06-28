@@ -1,4 +1,4 @@
-package com.example.morago.specification;
+package com.example.morago.repository.specification;
 
 import com.example.morago.controller.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.entity.Translator;
@@ -13,6 +13,18 @@ public class TranslatorSpecification {
     public static Specification<Translator> build(TranslatorGetRequest request) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
+
+            if (request.getKeyword() != null && !request.getKeyword().isBlank()) {
+                String keyword = "%" + request.getKeyword().toLowerCase() + "%";
+
+                Predicate keywordPredicate = cb.or(
+                    cb.like(cb.lower(root.get("firstName")), keyword),
+                    cb.like(cb.lower(root.get("lastName")), keyword),
+                    cb.like(cb.lower(root.get("phone")), keyword),
+                    cb.like(cb.lower(root.get("email")), keyword)
+                );
+                predicates.add(keywordPredicate);
+            }
 
             if (request.getFirstName() != null) {
                 predicates.add(cb.like(

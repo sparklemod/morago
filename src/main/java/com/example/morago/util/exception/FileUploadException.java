@@ -1,4 +1,4 @@
-package com.example.morago.exception;
+package com.example.morago.util.exception;
 
 public class FileUploadException extends RuntimeException {
     public FileUploadException(String message) {

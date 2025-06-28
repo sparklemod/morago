@@ -29,15 +29,4 @@ public class Language extends Auditable {
 
     @Column(nullable = false)
     private Boolean isActive = true;
-
-    //    TODO не знаю почему но тесты ломаются при использовании этого
-//    public void addTranslator(Translator translator) {
-//        languageTranslators.add(translator);
-//        translator.getLanguages().add(this);
-//    }
-//
-//    public void removeTranslator(Translator translator) {
-//        languageTranslators.remove(translator);
-//        translator.getLanguages().remove(this);
-//    }
 }
