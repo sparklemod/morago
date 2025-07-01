@@ -17,5 +17,4 @@ public class ThemeRequest {
     private Long iconId;
 
     private Boolean isPopular;
-
 }

@@ -6,8 +6,7 @@ import com.example.morago.controller.dto.response.PageResponse;
 import com.example.morago.controller.dto.response.theme.ThemeResponse;
 import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.Theme;
-import com.example.morago.model.entity.base.User;
-import com.example.morago.repository.CategoryRepository;
+import com.example.morago.model.enums.FileType;
 import com.example.morago.repository.ThemeRepository;
 import com.example.morago.repository.specification.ThemeSpecifications;
 import com.example.morago.service.file.FileService;
@@ -16,43 +15,32 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class ThemeService {
     private final ThemeRepository themeRepository;
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryService;
     private final FileService fileService;
 
     // Получение тем по переводчику
-    public Collection<Theme> getByIds(Set<Long> ids) {
-        return themeRepository.findAllByIdIn(ids);
+    public Set<Theme> getByIds(Set<Long> ids) {
+        return new HashSet<>(themeRepository.findAllByIdIn(ids));
     }
 
     // Публичный список тем
-    public PageResponse<ThemeResponse> getPublicThemes(ThemePageRequest themePageRequest) {
-        Specification<Theme> spec;
-        Pageable pageable;
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isAuthenticated = auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String);
-
-        if (isAuthenticated) {
-            // Авторизованный: фильтр по имени + сортировка по звонкам
-            Long userId = ((User) auth.getPrincipal()).getId();
-            spec = ThemeSpecifications.forAuthenticated(themePageRequest.getKeyword(), userId);
-            pageable = themePageRequest.toPageableWithoutSort(); // Сортировка в Specification
-        } else {
-            // Неавторизованный: сортировка по isPopular и id
-            spec = ThemeSpecifications.forAnonymous();
-            pageable = themePageRequest.toPageableWithoutSort(); // Сортировка в Specification
-        }
-        //Список тем для Админа
+    public PageResponse<ThemeResponse> getPublicThemes(ThemePageRequest themePageRequest, Long userId, Long categoryId) {
+        // Проверка авторизации вынесена в контроллер, userId=null для анонимов
+        Specification<Theme> spec = userId != null // Сортировка в Specification
+                ? ThemeSpecifications.forAuthenticated(themePageRequest.getKeyword(), userId)
+                .and(ThemeSpecifications.hasCategory(categoryId))
+                : ThemeSpecifications.forAnonymous().and(ThemeSpecifications.hasCategory(categoryId));
+        Pageable pageable = themePageRequest.toPageableWithoutSort();
         Page<Theme> page = themeRepository.findAll(spec, pageable);
         return mapToPageResponse(page);
     }
@@ -69,30 +57,39 @@ public class ThemeService {
 
     // Создание Theme
     public ThemeResponse createTheme(ThemeRequest themeRequest) {
-        Theme theme = mapToEntity(themeRequest);
-        Theme savedTheme = themeRepository.save(theme);
-        return toThemeResponse(savedTheme);
+        Theme theme = new Theme();
+        fillThemeFields(theme, themeRequest);
+        return toThemeResponse(themeRepository.save(theme));
     }
 
     public ThemeResponse getThemeById(Long id) {
-        Theme theme = themeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + id));
+        Theme theme = getThemeOrThrow(id);
         return toThemeResponse(theme);
     }
 
     // Обновление Theme
     public ThemeResponse updateTheme(Long id, ThemeRequest themeRequest) {
-        Theme theme = themeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + id));
+        Theme theme = getThemeOrThrow(id);
         fillThemeFields(theme, themeRequest);
         Theme updatedTheme = themeRepository.save(theme);
         return toThemeResponse(updatedTheme);
     }
 
+    // Обновление иконки Theme
+    public ThemeResponse updateThemeIcon(Long id, MultipartFile iconFile) {
+        Theme theme = getThemeOrThrow(id);
+        if (iconFile != null) {
+            Long existingFileId = theme.getIcon() != null ? theme.getIcon().getId() : null;
+            File icon = fileService.uploadFile(iconFile, FileType.ICON, existingFileId);
+            theme.setIcon(icon);
+            themeRepository.save(theme);
+        }
+        return toThemeResponse(theme);
+    }
+
     // Удаление Theme
     public void deleteTheme(Long id) {
-        Theme theme = themeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Not found theme with id " + id));
+        Theme theme = getThemeOrThrow(id);
         // Удаляем связанный файл, если есть
         if (theme.getIcon() != null) {
             fileService.deleteFile(theme.getIcon().getId());
@@ -104,13 +101,6 @@ public class ThemeService {
     private PageResponse<ThemeResponse> mapToPageResponse(Page<Theme> themePage) {
         Page<ThemeResponse> responsePage = themePage.map(this::toThemeResponse);
         return new PageResponse<>(responsePage);
-    }
-
-    // Маппинг ThemeRequest в Theme
-    private Theme mapToEntity(ThemeRequest themeRequest) {
-        Theme theme = new Theme();
-        fillThemeFields(theme, themeRequest);
-        return theme;
     }
 
     // Маппинг Theme в ThemeResponse
@@ -130,15 +120,11 @@ public class ThemeService {
         theme.setName(themeRequest.getName());
         theme.setIsActive(themeRequest.getIsActive() != null ? themeRequest.getIsActive() : false);
         theme.setIsPopular(themeRequest.getIsPopular() != null ? themeRequest.getIsPopular() : false);
-        theme.setCategory(categoryRepository.findById(themeRequest.getCategoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Category not found: " + themeRequest.getCategoryId())));
-        // Обработка иконки: если iconId тот же, обновление картинки через FileService
-        if (themeRequest.getIconId() != null) {
-            File icon = fileService.getFile(themeRequest.getIconId()); // Проверяем через FileService
-            theme.setIcon(icon);
-        } else if (theme.getIcon() != null) {
-            fileService.deleteFile(theme.getIcon().getId());
-            theme.setIcon(null);
-        }
+        theme.setCategory(categoryService.getCategoryByIdOrThrow(themeRequest.getCategoryId()));
+    }
+
+    private Theme getThemeOrThrow(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + id));
     }
 }

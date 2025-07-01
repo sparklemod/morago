@@ -30,6 +30,4 @@ public class AdminFileController {
     public void deleteFile(@PathVariable Long id) {
         fileService.deleteFile(id);
     }
-
-
 }

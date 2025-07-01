@@ -1,21 +1,15 @@
 package com.example.morago.repository;
 
 import com.example.morago.model.entity.Theme;
-import java.util.Collection;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface ThemeRepository extends JpaRepository<Theme, Long>,
-    JpaSpecificationExecutor<Theme> {
-
-    Optional<Theme> findByName(String name);
-
-    boolean existsByName(String name);
-
-    List<Theme> findAllByIdIn(Collection<Long> ids);
+        JpaSpecificationExecutor<Theme> {
+    List<Theme> findAllByIdIn(Set<Long> ids);
 }

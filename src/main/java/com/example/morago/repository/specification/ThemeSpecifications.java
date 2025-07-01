@@ -48,7 +48,7 @@ public class ThemeSpecifications {
     }
 
     // Комбинирование фильтров (админ)
-    public  static Specification<Theme> combineForAdmin(String keyword, Boolean isActive, Long categoryId) {
+    public static Specification<Theme> combineForAdmin(String keyword, Boolean isActive, Long categoryId) {
         return Specification.where(nameContains(keyword))
                 .and(isActive(isActive))
                 .and(hasCategory(categoryId));

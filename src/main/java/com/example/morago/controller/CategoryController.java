@@ -1,15 +1,16 @@
 package com.example.morago.controller;
 
-import com.example.morago.controller.dto.requests.PageRequest;
-import com.example.morago.controller.dto.response.CategoryResponse;
+import com.example.morago.controller.dto.requests.category.CategoryPageRequest;
+import com.example.morago.controller.dto.requests.theme.ThemePageRequest;
 import com.example.morago.controller.dto.response.PageResponse;
+import com.example.morago.controller.dto.response.theme.ThemeResponse;
+import com.example.morago.model.entity.Category;
+import com.example.morago.model.entity.base.User;
 import com.example.morago.service.CategoryService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.data.domain.Page;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/category")
@@ -17,8 +18,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class CategoryController {
     private final CategoryService categoryService;
 
-    @PostMapping
-    public ResponseEntity<PageResponse<CategoryResponse>> getCategories(@RequestBody PageRequest pageRequest) {
-        return ResponseEntity.ok(categoryService.getCategories(pageRequest));
+    @GetMapping
+    public Page<Category> getCategories(@ModelAttribute CategoryPageRequest categoryPageRequest) {
+        return categoryService.getPublicCategories(categoryPageRequest);
+    }
+
+    @GetMapping("/{id}/themes")
+    public PageResponse<ThemeResponse> getThemesByCategory(
+            @PathVariable Long id,
+            @ModelAttribute ThemePageRequest themePageRequest,
+            Authentication auth) {
+        // Проверка авторизации
+        Long userId = (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String))
+                ? ((User) auth.getPrincipal()).getId()
+                : null;
+        return categoryService.getThemesByCategoryId(id, themePageRequest, userId);
     }
 }
