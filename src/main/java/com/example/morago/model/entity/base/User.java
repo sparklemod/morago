@@ -24,7 +24,7 @@ import java.util.Set;
 @DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class User extends Auditable implements UserDetails, CredentialsContainer {

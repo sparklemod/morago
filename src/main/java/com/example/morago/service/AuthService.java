@@ -1,9 +1,9 @@
 package com.example.morago.service;
 
 import com.example.morago.config.security.JwtUtil;
-import com.example.morago.controller.dto.requests.auth.AuthRequest;
-import com.example.morago.controller.dto.requests.auth.UserCreateRequest;
-import com.example.morago.controller.dto.response.auth.AuthResponse;
+import com.example.morago.model.dto.requests.auth.AuthRequest;
+import com.example.morago.model.dto.requests.auth.UserCreateRequest;
+import com.example.morago.model.dto.response.auth.AuthResponse;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.model.entity.UserProfile;
 import com.example.morago.model.entity.base.User;

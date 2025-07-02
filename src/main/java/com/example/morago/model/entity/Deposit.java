@@ -28,5 +28,5 @@ public class Deposit extends Auditable {
     private PaymentStatusEnum status;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    private Translator translator;
 }

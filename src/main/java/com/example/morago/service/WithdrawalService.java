@@ -1,6 +1,6 @@
 package com.example.morago.service;
 
-import com.example.morago.controller.dto.requests.transaction.TransactionCreateRequest;
+import com.example.morago.model.dto.requests.transaction.TransactionCreateRequest;
 import com.example.morago.model.entity.Withdrawal;
 import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.PaymentStatusEnum;

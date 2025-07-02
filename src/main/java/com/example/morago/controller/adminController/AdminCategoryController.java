@@ -1,6 +1,6 @@
 package com.example.morago.controller.adminController;
 
-import com.example.morago.controller.dto.requests.category.CategoryPageRequest;
+import com.example.morago.model.dto.requests.category.CategoryPageRequest;
 import com.example.morago.model.entity.Category;
 import com.example.morago.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin/categories")
+@RequestMapping("/admin/categories")
 @RequiredArgsConstructor
 public class AdminCategoryController {
     private final CategoryService categoryService;

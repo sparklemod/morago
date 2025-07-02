@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @DiscriminatorValue("USER")
 @Setter
 @Getter
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserProfile extends User {
@@ -32,18 +32,6 @@ public class UserProfile extends User {
             inverseJoinColumns = @JoinColumn(name = "theme_id")
     )
     private Set<Theme> favoriteThemes = new HashSet<>();
-
-    @OneToMany(mappedBy = "caller")
-    private Set<Call> calls;
-
-    @OneToMany(mappedBy = "user")
-    private Set<Debtor> debtors;
-
-    @OneToMany(mappedBy = "user")
-    private Set<Deposit> deposits;
-
-    @OneToMany(mappedBy = "user")
-    private Set<Withdrawal> withdrawals;
 
     public void addFavoriteTheme(Theme theme) {
         favoriteThemes.add(theme);

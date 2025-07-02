@@ -1,14 +1,12 @@
 package com.example.morago.service;
 
-import com.example.morago.controller.dto.requests.translator.TranslatorGetRequest;
-import com.example.morago.controller.dto.requests.translator.TranslatorUpdateRequest;
-import com.example.morago.controller.dto.response.translator.TranslatorGetResponse;
-import com.example.morago.model.entity.File;
+import com.example.morago.model.dto.requests.translator.TranslatorGetRequest;
+import com.example.morago.model.dto.requests.translator.TranslatorUpdateRequest;
+import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.model.entity.Language;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.repository.TranslatorRepository;
-import com.example.morago.service.file.FileService;
 import com.example.morago.repository.specification.TranslatorSpecification;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.HashSet;
@@ -22,13 +20,12 @@ import org.springframework.stereotype.Service;
 public class TranslatorService {
 
     private final TranslatorRepository translatorRepository;
-    private final FileService fileService;
     private final ThemeService themeService;
     private final LanguageService languageService;
 
     //В макете у переводчика данные вводятся после регистрации по номеру и паролю
     public Translator update(TranslatorUpdateRequest request) {
-        File image = fileService.getFileByUrl(request.getImageUrl());
+        Translator translator = findById(request.getId());
 
         Set<Theme> themes = new HashSet<>();
         if (!request.getThemeIds().isEmpty()) {
@@ -40,7 +37,7 @@ public class TranslatorService {
             languages = new HashSet<>(languageService.getByIds(request.getLanguageIds()));
         }
 
-        return translatorRepository.save(request.build(image, themes, languages));
+        return translatorRepository.save(request.build(translator, themes, languages));
     }
 
     public Page<TranslatorGetResponse> searchTranslators(TranslatorGetRequest request) {
@@ -52,7 +49,7 @@ public class TranslatorService {
         return translators.map(this::mapToDto);
     }
 
-    public Translator searchUserById(Long id) {
+    public Translator findById(Long id) {
         return translatorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
     }
 

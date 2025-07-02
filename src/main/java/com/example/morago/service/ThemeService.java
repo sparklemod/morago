@@ -1,9 +1,9 @@
 package com.example.morago.service;
 
-import com.example.morago.controller.dto.requests.theme.ThemePageRequest;
-import com.example.morago.controller.dto.requests.theme.ThemeRequest;
-import com.example.morago.controller.dto.response.PageResponse;
-import com.example.morago.controller.dto.response.theme.ThemeResponse;
+import com.example.morago.model.dto.requests.theme.ThemePageRequest;
+import com.example.morago.model.dto.requests.theme.ThemeRequest;
+import com.example.morago.model.dto.response.PageResponse;
+import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.model.enums.FileType;

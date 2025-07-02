@@ -1,6 +1,6 @@
 package com.example.morago.controller.adminController;
 
-import com.example.morago.controller.dto.response.PageResponse;
+import com.example.morago.model.dto.response.PageResponse;
 import com.example.morago.model.entity.File;
 import com.example.morago.service.file.FileService;
 import jakarta.validation.Valid;

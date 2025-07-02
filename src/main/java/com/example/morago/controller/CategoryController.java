@@ -1,9 +1,9 @@
 package com.example.morago.controller;
 
-import com.example.morago.controller.dto.requests.category.CategoryPageRequest;
-import com.example.morago.controller.dto.requests.theme.ThemePageRequest;
-import com.example.morago.controller.dto.response.PageResponse;
-import com.example.morago.controller.dto.response.theme.ThemeResponse;
+import com.example.morago.model.dto.requests.category.CategoryPageRequest;
+import com.example.morago.model.dto.requests.theme.ThemePageRequest;
+import com.example.morago.model.dto.response.PageResponse;
+import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.entity.Category;
 import com.example.morago.model.entity.base.User;
 import com.example.morago.service.CategoryService;

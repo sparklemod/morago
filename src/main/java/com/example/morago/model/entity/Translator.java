@@ -17,7 +17,7 @@ import lombok.experimental.SuperBuilder;
 @DiscriminatorValue("TRANSLATOR")
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 @Setter
 @Getter
 public class Translator extends User {

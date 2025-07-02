@@ -1,9 +1,9 @@
 package com.example.morago.controller.adminController;
 
-import com.example.morago.controller.dto.requests.theme.ThemePageRequest;
-import com.example.morago.controller.dto.requests.theme.ThemeRequest;
-import com.example.morago.controller.dto.response.PageResponse;
-import com.example.morago.controller.dto.response.theme.ThemeResponse;
+import com.example.morago.model.dto.requests.theme.ThemePageRequest;
+import com.example.morago.model.dto.requests.theme.ThemeRequest;
+import com.example.morago.model.dto.response.PageResponse;
+import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.service.ThemeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/admin/themes")
+@RequestMapping("/admin/themes")
 @RequiredArgsConstructor
 public class AdminThemeController {
     private final ThemeService themeService;

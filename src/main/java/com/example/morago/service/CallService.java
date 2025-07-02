@@ -1,7 +1,7 @@
 package com.example.morago.service;
 
-import com.example.morago.controller.dto.requests.call.CallCreateRequest;
-import com.example.morago.controller.dto.websocket.CallPayload;
+import com.example.morago.model.dto.requests.call.CallCreateRequest;
+import com.example.morago.model.dto.requests.call.CallPayload;
 import com.example.morago.model.enums.CallStatusEnum;
 import com.example.morago.model.entity.Call;
 import com.example.morago.model.entity.Theme;
@@ -11,7 +11,9 @@ import com.example.morago.repository.CallRepository;
 import com.example.morago.repository.ThemeRepository;
 import com.example.morago.repository.TranslatorRepository;
 import com.example.morago.repository.UserProfileRepository;
+import com.example.morago.util.exception.HandledException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
@@ -35,6 +37,10 @@ public class CallService {
         UserProfile caller = userProfileRepository.findById(request.getCallerId()).orElseThrow(()->new EntityNotFoundException("Caller not found"));
         Translator recipient = translatorRepository.findById(request.getRecipientId()).orElseThrow(()->new EntityNotFoundException("Translator not found"));
         Theme theme = themeRepository.findById(request.getThemeId()).orElseThrow(()->new EntityNotFoundException("Theme not found"));
+
+        if (caller.getBalance() < 0) {
+            throw new HandledException("Caller balance is negative");
+        }
 
         Call call = Call.builder()
             .createdAt(LocalDateTime.now())
@@ -79,7 +85,8 @@ public class CallService {
         return callRepository.save(call);
     }
 
-    private void applyCallPayment(Call call)
+    @Transactional
+    protected void applyCallPayment(Call call)
     {
         BigDecimal pricePerMinute = BigDecimal.valueOf(call.getTheme().getPrice());
         BigDecimal totalPrice = pricePerMinute
@@ -91,11 +98,6 @@ public class CallService {
 
         UserProfile caller = call.getCaller();
         Translator recipient = call.getRecipient();
-
-        //TODO спросить что делать в таком случае
-        if (caller.getBalance() < totalPrice.longValue()) {
-            throw new IllegalStateException("Insufficient balance");
-        }
 
         caller.setBalance(caller.getBalance() - totalPrice.longValue());
         recipient.setBalance(recipient.getBalance() + toTranslator.longValue());
@@ -118,18 +120,12 @@ public class CallService {
         callRepository.deleteById(id);
     }
 
-    public Call updateCall(Long id, Call updatedCall) {
+    //TODO спросить про длительность звонка
+    public Call updateCallStatus(Long id, CallStatusEnum status) {
         Call existingCall = callRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Call not found"));
 
-        existingCall.setUpdatedAt(LocalDateTime.now());
-        existingCall.setStatus(updatedCall.getStatus());
-        existingCall.setIsEndCall(updatedCall.getIsEndCall());
-        existingCall.setCallStatus(updatedCall.getCallStatus());
-        existingCall.setSum(updatedCall.getSum());
-        existingCall.setCommission(updatedCall.getCommission());
-        existingCall.setTranslatorHasRated(updatedCall.getTranslatorHasRated());
-        existingCall.setUserHasRated(updatedCall.getUserHasRated());
+        existingCall.setCallStatus(status);
 
         return callRepository.save(existingCall);
     }

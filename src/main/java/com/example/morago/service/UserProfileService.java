@@ -1,17 +1,18 @@
 package com.example.morago.service;
 
-import com.example.morago.controller.dto.requests.user.UserGetRequest;
-import com.example.morago.controller.dto.requests.user.UserProfileUpdateRequest;
-import com.example.morago.controller.dto.response.user.UserGetResponse;
+import com.example.morago.model.dto.requests.user.UpdateNameSurnameRequest;
+import com.example.morago.model.dto.requests.user.UpdatePasswordRequest;
+import com.example.morago.model.dto.requests.user.UserGetRequest;
+import com.example.morago.model.dto.requests.user.UserProfileUpdateRequest;
+import com.example.morago.model.dto.response.user.UserGetResponse;
 import com.example.morago.util.exception.HandledException;
 import com.example.morago.util.exception.enums.NotFoundMessage;
-import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.UserProfile;
 import com.example.morago.repository.UserProfileRepository;
-import com.example.morago.service.file.FileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -20,13 +21,38 @@ import org.springframework.stereotype.Service;
 public class UserProfileService {
 
     private final UserProfileRepository repository;
-    private final FileService fileService;
+    private final PasswordEncoder passwordEncoder;
 
-    //В макете у пользователя при регистрации нет имени фамилии
-    //предполагаю что апдейт есть где-то после регистрации
+
+    public void updateName(Long userId, UpdateNameSurnameRequest request) {
+        UserProfile user = findById(userId);
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        repository.save(user);
+    }
+
+    public void updatePassword(Long userId, UpdatePasswordRequest request) {
+        UserProfile user = findById(userId);
+
+        if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("Passwords don't match");
+        }
+
+        if (!request.newPassword().equals(request.confirmPassword())) {
+            throw new IllegalArgumentException("New passwords don't match");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.newPassword()));
+        repository.save(user);
+    }
+
+    //TODO спросить у фронта
+    public void resetPassword(String phone) {
+    }
+
     public UserProfile update(UserProfileUpdateRequest request) {
-        File image = fileService.getFileByUrl(request.getImageUrl());
-        return repository.save(request.build(image));
+        UserProfile user = findById(request.getId());
+        return repository.save(request.build(user));
     }
 
     public void delete(Long id) {
