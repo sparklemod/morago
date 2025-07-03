@@ -7,7 +7,8 @@ import com.example.morago.model.entity.base.User;
 import com.example.morago.service.ThemeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,13 +18,11 @@ public class ThemeController {
     private final ThemeService themeService;
 
     @GetMapping
+    @PreAuthorize("isAuthenticated() or permitAll()")
     public PageResponse<ThemeResponse> getThemes(
             @Valid @ModelAttribute ThemePageRequest themePageRequest,
-            Authentication auth) {
-        // Проверка авторизации вынесена сюда
-        Long userId = (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String))
-                ? ((User) auth.getPrincipal()).getId()
-                : null;
+            @AuthenticationPrincipal User user) {
+        Long userId = userId = user != null ? user.getId() : null;
         return themeService.getPublicThemes(themePageRequest, userId, themePageRequest.getCategoryId());
     }
 
@@ -31,6 +30,4 @@ public class ThemeController {
     public ThemeResponse getThemeById(@PathVariable Long id) {
         return themeService.getThemeById(id);
     }
-
-
 }

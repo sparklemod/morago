@@ -15,10 +15,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -28,46 +30,16 @@ public class ThemeService {
     private final CategoryService categoryService;
     private final FileService fileService;
 
-    // Получение тем по переводчику
-    public Set<Theme> getByIds(Set<Long> ids) {
-        return new HashSet<>(themeRepository.findAllByIdIn(ids));
-    }
-
-    // Публичный список тем
-    public PageResponse<ThemeResponse> getPublicThemes(ThemePageRequest themePageRequest, Long userId, Long categoryId) {
-        // Проверка авторизации вынесена в контроллер, userId=null для анонимов
-        Specification<Theme> spec = userId != null // Сортировка в Specification
-                ? ThemeSpecifications.forAuthenticated(themePageRequest.getKeyword(), userId)
-                .and(ThemeSpecifications.hasCategory(categoryId))
-                : ThemeSpecifications.forAnonymous().and(ThemeSpecifications.hasCategory(categoryId));
-        Pageable pageable = themePageRequest.toPageableWithoutSort();
-        Page<Theme> page = themeRepository.findAll(spec, pageable);
-        return mapToPageResponse(page);
-    }
-
-    //Список тем для Админа
-    public PageResponse<ThemeResponse> getAdminThemes(ThemePageRequest themePageRequest) {
-        Specification<Theme> spec = ThemeSpecifications.combineForAdmin(
-                themePageRequest.getKeyword(), themePageRequest.getIsActive(), themePageRequest.getCategoryId());
-        Pageable pageable = themePageRequest.toPageable();
-
-        Page<Theme> themePage = themeRepository.findAll(spec, pageable);
-        return mapToPageResponse(themePage);
-    }
-
     // Создание Theme
+    @PreAuthorize("hasRole('ADMIN')")
     public ThemeResponse createTheme(ThemeRequest themeRequest) {
         Theme theme = new Theme();
         fillThemeFields(theme, themeRequest);
         return toThemeResponse(themeRepository.save(theme));
     }
 
-    public ThemeResponse getThemeById(Long id) {
-        Theme theme = getThemeOrThrow(id);
-        return toThemeResponse(theme);
-    }
-
     // Обновление Theme
+    @PreAuthorize("hasRole('ADMIN')")
     public ThemeResponse updateTheme(Long id, ThemeRequest themeRequest) {
         Theme theme = getThemeOrThrow(id);
         fillThemeFields(theme, themeRequest);
@@ -88,6 +60,7 @@ public class ThemeService {
     }
 
     // Удаление Theme
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteTheme(Long id) {
         Theme theme = getThemeOrThrow(id);
         // Удаляем связанный файл, если есть
@@ -95,6 +68,42 @@ public class ThemeService {
             fileService.deleteFile(theme.getIcon().getId());
         }
         themeRepository.delete(theme);
+    }
+
+    // Получение тем по переводчику
+    public List<Theme> getByIds(Set<Long> ids) {
+        return themeRepository.findAllByIdIn(new ArrayList<>(ids));
+    }
+
+    // Публичный список тем
+    @PreAuthorize("isAuthenticated() or #userId == null")
+    public PageResponse<ThemeResponse> getPublicThemes(
+            ThemePageRequest themePageRequest,
+            Long userId,
+            Long categoryId) {
+        Specification<Theme> spec = userId != null // Сортировка в Specification
+                ? ThemeSpecifications.forAuthenticated(themePageRequest.getKeyword(), userId)
+                .and(ThemeSpecifications.hasCategory(categoryId))
+                : ThemeSpecifications.forAnonymous().and(ThemeSpecifications.hasCategory(categoryId));
+        Pageable pageable = themePageRequest.toPageableWithoutSort();
+        Page<Theme> page = themeRepository.findAll(spec, pageable);
+        return mapToPageResponse(page);
+    }
+
+    //Список тем для Админа
+    @PreAuthorize("hasRole('ADMIN')")
+    public PageResponse<ThemeResponse> getAdminThemes(ThemePageRequest themePageRequest) {
+        Specification<Theme> spec = ThemeSpecifications.combineForAdmin(
+                themePageRequest.getKeyword(), themePageRequest.getIsActive(), themePageRequest.getCategoryId());
+        Pageable pageable = themePageRequest.toPageable();
+
+        Page<Theme> themePage = themeRepository.findAll(spec, pageable);
+        return mapToPageResponse(themePage);
+    }
+
+    public ThemeResponse getThemeById(Long id) {
+        Theme theme = getThemeOrThrow(id);
+        return toThemeResponse(theme);
     }
 
     // Маппинг Page<Theme> в PageResponse<ThemeResponse>

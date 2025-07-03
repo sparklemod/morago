@@ -20,27 +20,6 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final ThemeService themeService;
 
-    // Публичный список категорий
-    public Page<Category> getPublicCategories(CategoryPageRequest categoryPageRequest) {
-        Specification<Category> spec = CategorySpecification.forAuthenticated();
-        Pageable pageable = categoryPageRequest.toPageableWithoutSort();
-        return categoryRepository.findAll(spec, pageable);
-    }
-
-    // Список категорий для Админа
-    public Page<Category> getAdminCategories(CategoryPageRequest categoryPageRequest) {
-        Specification<Category> spec = CategorySpecification.combineForAdmin(categoryPageRequest.getKeyword(),
-                categoryPageRequest.getIsActive());
-        Pageable pageable = categoryPageRequest.toPageableWithoutSort();
-        return categoryRepository.findAll(spec, pageable);
-    }
-
-    // Получение категории по id
-    public Category getCategoryByIdOrThrow(Long id) {
-        return categoryRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
-    }
-
     // Создание
     public Category createCategory(Category category) {
         validateCategory(category);
@@ -65,6 +44,27 @@ public class CategoryService {
         return category;
     }
 
+    // Публичный список категорий
+    public Page<Category> getPublicCategories(CategoryPageRequest categoryPageRequest) {
+        Specification<Category> spec = CategorySpecification.forAuthenticated();
+        Pageable pageable = categoryPageRequest.toPageableWithoutSort();
+        return categoryRepository.findAll(spec, pageable);
+    }
+
+    // Список категорий для Админа
+    public Page<Category> getAdminCategories(CategoryPageRequest categoryPageRequest) {
+        Specification<Category> spec = CategorySpecification.combineForAdmin(categoryPageRequest.getKeyword(),
+                categoryPageRequest.getIsActive());
+        Pageable pageable = categoryPageRequest.toPageableWithoutSort();
+        return categoryRepository.findAll(spec, pageable);
+    }
+
+    // Получение категории по id
+    public Category getCategoryByIdOrThrow(Long id) {
+        return categoryRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
+    }
+
     // Получение тем по категории
     public PageResponse<ThemeResponse> getThemesByCategoryId(Long categoryId, ThemePageRequest themePageRequest, Long userId) {
         getCategoryByIdOrThrow(categoryId);
@@ -81,5 +81,4 @@ public class CategoryService {
             throw new IllegalArgumentException("Name must be less than 100 characters");
         }
     }
-
 }
