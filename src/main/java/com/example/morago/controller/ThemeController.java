@@ -22,7 +22,7 @@ public class ThemeController {
     public PageResponse<ThemeResponse> getThemes(
             @Valid @ModelAttribute ThemePageRequest themePageRequest,
             @AuthenticationPrincipal User user) {
-        Long userId = userId = user != null ? user.getId() : null;
+        Long userId = user != null ? user.getId() : null;
         return themeService.getPublicThemes(themePageRequest, userId, themePageRequest.getCategoryId());
     }
 
