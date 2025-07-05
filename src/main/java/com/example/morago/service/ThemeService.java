@@ -12,6 +12,7 @@ import com.example.morago.repository.specification.ThemeSpecifications;
 import com.example.morago.service.file.FileService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -27,7 +28,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ThemeService {
     private final ThemeRepository themeRepository;
-    private final CategoryService categoryService;
+    private final @Lazy CategoryService categoryService;
     private final FileService fileService;
 
     // Создание Theme

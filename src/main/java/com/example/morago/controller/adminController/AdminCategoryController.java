@@ -40,6 +40,4 @@ public class AdminCategoryController {
     public Category deleteCategory(@PathVariable Long id) {
         return categoryService.softDeleteCategoryById(id);
     }
-
-
 }
