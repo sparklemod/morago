@@ -1,8 +1,8 @@
 package com.example.morago.controller.translatorController;
 
 import com.example.morago.model.dto.requests.translator.TranslatorUpdateRequest;
+import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.model.entity.File;
-import com.example.morago.model.entity.Translator;
 import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.FileType;
 import com.example.morago.repository.UserRepository;
@@ -34,9 +34,9 @@ public class TranslatorController {
 
     @PutMapping()
     @Operation(description = "Update translator")
-    public ResponseEntity<Translator> updateTranslator(
+    public ResponseEntity<TranslatorGetResponse> updateTranslator(
             @RequestBody TranslatorUpdateRequest request) {
-        return ResponseEntity.ok(translatorService.update(request));
+        return ResponseEntity.ok(translatorService.mapToDto(translatorService.update(request)));
     }
 
     // Загрузка аватара

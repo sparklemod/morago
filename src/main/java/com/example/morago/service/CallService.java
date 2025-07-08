@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -38,7 +39,7 @@ public class CallService {
         Translator recipient = translatorRepository.findById(request.getRecipientId()).orElseThrow(()->new EntityNotFoundException("Translator not found"));
         Theme theme = themeRepository.findById(request.getThemeId()).orElseThrow(()->new EntityNotFoundException("Theme not found"));
 
-        if (caller.getBalance() < 0) {
+        if (caller.getBalance().compareTo(BigDecimal.ZERO) < 0) {
             throw new HandledException("Caller balance is negative");
         }
 
@@ -86,12 +87,9 @@ public class CallService {
     }
 
     @Transactional
-    protected void applyCallPayment(Call call)
+    public void applyCallPayment(Call call)
     {
-        BigDecimal pricePerMinute = BigDecimal.valueOf(call.getTheme().getPrice());
-        BigDecimal totalPrice = pricePerMinute
-            .multiply(BigDecimal.valueOf(call.getDuration()))
-            .divide(BigDecimal.valueOf(60), RoundingMode.CEILING);
+        BigDecimal totalPrice = getTotalPrice(call);
 
         BigDecimal commission = totalPrice.multiply(BigDecimal.valueOf(0.1));
         BigDecimal toTranslator = totalPrice.subtract(commission);
@@ -99,8 +97,8 @@ public class CallService {
         UserProfile caller = call.getCaller();
         Translator recipient = call.getRecipient();
 
-        caller.setBalance(caller.getBalance() - totalPrice.longValue());
-        recipient.setBalance(recipient.getBalance() + toTranslator.longValue());
+        caller.setBalance(caller.getBalance().subtract(totalPrice));
+        recipient.setBalance(recipient.getBalance().subtract(toTranslator));
 
         userProfileRepository.save(caller);
         translatorRepository.save(recipient);
@@ -120,7 +118,6 @@ public class CallService {
         callRepository.deleteById(id);
     }
 
-    //TODO спросить про длительность звонка
     public Call updateCallStatus(Long id, CallStatusEnum status) {
         Call existingCall = callRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Call not found"));
@@ -128,5 +125,22 @@ public class CallService {
         existingCall.setCallStatus(status);
 
         return callRepository.save(existingCall);
+    }
+
+    private static BigDecimal getTotalPrice(Call call) {
+        BigDecimal pricePerMinute = call.getTheme().getPrice();
+
+        LocalTime now = LocalTime.now();
+        LocalTime nightStart = LocalTime.of(22, 0);
+        LocalTime nightEnd = LocalTime.of(6, 0);
+
+        if (now.isAfter(nightStart) || now.isBefore(nightEnd))
+        {
+            pricePerMinute = call.getTheme().getNightPrice();
+        }
+
+        return pricePerMinute
+            .multiply(BigDecimal.valueOf(call.getDuration()))
+            .divide(BigDecimal.valueOf(60), RoundingMode.CEILING);
     }
 }

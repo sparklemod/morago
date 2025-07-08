@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,11 +39,11 @@ public class Theme extends Auditable {
 
     @Column(nullable = false)
     @Min(value = 0, message = "Price cannot be negative")
-    private Integer price;
+    private BigDecimal price;
 
     @Column(nullable = false)
     @Min(value = 0, message = "Night price cannot be negative")
-    private Integer nightPrice;
+    private BigDecimal nightPrice;
 
     @Column(nullable = false)
     private Boolean isPopular = false;

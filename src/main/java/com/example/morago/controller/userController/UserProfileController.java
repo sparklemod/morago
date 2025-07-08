@@ -2,8 +2,8 @@ package com.example.morago.controller.userController;
 
 import com.example.morago.model.dto.requests.user.UpdateNameSurnameRequest;
 import com.example.morago.model.dto.requests.user.UpdatePasswordRequest;
+import com.example.morago.model.dto.response.user.UserGetResponse;
 import com.example.morago.model.entity.File;
-import com.example.morago.model.entity.UserProfile;
 import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.FileType;
 import com.example.morago.repository.UserRepository;
@@ -61,11 +61,11 @@ public class UserProfileController {
 
     @GetMapping("/{id}")
     @Operation(description = "Get user by id")
-    public ResponseEntity<UserProfile> getUserProfile(
+    public ResponseEntity<UserGetResponse> getUserProfile(
             @PathVariable("id")
             @Parameter(description = "User Id", example = "6")
             Long id) {
-        return ResponseEntity.ok(service.findById(id));
+        return ResponseEntity.ok(service.mapToDto(service.findById(id)));
     }
 
     // Загрузка аватара

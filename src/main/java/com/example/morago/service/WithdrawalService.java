@@ -6,9 +6,7 @@ import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.PaymentStatusEnum;
 import com.example.morago.repository.UserRepository;
 import com.example.morago.repository.WithdrawalRepository;
-import com.example.morago.util.CoinConverter;
 import jakarta.transaction.Transactional;
-import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -24,21 +22,19 @@ public class WithdrawalService {
     public Withdrawal createWithdrawal(Long userId, TransactionCreateRequest request) {
         User user = userService.findById(userId);
 
-        BigDecimal coins = CoinConverter.convertWonToCoins(request.getWon());
-
-        if (user.getBalance() < coins.longValue()) {
+        if (user.getBalance().compareTo(request.getWon()) < 0) {
             throw new IllegalStateException("Insufficient funds on balance");
         }
 
-        user.setBalance(user.getBalance() - coins.longValue());
+        user.setBalance(user.getBalance().subtract(request.getWon()));
         userRepository.save(user);
 
         Withdrawal withdrawal = Withdrawal.builder()
             .user(user)
-            .sum(coins)
+            .sum(request.getWon())
             .accountHolder(request.getAccountHolder())
             .nameOfBank(request.getNameOfBank())
-            .status(PaymentStatusEnum.PENDING) //TODO отдельный метод для апрува?
+            .status(PaymentStatusEnum.PENDING)
             .build();
 
         return repository.save(withdrawal);

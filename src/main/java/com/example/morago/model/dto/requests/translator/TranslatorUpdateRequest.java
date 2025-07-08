@@ -26,14 +26,14 @@ public class TranslatorUpdateRequest extends UserUpdateRequest {
     private Integer levelOfKorean;
 
     @Schema(description = "Date of birth", example = "1993.03.06")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy.MM.dd")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @NotNull(message = "Date of birth cannot be null")
     private LocalDate dateOfBirth;
 
-    @Schema(description = "ThemeIds", example = "1,2")
+    @Schema(description = "ThemeIds", example = "[1, 2]")
     private Set<Long> themeIds = new HashSet<>();
 
-    @Schema(description = "LanguageIds", example = "1,2")
+    @Schema(description = "LanguageIds", example = "[1, 2]")
     private Set<Long> languageIds = new HashSet<>();
 
     public Translator build(Translator translator, Set<Theme> themes, Set<Language> languages) {

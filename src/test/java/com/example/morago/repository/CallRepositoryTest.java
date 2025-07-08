@@ -4,6 +4,7 @@ import com.example.morago.model.enums.CallStatusEnum;
 import com.example.morago.model.entity.Call;
 import com.example.morago.model.entity.Theme;
 import jakarta.transaction.Transactional;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -30,8 +31,8 @@ class CallRepositoryTest {
 
         theme.setName("Technical support");
         theme.setTitle("title");
-        theme.setNightPrice(123);
-        theme.setPrice(123);
+        theme.setNightPrice(BigDecimal.valueOf(123));
+        theme.setPrice(BigDecimal.valueOf(123));
 
         themeRepository.save(theme);
 

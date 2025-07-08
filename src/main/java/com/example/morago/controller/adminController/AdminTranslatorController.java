@@ -2,7 +2,6 @@ package com.example.morago.controller.adminController;
 
 import com.example.morago.model.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
-import com.example.morago.model.entity.Translator;
 import com.example.morago.service.TranslatorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,10 +33,10 @@ public class AdminTranslatorController {
     @Operation(
             description = "<strong>Get translator by ID</strong>"
     )
-    public ResponseEntity<Translator> getTranslatorById(
+    public ResponseEntity<TranslatorGetResponse> getTranslatorById(
             @PathVariable("id")
             @Parameter(description = "Translator ID", example = "2")
             Long id) {
-        return ResponseEntity.ok(translatorService.findById(id));
+        return ResponseEntity.ok(translatorService.mapToDto(translatorService.findById(id)));
     }
 }

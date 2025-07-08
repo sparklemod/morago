@@ -62,7 +62,12 @@ public class UserProfileService {
     }
 
     public Page<UserGetResponse> searchUsers(UserGetRequest request) {
-        Page<UserProfile> users = repository.findByKeyword(request.getKeyword(), request.toPageable());
+        Page<UserProfile> users;
+        if (request.getKeyword() == null || request.getKeyword().isEmpty()) {
+            users = repository.findAll(request.toPageable());
+        } else {
+            users = repository.findByKeyword(request.getKeyword(), request.toPageable());
+        }
 
         return users.map(this::mapToDto);
     }
@@ -72,7 +77,7 @@ public class UserProfileService {
             .orElseThrow(() -> new HandledException(NotFoundMessage.USER.format()));
     }
 
-    private UserGetResponse mapToDto(UserProfile userProfile) {
+    public UserGetResponse mapToDto(UserProfile userProfile) {
         return new UserGetResponse(
             userProfile.getId(),
             userProfile.getFirstName(),

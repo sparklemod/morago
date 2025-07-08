@@ -1,6 +1,7 @@
 package com.example.morago.model.dto.requests.translator;
 
 import com.example.morago.model.dto.requests.PageRequest;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.AllArgsConstructor;
@@ -36,9 +37,11 @@ public class TranslatorGetRequest extends PageRequest {
     @Schema(description = "Korean language proficiency level (from 1 to 5)", example = "4")
     private Integer levelOfKorean;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Schema(description = "Translator's date of birth (from)", example = "1985-05-12")
     private LocalDate dateOfBirthFrom;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     @Schema(description = "Translator's date of birth (to)", example = "2004-01-01")
     private LocalDate dateOfBirthTo;
 }

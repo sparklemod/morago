@@ -4,6 +4,7 @@ import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.Notification;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,7 +51,7 @@ public abstract class User extends Auditable implements UserDetails, Credentials
 
     @Column(nullable = false)
     @Min(0)
-    private Long balance;
+    private BigDecimal balance;
 
     @OneToOne(fetch = FetchType.LAZY)
     private File imageFile;

@@ -26,29 +26,6 @@ public class TranslatorSpecification {
                 predicates.add(keywordPredicate);
             }
 
-            if (request.getFirstName() != null) {
-                predicates.add(cb.like(
-                    cb.lower(root.get("firstName")),
-                    "%" + request.getFirstName().toLowerCase() + "%"));
-            }
-
-            if (request.getLastName() != null) {
-                predicates.add(cb.like(
-                    cb.lower(root.get("lastName")),
-                    "%" + request.getLastName().toLowerCase() + "%"));
-            }
-
-            if (request.getPhone() != null) {
-                predicates.add(cb.like(root.get("phone"), "%" + request.getPhone() + "%"));
-            }
-
-            if (request.getEmail() != null) {
-                predicates.add(cb.like(
-                    cb.lower(root.get("email")),
-                    "%" + request.getEmail().toLowerCase() + "%")
-                );
-            }
-
             if (request.getIsOnline() != null) {
                 predicates.add(cb.equal(root.get("isOnline"), request.getIsOnline()));
             }

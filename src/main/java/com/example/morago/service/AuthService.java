@@ -8,6 +8,7 @@ import com.example.morago.model.entity.Translator;
 import com.example.morago.model.entity.UserProfile;
 import com.example.morago.model.entity.base.User;
 import com.example.morago.repository.UserRepository;
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -41,7 +42,7 @@ public class AuthService {
         userProfile.setPhone(authRequest.getPhone());
         userProfile.setPassword(passwordEncoder.encode(authRequest.getPassword()));
         userProfile.setIsActive(true);
-        userProfile.setBalance(0L);
+        userProfile.setBalance(BigDecimal.ZERO);
         // firstName, lastName, email, imageId, notifications остаются null
         User savedUser = userRepository.save(userProfile);
         return buildAuthResponse(savedUser);
@@ -54,7 +55,7 @@ public class AuthService {
         translator.setPhone(authRequest.getPhone());
         translator.setPassword(passwordEncoder.encode(authRequest.getPassword()));
         translator.setIsActive(false);
-        translator.setBalance(0L);
+        translator.setBalance(BigDecimal.ZERO);
         // firstName, lastName, email, imageId, notifications остаются null
         User savedUser = userRepository.save(translator);
         return buildAuthResponse(savedUser);

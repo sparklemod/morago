@@ -3,7 +3,6 @@ package com.example.morago.controller.adminController;
 import com.example.morago.model.dto.requests.user.UserGetRequest;
 import com.example.morago.model.dto.requests.user.UserProfileUpdateRequest;
 import com.example.morago.model.dto.response.user.UserGetResponse;
-import com.example.morago.model.entity.UserProfile;
 import com.example.morago.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,18 +36,18 @@ public class AdminUserProfileController {
 
     @GetMapping("/{id}")
     @Operation(description = "Get user by id")
-    public ResponseEntity<UserProfile> getUserProfile(
+    public ResponseEntity<UserGetResponse> getUserProfile(
             @PathVariable("id")
             @Parameter(description = "User Id", example = "6")
             Long id) {
-        return ResponseEntity.ok(service.findById(id));
+        return ResponseEntity.ok(service.mapToDto(service.findById(id)));
     }
 
     @PutMapping()
     @Operation(description = "Update user")
-    public ResponseEntity<UserProfile> updateUserProfile(
+    public ResponseEntity<UserGetResponse> updateUserProfile(
             @RequestBody UserProfileUpdateRequest request) {
-        return ResponseEntity.ok(service.update(request));
+        return ResponseEntity.ok(service.mapToDto(service.update(request)));
     }
 
     @DeleteMapping("/{id}")
