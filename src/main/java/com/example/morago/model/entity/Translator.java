@@ -32,19 +32,9 @@ public class Translator extends User {
     private String memo;
 
     @ManyToMany
-    @JoinTable(
-            name = "translator_theme",
-            joinColumns = @JoinColumn(name = "translator_id"),
-            inverseJoinColumns = @JoinColumn(name = "theme_id")
-    )
     private Set<Theme> themes = new HashSet<>();
 
     @ManyToMany
-    @JoinTable(
-            name = "translator_language",
-            joinColumns = @JoinColumn(name = "translator_id"),
-            inverseJoinColumns = @JoinColumn(name = "theme_id")
-    )
     private Set<Language> languages = new HashSet<>();
 
     @OneToMany(mappedBy = "recipient")

@@ -21,7 +21,6 @@ public class Theme extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "theme_id")
     private Long id;
 
     @Column(nullable = false, unique = true, length = 100)
