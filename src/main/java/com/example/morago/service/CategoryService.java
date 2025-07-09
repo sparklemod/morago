@@ -1,6 +1,7 @@
 package com.example.morago.service;
 
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
+import com.example.morago.model.dto.requests.category.CategoryRequest;
 import com.example.morago.model.dto.requests.theme.ThemePageRequest;
 import com.example.morago.model.dto.response.PageResponse;
 import com.example.morago.model.dto.response.theme.ThemeResponse;
@@ -21,19 +22,17 @@ public class CategoryService {
     private final ThemeService themeService;
 
     // Создание
-    public Category createCategory(Category category) {
-        validateCategory(category);
-        category.setIsActive(category.getIsActive() != null ? category.getIsActive() : true);
+    public Category createCategory(CategoryRequest categoryRequest) {
+        Category category = new Category();
+        mapAndValidate(category, categoryRequest);
         return categoryRepository.save(category);
     }
 
     // Редакрирование
-    public Category updateCategory(Long id, Category category) {
+    public Category updateCategory(Long id, CategoryRequest categoryRequest) {
         Category existing = getCategoryByIdOrThrow(id);
-        validateCategory(category);
-        existing.setName(category.getName());
-        existing.setIsActive(category.getIsActive() != null ? category.getIsActive() : true);
-        return categoryRepository.save(category);
+        mapAndValidate(existing, categoryRequest);
+        return categoryRepository.save(existing);
     }
 
     // Мягкое удаление, для сохранения в истории и чтоб при случайном удалении не удалились темы
@@ -66,14 +65,19 @@ public class CategoryService {
     }
 
     // Получение тем по категории
-    public PageResponse<ThemeResponse> getThemesByCategoryId(Long categoryId, ThemePageRequest themePageRequest, Long userId) {
+    public PageResponse<ThemeResponse> getThemesByCategoryId(
+            Long categoryId,
+            ThemePageRequest themePageRequest,
+            Long userId) {
         getCategoryByIdOrThrow(categoryId);
-        themePageRequest.setCategoryId(categoryId);
         return themeService.getPublicThemes(themePageRequest, userId, categoryId);
     }
 
-    // Валидация
-    private void validateCategory(Category category) {
+    // Маппинг и валидация
+    private void mapAndValidate(Category category, CategoryRequest request) {
+        category.setName(request.getName());
+        category.setIsActive(request.getIsActive() != null ? request.getIsActive() : true);
+
         if (category.getName() == null || category.getName().isBlank()) {
             throw new IllegalArgumentException("Name cannot be empty");
         }
