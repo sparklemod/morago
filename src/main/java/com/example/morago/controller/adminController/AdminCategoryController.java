@@ -1,6 +1,7 @@
 package com.example.morago.controller.adminController;
 
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
+import com.example.morago.model.dto.requests.category.CategoryRequest;
 import com.example.morago.model.entity.Category;
 import com.example.morago.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +17,8 @@ public class AdminCategoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Category createCategory(@RequestBody Category category) {
-        return categoryService.createCategory(category);
+    public Category createCategory(@RequestBody CategoryRequest categoryRequest) {
+        return categoryService.createCategory(categoryRequest);
     }
 
     @GetMapping
@@ -31,8 +32,8 @@ public class AdminCategoryController {
     }
 
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable Long id, @RequestBody Category category) {
-        return categoryService.updateCategory(id, category);
+    public Category updateCategory(@PathVariable Long id, @RequestBody CategoryRequest categoryRequest) {
+        return categoryService.updateCategory(id, categoryRequest);
     }
 
     @DeleteMapping("/{id}")
