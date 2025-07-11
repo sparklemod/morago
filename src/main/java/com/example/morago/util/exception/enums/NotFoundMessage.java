@@ -3,7 +3,8 @@ package com.example.morago.util.exception.enums;
 public enum NotFoundMessage {
     USER("User"),
     IMAGE("Image"),
-    THEME("Theme");
+    THEME("Theme"),
+    ROLE("Role");
 
     private final String entity;
 

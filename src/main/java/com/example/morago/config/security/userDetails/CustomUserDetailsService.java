@@ -1,9 +1,9 @@
-package com.example.morago.service;
+package com.example.morago.config.security.userDetails;
 
-import com.example.morago.repository.UserRepository;
+import com.example.morago.model.entity.base.User;
+import com.example.morago.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -11,11 +11,12 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepository;
+    private final UserService userService;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByPhone(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with phone: " + username));
+    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userService.getUserByPhone(username);
+
+        return new CustomUserDetails(user);
     }
 }

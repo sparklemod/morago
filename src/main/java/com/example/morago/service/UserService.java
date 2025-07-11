@@ -1,5 +1,6 @@
 package com.example.morago.service;
 
+import com.example.morago.model.entity.base.User;
 import com.example.morago.util.exception.HandledException;
 import com.example.morago.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,5 +16,10 @@ public class UserService {
         if (repository.existsByPhone(phone)) {
             throw new HandledException("User profile already exists");
         }
+    }
+
+    public User getUserByPhone(String phone) {
+        return repository.findByPhone(phone)
+            .orElseThrow(()->new HandledException("User profile not found"));
     }
 }

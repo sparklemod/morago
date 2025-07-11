@@ -12,17 +12,16 @@ import java.util.Set;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@DiscriminatorValue("USER")
 @Setter
 @Getter
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserProfile extends User {
-    @Column(name = "is_debtor", nullable = false)
+    @Column(nullable = false)
     private Boolean isDebtor = false;
 
-    @Column(name = "is_free_call_made", nullable = false)
+    @Column(nullable = false)
     private Boolean isFreeCallMade = false;
 
     @ManyToMany(fetch = FetchType.LAZY)

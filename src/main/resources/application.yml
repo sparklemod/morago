@@ -7,9 +7,6 @@ spring:
     url: ${DATABASE_URL}
     username: ${DB_USER}
     password: ${DB_PASSWORD}
-  sql:
-    init:
-      mode: always
 
   jpa:
     hibernate:
