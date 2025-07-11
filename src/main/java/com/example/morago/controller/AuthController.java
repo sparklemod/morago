@@ -1,4 +1,4 @@
-package com.example.morago.controller.authController;
+package com.example.morago.controller;
 
 import com.example.morago.model.dto.requests.auth.AuthRequest;
 import com.example.morago.model.dto.requests.auth.UserCreateRequest;
@@ -19,7 +19,7 @@ public class AuthController {
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
     public AuthResponse login(@Valid @RequestBody AuthRequest request) {
-        return authService.login(request);
+        return authService.auth(request.getPhone(), request.getPassword());
     }
 
     @PostMapping("/register/user")

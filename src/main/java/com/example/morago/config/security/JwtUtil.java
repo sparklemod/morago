@@ -1,6 +1,6 @@
 package com.example.morago.config.security;
 
-import com.example.morago.model.entity.base.User;
+import com.example.morago.config.security.userDetails.CustomUserDetails;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -23,12 +23,18 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    public String generateToken(User user) {
+    public String generateToken(CustomUserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", user.getId());
+
+        claims.put("id", userDetails.getId());
+        claims.put("username", userDetails.getUsername());
+        claims.put("firstName", userDetails.getFirstName());
+        claims.put("lastName", userDetails.getLastName());
+        claims.put("role", userDetails.getAuthorities());
+
         return Jwts.builder()
                 .claims(claims)
-                .subject(user.getUsername())
+                .subject(userDetails.getUsername())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())

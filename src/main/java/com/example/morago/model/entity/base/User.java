@@ -1,105 +1,62 @@
 package com.example.morago.model.entity.base;
 
 import com.example.morago.model.entity.File;
-import com.example.morago.model.entity.Notification;
+import com.example.morago.model.entity.Role;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
+import java.util.HashSet;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import org.springframework.security.core.CredentialsContainer;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
 @Getter
 @Setter
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class User extends Auditable implements UserDetails, CredentialsContainer {
+public abstract class User extends Auditable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    protected Long id;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+        name = "user_roles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    protected Set<Role> roles = new HashSet<>();
 
     @Column(nullable = false, unique = true)
-    private String phone;
+    protected String phone;
 
     @Column(nullable = false)
-    private String password;
+    protected String password;
 
-    private String firstName;
+    protected String firstName;
 
-    private String lastName;
+    protected String lastName;
 
     @Column(unique = true)
-    private String email;
-
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive;
+    protected String email;
 
     @Column(nullable = false)
-    @Min(0)
-    private BigDecimal balance;
+    protected Boolean isActive;
+
+    @Column(nullable = false)
+    protected BigDecimal balance;
 
     @OneToOne(fetch = FetchType.LAZY)
-    private File imageFile;
-
-    @OneToMany(mappedBy = "user")
-    private Set<Notification> notifications;
+    protected File imageFile;
 
     public String getFullName(){
         return getFirstName() + " " + getLastName();
-    }
-
-    @Override
-    public String getUsername() {
-        return String.valueOf(this.phone);
-    }
-
-    @Override
-    public String getPassword() {
-        return String.valueOf(this.password);
-    }
-
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + this.getClass().getSimpleName().toUpperCase()));
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return this.isActive;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return this.isActive;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return this.isActive;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return this.isActive;
-    }
-
-    @Override
-    public void eraseCredentials() {
-        this.password = null;
     }
 }
