@@ -46,7 +46,8 @@ public class SecurityConfig {
 //                                "/v3/api-docs/**",
 //                                "/api/themes",
 //                                "/api/themes/{id}",
-//                                "/api/categories/**"
+//                                "/api/categories/**",
+//                                "/api/password/reset/**"
 //                        ).permitAll()
 //                        // Админские эндпоинты
 //                        .requestMatchers(
