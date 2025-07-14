@@ -44,24 +44,14 @@ public class SecurityConfig {
 //                                "/auth/**",
 //                                "/swagger-ui/**",
 //                                "/v3/api-docs/**",
-//                                "/api/themes",
-//                                "/api/themes/{id}",
-//                                "/api/categories/**",
-//                                "/api/password/reset/**"
+//                                "/themes",
+//                                "/themes/{id}",
+//                                "/categories/**"
 //                        ).permitAll()
-//                        // Админские эндпоинты
-//                        .requestMatchers(
-//                                "/admin/**",
-//                                "/admin/themes/**",
-//                                "/admin/categories/**",
-//                                "/admin/files/**"
-//                        ).hasRole("ADMIN")
-//                        // Аутентифицированный эндпоинт
-//                        .requestMatchers("/files/upload").authenticated()
-//                        // Пользователи
-//                        .requestMatchers("/user/profile/image").hasAnyRole("USER", "TRANSLATOR")
+//                        .requestMatchers("/files/avatar/**").hasAnyRole("USER", "TRANSLATOR")
 //                        .requestMatchers("/translator/**").hasRole("TRANSLATOR")
 //                        .requestMatchers("/user/**").hasRole("USER")
+//                        .requestMatchers("/admin/**").hasRole("ADMIN")
 //                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

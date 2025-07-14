@@ -1,4 +1,4 @@
-package com.example.morago.controller.translatorController;
+package com.example.morago.controller;
 
 import com.example.morago.model.dto.requests.transaction.TransactionCreateRequest;
 import com.example.morago.model.entity.Withdrawal;

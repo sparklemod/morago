@@ -2,12 +2,10 @@ package com.example.morago.service.file;
 
 import com.example.morago.util.exception.FileUploadException;
 import com.example.morago.util.exception.HandledException;
-import com.example.morago.util.exception.enums.NotFoundMessage;
 import com.example.morago.model.entity.File;
 import com.example.morago.model.enums.FileType;
 import com.example.morago.repository.FileRepository;
 import com.example.morago.service.file.storage.FileStorage;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -26,48 +24,30 @@ public class FileService {
     private final FileStorage fileStorage;
 
     // Загрузка нового файла или обновление предущего
-    public File uploadFile(MultipartFile file, FileType type, Long existingField) {
-        validateFile(file);
-        String key = generateKey(file.getOriginalFilename(), type);
+    public File uploadFile(MultipartFile uploadedFile, FileType type, Long existingFileId) {
+        validateFile(uploadedFile);
+        String key = generateKey(uploadedFile.getOriginalFilename(), type);
 
-        if (existingField != null) {
-            File existingFile = fileRepository.findById(existingField)
-                    .orElseThrow(() -> new EntityNotFoundException("File not found with id: " + existingField));
-            return saveFile(file, key, existingFile);
+        File fileToSave = new File();
+
+        if (existingFileId != null) {
+            fileToSave = getFileById(existingFileId);
         }
 
-        File newFile = new File();
-        return saveFile(file, key, newFile);
+        return saveFile(uploadedFile, key, fileToSave);
     }
 
-    public File getFileByUrl(String url) {
-        File image = null;
-        if (url != null && !url.isEmpty()) {
-            image = fileRepository.findByPath(url)
-                .orElseThrow(() -> new HandledException(NotFoundMessage.IMAGE.format()));
-        }
-
-        return image;
-    }
-
-    public File getFile(Long id) {
+    public File getFileById(Long id) {
         return fileRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("File not found with id " + id));
+                .orElseThrow(() -> new HandledException("File not found with id " + id));
     }
 
     public Page<File> getAllFiles(Pageable pageable) {
         return fileRepository.findAll(pageable);
     }
 
-    public String getFileUrl(Long id) {
-        File file = fileRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("File not found with id" + id));
-        return fileStorage.getFileUrl(file.getPath());
-    }
-
     public void deleteFile(Long id) {
-        File file = fileRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("File not found with id " + id));
+        File file = getFileById(id);
         fileStorage.deleteFile(file.getPath());
         fileRepository.delete(file);
     }
