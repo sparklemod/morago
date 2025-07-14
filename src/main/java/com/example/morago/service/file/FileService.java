@@ -1,8 +1,10 @@
 package com.example.morago.service.file;
 
 import com.example.morago.model.entity.File;
+import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.FileType;
 import com.example.morago.repository.FileRepository;
+import com.example.morago.repository.UserRepository;
 import com.example.morago.service.file.storage.FileStorage;
 import com.example.morago.util.exception.FileUploadException;
 import com.example.morago.util.exception.HandledException;
@@ -21,6 +23,7 @@ import java.util.UUID;
 public class FileService {
     private final FileRepository fileRepository;
     private final FileStorage fileStorage;
+    private final UserRepository userRepository;
 
     // Загрузка нового файла или обновление предущего
     public File uploadFile(MultipartFile uploadedFile, FileType type, Long existingFileId) {
@@ -31,6 +34,40 @@ public class FileService {
         File fileToSave = existingFileId != null ? getFileById(existingFileId) : new File();
 
         return saveFile(uploadedFile, key, fileToSave);
+    }
+
+    public File replaceUserAvatar(User user, MultipartFile file) {
+        Long existingId = Optional.ofNullable(user.getImageFile())
+                .map(File::getId)
+                .orElse(null);
+        File updated = uploadFile(file, FileType.AVATAR, existingId);
+        user.setImageFile(updated);
+        userRepository.save(user);
+        return updated;
+    }
+
+    public void deleteFile(Long id) {
+        File file = getFileById(id);
+        fileStorage.deleteFile(file.getPath());
+        fileRepository.delete(file);
+    }
+
+    public void deleteUserAvatar(User user) {
+        File avatar = user.getImageFile();
+        if (avatar != null) {
+            deleteFile(avatar.getId());
+            user.setImageFile(null);
+            userRepository.save(user);
+        }
+    }
+
+    public File getFileById(Long id) {
+        return fileRepository.findById(id)
+                .orElseThrow(() -> new HandledException("File not found with id " + id));
+    }
+
+    public Page<File> getAllFiles(Pageable pageable) {
+        return fileRepository.findAll(pageable);
     }
 
     // Сохранение файла
@@ -44,21 +81,6 @@ public class FileService {
         fileEntity.setSize(file.getSize());
         fileEntity.setType(file.getContentType());
         return fileRepository.save(fileEntity);
-    }
-
-    public File getFileById(Long id) {
-        return fileRepository.findById(id)
-                .orElseThrow(() -> new HandledException("File not found with id " + id));
-    }
-
-    public Page<File> getAllFiles(Pageable pageable) {
-        return fileRepository.findAll(pageable);
-    }
-
-    public void deleteFile(Long id) {
-        File file = getFileById(id);
-        fileStorage.deleteFile(file.getPath());
-        fileRepository.delete(file);
     }
 
     // Валидация

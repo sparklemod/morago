@@ -32,18 +32,11 @@ public class FileController {
     }
 
     @PostMapping("/avatar/upload")
-    @Operation(description = "Upload avatar image [TRANSLATOR, USER]")
-    public File uploadAvatar(@RequestParam("file") MultipartFile file, Authentication authentication) {
+    @Operation(description = "Upload avatar image [USER, TRANSLATOR]")
+    public File uploadAvatar(@RequestParam("file") MultipartFile file,
+                             Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        File uploadedFile;
-        if (user.getImageFile() != null) {
-            uploadedFile = fileService.uploadFile(file, FileType.AVATAR, user.getImageFile().getId());
-        } else {
-            uploadedFile = fileService.uploadFile(file, FileType.AVATAR, null);
-        }
-        user.setImageFile(uploadedFile);
-        userRepository.save(user);
-        return uploadedFile;
+        return fileService.replaceUserAvatar(user, file);
     }
 
     @DeleteMapping("/avatar/delete")
