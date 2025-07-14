@@ -1,4 +1,4 @@
-package com.example.morago.controller.adminController;
+package com.example.morago.controller;
 
 import com.example.morago.model.dto.requests.user.UserGetRequest;
 import com.example.morago.model.dto.requests.user.UserProfileUpdateRequest;
@@ -16,14 +16,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/admin/users")
 @RequiredArgsConstructor
-public class AdminUserProfileController {
+public class UserProfileController {
 
     private final UserProfileService service;
 
@@ -34,7 +32,7 @@ public class AdminUserProfileController {
         return ResponseEntity.ok(service.searchUsers(request));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/admin/users/{id}")
     @Operation(description = "Get user by id")
     public ResponseEntity<UserGetResponse> getUserProfile(
             @PathVariable("id")
@@ -43,14 +41,14 @@ public class AdminUserProfileController {
         return ResponseEntity.ok(service.mapToDto(service.findById(id)));
     }
 
-    @PutMapping()
+    @PutMapping("/admin/users")
     @Operation(description = "Update user")
     public ResponseEntity<UserGetResponse> updateUserProfile(
             @RequestBody UserProfileUpdateRequest request) {
         return ResponseEntity.ok(service.mapToDto(service.update(request)));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/users/{id}")
     @Operation(description = "Delete user by id")
     public ResponseEntity<Void> deleteUserProfile(
             @PathVariable("id") @Parameter(description = "User Id", example = "6") Long id) {
