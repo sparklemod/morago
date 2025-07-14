@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 @RequiredArgsConstructor
 public class S3Config {
     @Bean
-    @ConfigurationProperties(prefix = "file.storage.storage.aws")
+    @ConfigurationProperties(prefix = "file.storage.aws")
     public AwsProps awsProps() {
         return new AwsProps();
     }

@@ -33,7 +33,7 @@ public class LocalFileStorage implements FileStorage {
         try {
             Path path = uploadDir.resolve(key);
             Files.copy(file.getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
-            return path.toString();
+            return key;
         } catch (IOException e) {
             throw new FileUploadException("Saving file failed" + e.getMessage());
         }

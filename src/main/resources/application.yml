@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: s3
   config:
     import: optional:file:.env[.properties]
   application:
