@@ -1,9 +1,10 @@
-package com.example.morago.controller.wsController;
+package com.example.morago.controller;
 
 import com.example.morago.model.dto.requests.call.CallCreateRequest;
 import com.example.morago.model.entity.Call;
 import com.example.morago.model.enums.CallStatusEnum;
 import com.example.morago.service.CallService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,6 +38,7 @@ public class CallController {
     }
 
     @GetMapping("/{id}")
+    @Operation(description = "Get call by Id")
     public ResponseEntity<Call> getCall(@PathVariable Long id) {
         return ResponseEntity.of(callService.getCall(id));
     }

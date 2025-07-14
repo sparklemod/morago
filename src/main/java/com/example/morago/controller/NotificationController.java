@@ -1,4 +1,4 @@
-package com.example.morago.controller.wsController;
+package com.example.morago.controller;
 
 import com.example.morago.model.dto.requests.call.CallPayload;
 import com.example.morago.model.dto.requests.notification.NotificationMessage;

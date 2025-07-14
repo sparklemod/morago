@@ -1,8 +1,9 @@
-package com.example.morago.controller.userController;
+package com.example.morago.controller;
 
 import com.example.morago.model.dto.requests.transaction.TransactionCreateRequest;
 import com.example.morago.model.entity.Deposit;
 import com.example.morago.service.DepositService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ public class DepositController {
     private final DepositService depositService;
 
     @PostMapping("/{userId}")
+    @Operation(description = "User balance recharge")
     public ResponseEntity<Deposit> createDeposit(@PathVariable Long userId,
         @RequestBody TransactionCreateRequest request) {
         Deposit deposit = depositService.createDeposit(userId, request);
