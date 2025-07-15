@@ -1,5 +1,1 @@
 CREATE DATABASE IF NOT EXISTS morago;
-GRANT ALL PRIVILEGES
-    ON morago.*
-    TO 'user'@'%';
-FLUSH PRIVILEGES;
