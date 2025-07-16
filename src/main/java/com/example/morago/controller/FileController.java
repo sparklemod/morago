@@ -7,11 +7,13 @@ import com.example.morago.model.enums.FileType;
 import com.example.morago.repository.UserRepository;
 import com.example.morago.service.file.FileService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,16 +27,20 @@ public class FileController {
     private final FileService fileService;
     private final UserRepository userRepository;
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public File uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("type")FileType type) {
+    @Operation(summary = "Upload file", description = "Upload a general file [USER, TRANSLATOR, ADMIN]")
+    public File uploadFile(
+            @Parameter(description = "File to upload") @RequestParam("file") MultipartFile file,
+            @Parameter(description = "Type of file") @RequestParam("type") FileType type) {
         return fileService.uploadFile(file, type, null);
     }
 
-    @PostMapping("/avatar/upload")
-    @Operation(description = "Upload avatar image [USER, TRANSLATOR]")
-    public File uploadAvatar(@RequestParam("file") MultipartFile file,
-                             Authentication authentication) {
+    @PostMapping(value = "/avatar/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(summary = "Upload avatar image", description = "Upload avatar image [USER, TRANSLATOR]")
+    public File uploadAvatar(
+            @Parameter(description = "Avatar image file") @RequestParam("file") MultipartFile file,
+            Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return fileService.replaceUserAvatar(user, file);
     }
