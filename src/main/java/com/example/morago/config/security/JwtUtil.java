@@ -57,25 +57,12 @@ public class JwtUtil {
                 .compact();
     }
 
-    public String extractUsername(String token) {
-        return extractClaims(token).getSubject();
-    }
-
-//    public boolean validateToken(String token, UserDetails userDetails) {
-//        String username = extractUsername(token);
-//        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
-//    }
-
     private Claims extractClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractClaims(token).getExpiration().before(new Date());
     }
 
     private SecretKey getSigningKey() {
