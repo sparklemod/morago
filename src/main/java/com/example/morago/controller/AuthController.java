@@ -4,6 +4,7 @@ import com.example.morago.model.dto.requests.auth.AuthRequest;
 import com.example.morago.model.dto.requests.auth.UserCreateRequest;
 import com.example.morago.model.dto.response.auth.AuthResponse;
 import com.example.morago.service.AuthService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/auth")
+@Tag(name = "AuthController", description = "Access: public")
 public class AuthController {
 
     private final AuthService authService;
@@ -22,15 +24,9 @@ public class AuthController {
         return authService.auth(request.getPhone(), request.getPassword());
     }
 
-    @PostMapping("/register/user")
+    @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public AuthResponse registerUser(@Valid @RequestBody UserCreateRequest request) {
-        return authService.registerUser(request);
-    }
-
-    @PostMapping("/register/translator")
-    @ResponseStatus(HttpStatus.CREATED)
-    public AuthResponse registerTranslator(@Valid @RequestBody UserCreateRequest request) {
-        return authService.registerTranslator(request);
+    public AuthResponse register(@Valid @RequestBody UserCreateRequest request) {
+        return authService.register(request);
     }
 }

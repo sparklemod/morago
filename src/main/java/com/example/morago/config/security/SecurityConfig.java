@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -32,31 +33,38 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-//    временно открытый доступ для тестирования api
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/**").permitAll()
-//                        // Публичные эндпоинты
-//                        .requestMatchers(
-//                                "/auth/**",
-//                                "/swagger-ui/**",
-//                                "/v3/api-docs/**",
-//                                "/themes",
-//                                "/themes/{id}",
-//                                "/categories/**"
-//                        ).permitAll()
-//                        .requestMatchers("/files/avatar/**").hasAnyRole("USER", "TRANSLATOR")
-//                        .requestMatchers("/translator/**").hasRole("TRANSLATOR")
-//                        .requestMatchers("/user/**").hasRole("USER")
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
-//                        .anyRequest().authenticated()
-                )
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+            .cors(Customizer.withDefaults())
+            .csrf(AbstractHttpConfigurer::disable)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**",
+                     "/auth/**",
+                    "/public/**"
+                ).permitAll()
+                .requestMatchers(
+                    "/profile/**",
+                    "/themes/**",
+                    "/categories/**",
+                    "/languages/**",
+                    "/call/end"
+                ).hasAnyRole("USER", "TRANSLATOR")
+                .requestMatchers(
+                    "/user/**",
+                    "/translators/**",
+                    "/call/**"
+                    )
+                .hasRole("USER")
+                .requestMatchers("/translator/**", "/call/accept").hasRole("TRANSLATOR")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
+                .anyRequest().authenticated()
+            )
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            );
         http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }

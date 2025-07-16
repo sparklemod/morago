@@ -2,6 +2,7 @@ package com.example.morago.model.enums;
 
 public enum CallStatusEnum {
     COMPLETED,
+    STARTED,
     BUSY,
     REJECTED,
     MISSED,

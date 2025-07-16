@@ -12,15 +12,12 @@ import com.example.morago.model.enums.RoleEnum;
 import com.example.morago.repository.RoleRepository;
 import com.example.morago.repository.UserRepository;
 import com.example.morago.util.exception.HandledException;
-import com.example.morago.util.exception.enums.NotFoundMessage;
 import java.math.BigDecimal;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,19 +32,15 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
 
-    public AuthResponse registerUser(UserCreateRequest req) {
-        return register(req, RoleEnum.ROLE_USER);
-    }
-
-    public AuthResponse registerTranslator(UserCreateRequest req) {
-        return register(req, RoleEnum.ROLE_TRANSLATOR);
-    }
-
-    private AuthResponse register(UserCreateRequest req, RoleEnum roleEnum) {
+    public AuthResponse register(UserCreateRequest req) {
         userService.checkIsExistByPhone(req.getPhone());
 
-        Role role = roleRepository.findByName(roleEnum)
-            .orElseThrow(() -> new HandledException(NotFoundMessage.ROLE.format()));
+        Role role = roleRepository.findByName(req.getRole())
+            .orElseThrow(() -> new HandledException("Role not found"));
+
+        if (!req.getPassword().equals(req.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords don't match");
+        }
 
         User user = createUser(req, role);
         userRepository.save(user);
@@ -65,9 +58,6 @@ public class AuthService {
 
     private AuthResponse buildAuthResponse(CustomUserDetails userDetails) {
         String token = jwtUtil.generateToken(userDetails);
-        String roles = userDetails.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.joining(","));
 
         return AuthResponse.builder()
             .token(token)
@@ -75,17 +65,21 @@ public class AuthService {
             .phone(userDetails.getUsername())
             .firstName(userDetails.getFirstName())
             .lastName(userDetails.getLastName())
-            .roles(roles)
+            .roles(userDetails.getAllUserRolesToString())
             .build();
     }
 
     private User createUser(UserCreateRequest req, Role role) {
-        User user = new UserProfile();
-        user.setIsActive(true);
+        User user;
 
         if (role.getName().equals(RoleEnum.ROLE_TRANSLATOR)) {
-            user = new Translator();
-            user.setIsActive(false);
+            Translator translator = new Translator();
+            translator.setIsActive(false);
+            translator.setIsOnline(false);
+            user = translator;
+        } else {
+            user = new UserProfile();
+            user.setIsActive(true);
         }
 
         user.setPhone(req.getPhone());

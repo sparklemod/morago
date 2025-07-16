@@ -33,6 +33,9 @@ spring:
       max-file-size: 20MB
       max-request-size: 20MB
 
+app:
+  calendly: https://calendly.com/
+
 jwt:
   secret: your-very-secure-secret-key-1234567890
   expiration: 86400000

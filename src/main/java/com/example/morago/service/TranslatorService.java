@@ -23,9 +23,14 @@ public class TranslatorService {
     private final ThemeService themeService;
     private final LanguageService languageService;
 
-    //В макете у переводчика данные вводятся после регистрации по номеру и паролю
-    public Translator update(TranslatorUpdateRequest request) {
-        Translator translator = findById(request.getId());
+    public void switchStatus(Long id) {
+        Translator translator = findById(id);
+        translator.setIsOnline(!translator.getIsOnline());
+        translatorRepository.save(translator);
+    }
+
+    public Translator update(Long id, TranslatorUpdateRequest request) {
+        Translator translator = findById(id);
 
         Set<Theme> themes = new HashSet<>();
         if (!request.getThemeIds().isEmpty()) {
