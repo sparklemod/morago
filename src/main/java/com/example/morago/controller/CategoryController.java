@@ -18,11 +18,12 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
+@RequestMapping("/categories")
 @Tag(name = "CategoryController")
 public class CategoryController {
     private final CategoryService categoryService;
 
-    @GetMapping("/categories")
+    @GetMapping()
     @Operation(description = "Get public list of categories")
     public Page<Category> getPublicCategories(@ModelAttribute CategoryPageRequest categoryPageRequest) {
         return categoryService.getPublicCategories(categoryPageRequest);
