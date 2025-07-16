@@ -1,7 +1,6 @@
 package com.example.morago.config.security;
 
 import com.example.morago.config.security.userDetails.CustomUserDetails;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -55,14 +54,6 @@ public class JwtUtil {
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey())
                 .compact();
-    }
-
-    private Claims extractClaims(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
     }
 
     private SecretKey getSigningKey() {
