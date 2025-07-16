@@ -1,8 +1,8 @@
 package com.example.morago.service;
 
 import com.example.morago.model.entity.base.User;
-import com.example.morago.util.exception.HandledException;
 import com.example.morago.repository.UserRepository;
+import com.example.morago.util.exception.HandledException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +19,12 @@ public class UserService {
     }
 
     public User getUserByPhone(String phone) {
+        System.out.println("Trying to auth with phone = " + phone);
+        repository.findByPhone(phone).ifPresentOrElse(
+                u -> System.out.println("✅ FOUND USER: " + u.getPhone()),
+                () -> System.out.println("❌ NOT FOUND")
+        );
+
         return repository.findByPhone(phone)
             .orElseThrow(()->new HandledException("User profile not found"));
     }

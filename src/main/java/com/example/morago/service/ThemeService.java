@@ -17,7 +17,6 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -39,7 +38,6 @@ public class ThemeService {
 
 
     // Создание Theme
-    @PreAuthorize("hasRole('ADMIN')")
     public ThemeResponse createTheme(ThemeRequest themeRequest) {
         Theme theme = new Theme();
         fillThemeFields(theme, themeRequest);
@@ -47,7 +45,7 @@ public class ThemeService {
     }
 
     // Обновление Theme
-    @PreAuthorize("hasRole('ADMIN')")
+
     public ThemeResponse updateTheme(Long id, ThemeRequest themeRequest) {
         Theme theme = getThemeOrThrow(id);
         fillThemeFields(theme, themeRequest);
@@ -68,7 +66,6 @@ public class ThemeService {
     }
 
     // Удаление Theme
-    @PreAuthorize("hasRole('ADMIN')")
     public void deleteTheme(Long id) {
         Theme theme = getThemeOrThrow(id);
         // Удаляем связанный файл, если есть
@@ -84,7 +81,6 @@ public class ThemeService {
     }
 
     // Публичный список тем
-    @PreAuthorize("isAuthenticated() or #userId == null")
     public PageResponse<ThemeResponse> getPublicThemes(
             ThemePageRequest themePageRequest,
             Long userId,
@@ -99,7 +95,6 @@ public class ThemeService {
     }
 
     //Список тем для Админа
-    @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<ThemeResponse> getAdminThemes(ThemePageRequest themePageRequest) {
         Specification<Theme> spec = ThemeSpecifications.combineForAdmin(
                 themePageRequest.getKeyword(), themePageRequest.getIsActive(), themePageRequest.getCategoryId());
@@ -135,8 +130,13 @@ public class ThemeService {
     // Обновление полей
     private void fillThemeFields(Theme theme, ThemeRequest themeRequest) {
         theme.setName(themeRequest.getName());
+        theme.setTitle(themeRequest.getTitle());
+        theme.setDescription(themeRequest.getDescription());
+        theme.setPrice(themeRequest.getPrice());
+        theme.setNightPrice(themeRequest.getNightPrice());
         theme.setIsActive(themeRequest.getIsActive() != null ? themeRequest.getIsActive() : false);
         theme.setIsPopular(themeRequest.getIsPopular() != null ? themeRequest.getIsPopular() : false);
+        theme.setIcon(themeRequest.getIconId() != null && themeRequest.getIconId() > 0 ? fileService.getFileById(themeRequest.getIconId()) : null);
         theme.setCategory(categoryService.getCategoryByIdOrThrow(themeRequest.getCategoryId()));
     }
 

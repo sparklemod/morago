@@ -1,4 +1,6 @@
 spring:
+  profiles:
+    active: s3
   config:
     import: optional:file:.env[.properties]
   application:
@@ -41,11 +43,10 @@ jwt:
 file:
   upload-dir: ./uploads
   storage:
-    type: local
-    # Для S3 (раскомментировать и настроить):
-    # aws:
-    #   s3:
-    #     bucket: morago-bucket
-    #     region: us-east-1
-    #     access-key: your-access-key
-    #     secret-key: your-secret-key
+    type: s3 # переключение на s3 с local
+    aws:
+      s3:
+        bucket: morago-files
+        region: ap-northeast-2
+        access-key: AKIAWZCVJCKYF37JDZ42
+        secret-key: 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
