@@ -46,12 +46,8 @@ public class UserProfileService {
         repository.save(user);
     }
 
-    //TODO спросить у фронта
-    public void resetPassword(String phone) {
-    }
-
-    public UserProfile update(UserProfileUpdateRequest request) {
-        UserProfile user = findById(request.getId());
+    public UserProfile update(Long id, UserProfileUpdateRequest request) {
+        UserProfile user = findById(id);
         return repository.save(request.build(user));
     }
 

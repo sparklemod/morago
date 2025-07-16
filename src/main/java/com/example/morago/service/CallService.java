@@ -118,11 +118,11 @@ public class CallService {
         callRepository.deleteById(id);
     }
 
-    public Call updateCallStatus(Long id, CallStatusEnum status) {
+    public Call acceptCall(Long id) {
         Call existingCall = callRepository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Call not found"));
 
-        existingCall.setCallStatus(status);
+        existingCall.setCallStatus(CallStatusEnum.STARTED);
 
         return callRepository.save(existingCall);
     }
@@ -142,5 +142,9 @@ public class CallService {
         return pricePerMinute
             .multiply(BigDecimal.valueOf(call.getDuration()))
             .divide(BigDecimal.valueOf(60), RoundingMode.CEILING);
+    }
+
+    public Call rateCall(Long id) {
+        return new Call();
     }
 }

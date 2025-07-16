@@ -8,13 +8,8 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Schema(description = "Translator create request")
+@Schema(description = "User update request")
 public abstract class UserUpdateRequest {
-
-    @Schema(description = "User id", example = "3")
-    @NotBlank(message = "Can not be empty")
-    protected Long id;
-
     @Schema(description = "Translator firstname", example = "Svetlana")
     @NotBlank(message = "Can not be empty")
     @Size(max = 50, message = "Must be less than 50 characters")
