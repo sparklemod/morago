@@ -36,7 +36,10 @@ public class FileService {
         return saveFile(uploadedFile, key, fileToSave);
     }
 
-    public File replaceUserAvatar(User user, MultipartFile file) {
+    public File replaceUserAvatar(Long userId, MultipartFile file) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new HandledException("User not found with id: " + userId));
+
         Long existingId = Optional.ofNullable(user.getImageFile())
                 .map(File::getId)
                 .orElse(null);

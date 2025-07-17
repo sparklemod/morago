@@ -1,14 +1,12 @@
 package com.example.morago.controller;
 
-import com.example.morago.config.security.userDetails.CustomUserDetails;
 import com.example.morago.model.dto.requests.CallHistoryRequest;
 import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.user.UpdatePasswordRequest;
 import com.example.morago.model.entity.File;
-import com.example.morago.model.entity.base.User;
-import com.example.morago.model.enums.FileType;
 import com.example.morago.repository.UserRepository;
 import com.example.morago.service.UserProfileService;
+import com.example.morago.service.UserService;
 import com.example.morago.service.file.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -20,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,8 +32,7 @@ public class ProfileController {
     private final FileService fileService;
     private final UserRepository userRepository;
     private final UserProfileService service;
-    private final PasswordEncoder passwordEncoder;
-    private final UserProfileService userProfileService;
+    private final UserService userService;
 
     @GetMapping("/balance")
     @Operation(description = "Get current user balance")
@@ -61,45 +57,27 @@ public class ProfileController {
     @PostMapping("/password/update")
     @Operation(description = "Update password")
     public void updatePassword(Authentication authentication, UpdatePasswordRequest request) {
-        Jwt jwt = (Jwt) authentication.getPrincipal();
-        Long userId = jwt.getClaim("id");
-
-        userProfileService.updatePassword(userId, request);
+        Long userId = ((Jwt) authentication.getPrincipal()).getClaim("id");
+        service.updatePassword(userId, request);
     }
 
-    //TODO Саша посмотри, нужно достать пользователя из jwt и перенести в сервис все
     @Operation(description = "Upload avatar image", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)))
     @PostMapping(value = "/avatar/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public File uploadAvatar(
-            @Parameter(description = "Файл аватара", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+            @Parameter(description = "Avatar file", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestParam("file") MultipartFile file,
             Authentication authentication
     ) {
-        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-        File uploadedFile;
-        if (user.getImageFile() != null) {
-            uploadedFile = fileService.uploadFile(file, FileType.AVATAR, user.getImageFile().getId());
-        } else {
-            uploadedFile = fileService.uploadFile(file, FileType.AVATAR, null);
-        }
-        user.setImageFile(uploadedFile);
-        userRepository.save(user);
-        return uploadedFile;
+        Long userId = ((Jwt) authentication.getPrincipal()).getClaim("id");
+        return fileService.replaceUserAvatar(userId, file);
     }
 
-    //TODO Саша посмотри, нужно достать пользователя из jwt и перенести в сервис все
     @DeleteMapping("/avatar/delete")
     @Operation(description = "Delete avatar image")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAvatar(Authentication authentication) {
-        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
-        User user = principal.getUser();
-        if (user.getImageFile() != null) {
-            fileService.deleteFile(user.getImageFile().getId());
-            user.setImageFile(null);
-            userRepository.save(user);
-        }
+        Long userId = ((Jwt) authentication.getPrincipal()).getClaim("id");
+        fileService.deleteFile(userId);
     }
 }
