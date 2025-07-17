@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/password")
+@RequestMapping("/publicResetPassword")
 @RequiredArgsConstructor
 public class PasswordResetController {
     private final PasswordResetService service;
@@ -23,14 +23,14 @@ public class PasswordResetController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/reser/verify")
+    @PostMapping("/reset/verify")
     public ResponseEntity<String> verify(@RequestBody OtpVerificationRequest req) {
         String resetToken = service.verifyCode(req);
         return ResponseEntity.ok(resetToken);
     }
 
-    @PostMapping("/reset/verify")
-    public ResponseEntity<String> verify(@RequestBody PasswordResetConfirmRequest request) {
+    @PostMapping("/reset/confirm")
+    public ResponseEntity<String> confirm(@RequestBody PasswordResetConfirmRequest request) {
         service.confirmPasswordReset(request);
         return ResponseEntity.ok().build();
     }

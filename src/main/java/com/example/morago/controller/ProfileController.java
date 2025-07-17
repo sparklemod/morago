@@ -55,20 +55,15 @@ public class ProfileController {
     }
 
     //TODO Саша посмотри
-    @PostMapping("/password/reset")
-    @Operation(description = "Reset password")
-    public void resetPassword() {
-    }
-
-    //TODO Саша посмотри
     @PostMapping("/password/update")
     @Operation(description = "Update password")
     public void updatePassword(UpdatePasswordRequest request) {
     }
 
     //TODO Саша посмотри, нужно достать пользователя из jwt и перенести в сервис все
-    @PostMapping("/avatar/upload")
-    @Operation(description = "Upload avatar image")
+    @Operation(description = "Upload avatar image", requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE)))
+    @PostMapping(value = "/avatar/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public File uploadAvatar(
             @Parameter(description = "Файл аватара", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestParam("file") MultipartFile file,
