@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     private final CategoryService categoryService;
 
+    //TODO Саша посмотри контроллер
     @GetMapping()
     @Operation(description = "Get public list of categories")
     public Page<Category> getPublicCategories(@ModelAttribute CategoryPageRequest categoryPageRequest) {
