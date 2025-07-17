@@ -1,7 +1,7 @@
 package com.example.morago.service;
 
 import com.example.morago.model.dto.requests.transactions.TransactionCreateRequest;
-import com.example.morago.model.dto.requests.transactions.TransactionGetHistoryResponse;
+import com.example.morago.model.dto.response.transactions.TransactionGetHistoryResponse;
 import com.example.morago.model.dto.requests.transactions.withdrawal.WithdrawalApproveRequest;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.model.entity.Withdrawal;

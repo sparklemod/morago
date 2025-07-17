@@ -1,6 +1,6 @@
 package com.example.morago.service;
 
-import com.example.morago.model.dto.requests.transactions.TransactionGetHistoryResponse;
+import com.example.morago.model.dto.response.transactions.TransactionGetHistoryResponse;
 import com.example.morago.model.dto.requests.transactions.deposit.DepositApproveRequest;
 import com.example.morago.model.dto.requests.transactions.TransactionCreateRequest;
 import com.example.morago.model.entity.Deposit;

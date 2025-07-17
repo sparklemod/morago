@@ -140,7 +140,7 @@ public class ThemeService {
         theme.setCategory(categoryService.getCategoryByIdOrThrow(themeRequest.getCategoryId()));
     }
 
-    private Theme getThemeOrThrow(Long id) {
+    public Theme getThemeOrThrow(Long id) {
         return themeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + id));
     }

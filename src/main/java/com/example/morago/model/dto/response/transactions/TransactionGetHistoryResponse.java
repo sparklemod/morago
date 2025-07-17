@@ -1,4 +1,4 @@
-package com.example.morago.model.dto.requests.transactions;
+package com.example.morago.model.dto.response.transactions;
 
 import com.example.morago.model.enums.PaymentStatusEnum;
 import java.math.BigDecimal;

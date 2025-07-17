@@ -6,7 +6,7 @@ import com.example.morago.model.dto.requests.category.CategoryRequest;
 import com.example.morago.model.dto.requests.transactions.deposit.DepositApproveRequest;
 import com.example.morago.model.dto.requests.theme.ThemePageRequest;
 import com.example.morago.model.dto.requests.theme.ThemeRequest;
-import com.example.morago.model.dto.requests.transactions.TransactionGetHistoryResponse;
+import com.example.morago.model.dto.response.transactions.TransactionGetHistoryResponse;
 import com.example.morago.model.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.dto.requests.user.UserGetRequest;
 import com.example.morago.model.dto.requests.transactions.withdrawal.WithdrawalApproveRequest;
@@ -24,7 +24,6 @@ import com.example.morago.service.DepositService;
 import com.example.morago.service.ThemeService;
 import com.example.morago.service.TranslatorService;
 import com.example.morago.service.UserProfileService;
-import com.example.morago.service.UserService;
 import com.example.morago.service.WithdrawalService;
 import com.example.morago.service.file.FileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,7 +58,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "AdminController", description = "Access: [ADMIN]")
 public class AdminController {
 
-    private final UserService userService;
     private final UserProfileService userProfileService;
     private final TranslatorService translatorService;
     private final CategoryService categoryService;
@@ -82,7 +80,7 @@ public class AdminController {
         @PathVariable("id")
         @Parameter(description = "Translator ID", example = "2")
         Long id) {
-        return ResponseEntity.ok(translatorService.mapToDto(translatorService.findById(id)));
+        return ResponseEntity.ok(TranslatorGetResponse.mapToDto(translatorService.findById(id)));
     }
 
     /** Users */
@@ -99,7 +97,7 @@ public class AdminController {
             @PathVariable("id")
             @Parameter(description = "User Id", example = "6")
             Long id) {
-        return ResponseEntity.ok(userProfileService.mapToDto(userProfileService.findById(id)));
+        return ResponseEntity.ok(UserGetResponse.mapToDto(userProfileService.findById(id)));
     }
 
     @DeleteMapping("/users/{id}")

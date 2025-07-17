@@ -48,4 +48,7 @@ public class Translator extends User {
 
     @OneToMany(mappedBy = "recipient")
     private Set<Call> calls;
+
+    @OneToMany(mappedBy = "translator")
+    private Set<Withdrawal> withdrawals;
 }
