@@ -20,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +35,8 @@ public class ProfileController {
     private final FileService fileService;
     private final UserRepository userRepository;
     private final UserProfileService service;
+    private final PasswordEncoder passwordEncoder;
+    private final UserProfileService userProfileService;
 
     @GetMapping("/balance")
     @Operation(description = "Get current user balance")
@@ -54,10 +58,13 @@ public class ProfileController {
     public void clearNotifications(Authentication authentication, PageRequest req) {
     }
 
-    //TODO Саша посмотри
     @PostMapping("/password/update")
     @Operation(description = "Update password")
-    public void updatePassword(UpdatePasswordRequest request) {
+    public void updatePassword(Authentication authentication, UpdatePasswordRequest request) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        Long userId = jwt.getClaim("id");
+
+        userProfileService.updatePassword(userId, request);
     }
 
     //TODO Саша посмотри, нужно достать пользователя из jwt и перенести в сервис все
