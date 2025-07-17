@@ -66,6 +66,7 @@ public class ProfileController {
     public void updatePassword(UpdatePasswordRequest request) {
     }
 
+    //TODO Саша посмотри, нужно достать пользователя из jwt и перенести в сервис все
     @PostMapping("/avatar/upload")
     @Operation(description = "Upload avatar image")
     public File uploadAvatar(
@@ -86,6 +87,7 @@ public class ProfileController {
         return uploadedFile;
     }
 
+    //TODO Саша посмотри, нужно достать пользователя из jwt и перенести в сервис все
     @DeleteMapping("/avatar/delete")
     @Operation(description = "Delete avatar image")
     @ResponseStatus(HttpStatus.NO_CONTENT)

@@ -1,7 +1,7 @@
 package com.example.morago.controller;
 
 import com.example.morago.config.security.userDetails.CustomUserDetails;
-import com.example.morago.model.dto.requests.transaction.TransactionCreateRequest;
+import com.example.morago.model.dto.requests.transactions.TransactionCreateRequest;
 import com.example.morago.model.dto.requests.user.UserProfileUpdateRequest;
 import com.example.morago.model.dto.response.user.UserGetResponse;
 import com.example.morago.model.entity.Deposit;
@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -53,8 +54,9 @@ public class UserProfileController {
     @Operation(description = "Create deposit")
     public ResponseEntity<Deposit> createDeposit(Authentication authentication,
         @RequestBody TransactionCreateRequest request) {
-        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
-        Deposit deposit = depositService.createDeposit(principal.getId(), request);
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        Long userId = jwt.getClaim("id");
+        Deposit deposit = depositService.createDeposit(userId, request);
         return ResponseEntity.ok(deposit);
     }
 
@@ -63,7 +65,8 @@ public class UserProfileController {
     public ResponseEntity<UserGetResponse> updateUserProfile(
         Authentication authentication,
         @RequestBody UserProfileUpdateRequest request) {
-        CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
-        return ResponseEntity.ok(service.mapToDto(service.update(principal.getId(), request)));
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        Long userId = jwt.getClaim("id");
+        return ResponseEntity.ok(service.mapToDto(service.update(userId, request)));
     }
 }

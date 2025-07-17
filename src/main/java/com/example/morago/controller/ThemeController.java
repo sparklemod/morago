@@ -23,6 +23,7 @@ public class ThemeController {
     private final ThemeService themeService;
     private final CategoryService categoryService;
 
+    //TODO Саша посмотри контроллер
     @GetMapping("/themes")
     @Operation(description = "Get list of themes")
     @PreAuthorize("isAuthenticated() or permitAll()")

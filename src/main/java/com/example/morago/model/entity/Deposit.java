@@ -2,7 +2,7 @@ package com.example.morago.model.entity;
 
 import com.example.morago.model.enums.PaymentStatusEnum;
 import com.example.morago.model.entity.base.Auditable;
-import com.example.morago.model.entity.base.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,6 +27,7 @@ public class Deposit extends Auditable {
     @Enumerated(EnumType.STRING)
     private PaymentStatusEnum status;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    private Translator translator;
+    private UserProfile user;
 }

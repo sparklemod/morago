@@ -7,7 +7,7 @@ VALUES
 -- USERS (пароль как email)
 INSERT INTO user (id, phone, password, first_name, last_name, email, is_active, balance, image_file_id, created_at)
 VALUES
-    (1, '+70000000002', '$2a$10$Zy/kTR7vh1rUMpb4TSJ9cOgXYnO1m6LfF9Ef7Am.O4dmB.SXTD59K', 'Elena',  'Ivanova',  'elena2@example.com', true, 1000, NULL, NOW()),
+    (1, '+70000000002', '$2a$12$9cay2MFJR3ePSw.n5bTZbOoh.BIUMfX04r0hZ7wqgFTz/lEfaEjym', 'Elena',  'Ivanova',  'elena2@example.com', true, 1000, NULL, NOW()),
     (2, '+70000000001', '$2a$10$Hb8QQEGx.1MblFb2llEQEOt/Cw6lydxu63DOUasPq2FvO1KhOGJ8C', 'Ivan',   'Petrov',   'ivan1@example.com', true, 1000, NULL, NOW()),
     (3, '+70000000003', '$2a$10$KJDpDZRCQ4N62DRZB8ll8.xUw/IlPyDB.ju8m7rMPoxChky0iYe4S', 'Maxim',  'Kozlov',   'maxim3@example.com', true, 1000, NULL, NOW()),
     (4, '+70000000004', '$2a$10$NDMvKOsSox84cc6fFu19hOUDi1IXyaPP2PKZt6T3c6KGVGya3jwsu', 'Olga',   'Smirnova', 'olga4@example.com', true, 1000, NULL, NOW()),
