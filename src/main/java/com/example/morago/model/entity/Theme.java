@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "themes")
@@ -49,4 +51,8 @@ public class Theme extends Auditable {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
+
+    @ManyToMany(mappedBy = "themes")
+    private Set<Translator> translators = new HashSet<>();
+
 }

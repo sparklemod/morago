@@ -9,7 +9,6 @@ import com.example.morago.model.dto.response.PageResponse;
 import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.entity.Category;
 import com.example.morago.model.entity.File;
-import com.example.morago.model.entity.base.User;
 import com.example.morago.service.CategoryService;
 import com.example.morago.service.UserService;
 import com.example.morago.service.file.FileService;
@@ -37,7 +36,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ProfileController {
     private final FileService fileService;
     private final UserService userService;
-    CategoryService categoryService;
+    private final CategoryService categoryService;
 
     @GetMapping("/balance")
     @Operation(description = "Get current user balance")
@@ -93,16 +92,16 @@ public class ProfileController {
     public Page<Category> getPublicCategories(@ModelAttribute CategoryPageRequest categoryPageRequest) {
         return categoryService.getPublicCategories(categoryPageRequest);
     }
-
-    @GetMapping("/{id}/themes")
+    //TODO доделать-переделать связи с Call и Translator
+    @GetMapping("/category{id}/themes")
     @Operation(description = "Get public themes by category")
     public PageResponse<ThemeResponse> getPublicThemesByCategory(
             @PathVariable Long id,
             @ModelAttribute ThemePageRequest themePageRequest,
             Authentication auth) {
 
-        Long userId = (auth != null && auth.isAuthenticated() && !(auth.getPrincipal() instanceof String))
-                ? ((User) auth.getPrincipal()).getId()
+        Long userId = (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof Jwt)
+                ? ((Jwt) auth.getPrincipal()).getClaim("id")
                 : null;
         return categoryService.getThemesByCategoryId(id, themePageRequest, userId);
     }
