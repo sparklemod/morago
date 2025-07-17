@@ -1,4 +1,4 @@
-package com.example.morago.model.dto.requests.transaction;
+package com.example.morago.model.dto.requests.transactions;
 
 import lombok.Getter;
 import lombok.Setter;

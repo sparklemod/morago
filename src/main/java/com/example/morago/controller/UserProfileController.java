@@ -1,7 +1,7 @@
 package com.example.morago.controller;
 
 import com.example.morago.config.security.userDetails.CustomUserDetails;
-import com.example.morago.model.dto.requests.transaction.TransactionCreateRequest;
+import com.example.morago.model.dto.requests.transactions.TransactionCreateRequest;
 import com.example.morago.model.dto.requests.user.UserProfileUpdateRequest;
 import com.example.morago.model.dto.response.user.UserGetResponse;
 import com.example.morago.model.entity.Deposit;
