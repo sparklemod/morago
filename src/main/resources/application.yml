@@ -50,3 +50,8 @@ file:
         region: ap-northeast-2
         access-key: AKIAWZCVJCKYF37JDZ42
         secret-key: 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
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true

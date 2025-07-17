@@ -11,19 +11,16 @@ import com.example.morago.repository.UserRepository;
 import com.example.morago.service.UserProfileService;
 import com.example.morago.service.file.FileService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
@@ -39,33 +36,43 @@ public class ProfileController {
 
     @GetMapping("/balance")
     @Operation(description = "Get current user balance")
-    public void getBalance() {}
+    public void getBalance() {
+    }
 
     @GetMapping("/calls/history")
     @Operation(description = "Get current user call history")
-    public void getCallHistory(Authentication authentication, CallHistoryRequest req) {}
+    public void getCallHistory(Authentication authentication, CallHistoryRequest req) {
+    }
 
     @GetMapping("/notifications")
     @Operation(description = "Get current user notifications")
-    public void getNotifications(Authentication authentication, PageRequest req) {}
+    public void getNotifications(Authentication authentication, PageRequest req) {
+    }
 
     @PostMapping("/notifications/clear")
     @Operation(description = "Clear all current user notifications")
-    public void clearNotifications(Authentication authentication, PageRequest req) {}
+    public void clearNotifications(Authentication authentication, PageRequest req) {
+    }
 
     //TODO Саша посмотри
     @PostMapping("/password/reset")
     @Operation(description = "Reset password")
-    public void resetPassword() {}
+    public void resetPassword() {
+    }
 
     //TODO Саша посмотри
     @PostMapping("/password/update")
     @Operation(description = "Update password")
-    public void updatePassword(UpdatePasswordRequest request) {}
+    public void updatePassword(UpdatePasswordRequest request) {
+    }
 
     @PostMapping("/avatar/upload")
     @Operation(description = "Upload avatar image")
-    public File uploadAvatar(@RequestParam("file") MultipartFile file, Authentication authentication) {
+    public File uploadAvatar(
+            @Parameter(description = "Файл аватара", content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+            @RequestParam("file") MultipartFile file,
+            Authentication authentication
+    ) {
         CustomUserDetails principal = (CustomUserDetails) authentication.getPrincipal();
         User user = principal.getUser();
         File uploadedFile;
