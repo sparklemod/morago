@@ -47,7 +47,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "AdminController", description = "Access: [ADMIN]")
 public class AdminController {
 
-    private final UserService userService;
     private final UserProfileService userProfileService;
     private final TranslatorService translatorService;
     private final CategoryService categoryService;
