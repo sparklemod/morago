@@ -1,17 +1,20 @@
 package com.example.morago.controller;
 
-import com.example.morago.config.security.userDetails.CustomUserDetails;
+import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.transactions.TransactionCreateRequest;
 import com.example.morago.model.dto.requests.user.UserProfileUpdateRequest;
+import com.example.morago.model.dto.response.translator.TranslatorGetByThemesResponse;
 import com.example.morago.model.dto.response.user.UserGetResponse;
 import com.example.morago.model.entity.Deposit;
 import com.example.morago.service.DepositService;
+import com.example.morago.service.TranslatorService;
 import com.example.morago.service.UserProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -34,15 +37,21 @@ public class UserProfileController {
 
     private final UserProfileService service;
     private final DepositService depositService;
+    private final TranslatorService translatorService;
 
+    //TODO Саша посмотри
     @GetMapping("/themes")
     @Operation(description = "Get current user favorite themes")
     public void getThemes() {
     }
 
     @GetMapping("/translators")
-    @Operation(description = "Get translators list")
-    public void getTranslators(@RequestParam("themeId") Long themeId) {
+    @Operation(description = "Get translators list filtered by theme")
+    public ResponseEntity<Page<TranslatorGetByThemesResponse>> getTranslators(
+        @RequestParam(value = "themeId", required = false) Long themeId,
+        PageRequest request
+    ) {
+        return ResponseEntity.ok(translatorService.searchTranslatorsByTheme(themeId, request));
     }
 
     @GetMapping("/translators/{translatorId}")
@@ -61,12 +70,12 @@ public class UserProfileController {
     }
 
     @PutMapping()
-    @Operation(description = "Update user")
+    @Operation(description = "Update user profile")
     public ResponseEntity<UserGetResponse> updateUserProfile(
         Authentication authentication,
         @RequestBody UserProfileUpdateRequest request) {
         Jwt jwt = (Jwt) authentication.getPrincipal();
         Long userId = jwt.getClaim("id");
-        return ResponseEntity.ok(service.mapToDto(service.update(userId, request)));
+        return ResponseEntity.ok(UserGetResponse.mapToDto(service.update(userId, request)));
     }
 }

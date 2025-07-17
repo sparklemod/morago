@@ -1,6 +1,5 @@
 package com.example.morago.controller;
 
-import com.example.morago.config.security.userDetails.CustomUserDetails;
 import com.example.morago.model.dto.requests.transactions.TransactionCreateRequest;
 import com.example.morago.model.dto.requests.translator.TranslatorUpdateRequest;
 import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
@@ -31,13 +30,13 @@ public class TranslatorController {
     private final WithdrawalService withdrawalService;
 
     @PutMapping()
-    @Operation(description = "Update translator")
+    @Operation(description = "Fill translator profile")
     public ResponseEntity<TranslatorGetResponse> updateTranslator(
         Authentication authentication,
         @RequestBody TranslatorUpdateRequest request) {
         Jwt jwt = (Jwt) authentication.getPrincipal();
         Long userId = jwt.getClaim("id");
-        return ResponseEntity.ok(translatorService.mapToDto(translatorService.update(userId, request)));
+        return ResponseEntity.ok(TranslatorGetResponse.mapToDto(translatorService.update(userId, request)));
     }
 
     @PostMapping("/withdrawal")

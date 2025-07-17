@@ -3,10 +3,10 @@ package com.example.morago.controller;
 import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
 import com.example.morago.model.dto.requests.category.CategoryRequest;
+import com.example.morago.model.dto.requests.transactions.deposit.DepositApproveRequest;
 import com.example.morago.model.dto.requests.theme.ThemePageRequest;
 import com.example.morago.model.dto.requests.theme.ThemeRequest;
 import com.example.morago.model.dto.requests.transactions.TransactionGetHistoryResponse;
-import com.example.morago.model.dto.requests.transactions.deposit.DepositApproveRequest;
 import com.example.morago.model.dto.requests.transactions.withdrawal.WithdrawalApproveRequest;
 import com.example.morago.model.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.dto.requests.user.UserGetRequest;
@@ -59,24 +59,24 @@ public class AdminController {
     @GetMapping("/translators")
     @Operation(description = "Get a list of translators by request body parameters")
     public ResponseEntity<Page<TranslatorGetResponse>> getTranslators(
-            @ModelAttribute TranslatorGetRequest request) {
+        @ModelAttribute TranslatorGetRequest request) {
         return ResponseEntity.ok(translatorService.searchTranslators(request));
     }
 
     @GetMapping("/translators/{id}")
     @Operation(description = "Get translator by ID")
     public ResponseEntity<TranslatorGetResponse> getTranslatorById(
-            @PathVariable("id")
-            @Parameter(description = "Translator ID", example = "2")
-            Long id) {
-        return ResponseEntity.ok(translatorService.mapToDto(translatorService.findById(id)));
+        @PathVariable("id")
+        @Parameter(description = "Translator ID", example = "2")
+        Long id) {
+        return ResponseEntity.ok(TranslatorGetResponse.mapToDto(translatorService.findById(id)));
     }
 
     /** Users */
     @GetMapping("/users")
     @Operation(description = "Get list of users with filters")
     public ResponseEntity<Page<UserGetResponse>> getUserProfiles(
-            @ModelAttribute UserGetRequest request) {
+        @ModelAttribute UserGetRequest request) {
         return ResponseEntity.ok(userProfileService.searchUsers(request));
     }
 
@@ -86,24 +86,23 @@ public class AdminController {
             @PathVariable("id")
             @Parameter(description = "User Id", example = "6")
             Long id) {
-        return ResponseEntity.ok(userProfileService.mapToDto(userProfileService.findById(id)));
+        return ResponseEntity.ok(UserGetResponse.mapToDto(userProfileService.findById(id)));
     }
 
     @DeleteMapping("/users/{id}")
     @Operation(description = "Delete user by id")
     public ResponseEntity<Void> deleteUserProfile(
-            @PathVariable("id") @Parameter(description = "User Id", example = "6") Long id) {
+        @PathVariable("id") @Parameter(description = "User Id", example = "6") Long id) {
         userProfileService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     //TODO реализовать методы
-
     /** Calls */
     @GetMapping("/calls/history/{userId}")
     @Operation(description = "Get call history of selected user. Depends on Role")
     public ResponseEntity<Page<UserGetResponse>> getCallHistory(
-            @PathVariable("userId") Long userId) {
+        @PathVariable("userId") Long userId) {
         return ResponseEntity.ok(Page.empty());
     }
 
@@ -111,26 +110,26 @@ public class AdminController {
     @GetMapping("/deposits/history/{userId}")
     @Operation(description = "Get deposit history of selected user")
     public ResponseEntity<Page<TransactionGetHistoryResponse>> getDepositHistory(
-            @PathVariable("userId") Long userId,
-            @ParameterObject PageRequest pageRequest
+        @PathVariable("userId") Long userId,
+        @ParameterObject PageRequest pageRequest
     ) {
         Page<TransactionGetHistoryResponse> page = depositService.getHistory(userId,
-                pageRequest.toPageable());
+            pageRequest.toPageable());
         return ResponseEntity.ok(page);
     }
 
     @GetMapping("/deposits")
     @Operation(description = "Get user's last deposit")
     public ResponseEntity<Deposit> getDeposit(
-            @RequestParam("userId") Long userId) {
+        @RequestParam("userId") Long userId) {
         return ResponseEntity.ok(depositService.getLastDepositByUser(userId));
     }
 
     @PutMapping("/deposits/{id}")
     @Operation(description = "Approve deposit")
     public ResponseEntity<Void> approveDeposit(
-            @PathVariable("id") Long id,
-            @Valid @RequestBody DepositApproveRequest request
+        @PathVariable("id") Long id,
+        @Valid @RequestBody DepositApproveRequest request
     ) {
         depositService.approveDeposit(id, request);
         return ResponseEntity.ok().build();
@@ -140,15 +139,15 @@ public class AdminController {
     @GetMapping("/withdrawals")
     @Operation(description = "Get translator's last withdrawal")
     public ResponseEntity<Withdrawal> getWithdrawal(
-            @RequestParam("userId") Long userId) {
+        @RequestParam("userId") Long userId) {
         return ResponseEntity.ok(withdrawalService.getLastWithdrawalByUser(userId));
     }
 
     @GetMapping("/withdrawals/history/{userId}")
     @Operation(description = "Get withdrawal history of selected user")
     public ResponseEntity<Page<TransactionGetHistoryResponse>> getWithdrawalHistory(
-            @PathVariable("userId") Long userId,
-            @ParameterObject PageRequest pageRequest
+        @PathVariable("userId") Long userId,
+        @ParameterObject PageRequest pageRequest
     ) {
         Page<TransactionGetHistoryResponse> page = withdrawalService.getHistory(userId, pageRequest.toPageable());
         return ResponseEntity.ok(page);
@@ -157,8 +156,8 @@ public class AdminController {
     @PutMapping("/withdrawals/{id}")
     @Operation(description = "Approve withdrawal")
     public ResponseEntity<Void> approveWithdrawal(
-            @PathVariable("id") Long id,
-            @Valid @RequestBody WithdrawalApproveRequest request) {
+        @PathVariable("id") Long id,
+        @Valid @RequestBody WithdrawalApproveRequest request) {
         withdrawalService.approveWithdrawal(id, request);
         return ResponseEntity.ok().build();
     }

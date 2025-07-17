@@ -1,8 +1,10 @@
 package com.example.morago.service;
 
+import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.dto.requests.translator.TranslatorUpdateRequest;
 import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
+import com.example.morago.model.dto.response.translator.TranslatorGetByThemesResponse;
 import com.example.morago.model.entity.Language;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.model.entity.Translator;
@@ -45,29 +47,29 @@ public class TranslatorService {
         return translatorRepository.save(request.build(translator, themes, languages));
     }
 
+    public Page<TranslatorGetByThemesResponse> searchTranslatorsByTheme(Long themeId, PageRequest request) {
+        Page<Translator> translators;
+
+        if (themeId == null) {
+            translators = translatorRepository.findAll(request.toPageable());
+        } else {
+            translators = translatorRepository.findAllByThemesId(themeId, request.toPageable());
+        }
+
+        Theme theme = themeService.getThemeOrThrow(themeId);
+        return translators.map(t -> TranslatorGetByThemesResponse.mapToDto(t, theme.getName()));
+    }
+
     public Page<TranslatorGetResponse> searchTranslators(TranslatorGetRequest request) {
         Page<Translator> translators = translatorRepository.findAll(
             TranslatorSpecification.build(request),
             request.toPageable()
         );
 
-        return translators.map(this::mapToDto);
+        return translators.map(TranslatorGetResponse::mapToDto);
     }
 
     public Translator findById(Long id) {
         return translatorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
-    }
-
-    public TranslatorGetResponse mapToDto(Translator t) {
-        return new TranslatorGetResponse(
-            t.getId(),
-            t.getFirstName(),
-            t.getLastName(),
-            t.getPhone(),
-            t.getEmail(),
-            t.getIsOnline(),
-            t.getLevelOfKorean(),
-            t.getDateOfBirth()
-        );
     }
 }

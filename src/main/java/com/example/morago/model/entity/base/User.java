@@ -1,9 +1,9 @@
 package com.example.morago.model.entity.base;
 
+import ch.qos.logback.core.util.StringUtil;
 import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.Role;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import lombok.AllArgsConstructor;
@@ -58,5 +58,9 @@ public abstract class User extends Auditable {
 
     public String getFullName(){
         return getFirstName() + " " + getLastName();
+    }
+
+    public String getNameWithInitials(){
+        return getFirstName().substring(0,1).toUpperCase() + ". " + StringUtil.capitalizeFirstLetter(getLastName());
     }
 }
