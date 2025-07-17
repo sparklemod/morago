@@ -1,23 +1,31 @@
 package com.example.morago.controller;
 
+import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
 import com.example.morago.model.dto.requests.category.CategoryRequest;
+import com.example.morago.model.dto.requests.transactions.deposit.DepositApproveRequest;
 import com.example.morago.model.dto.requests.theme.ThemePageRequest;
 import com.example.morago.model.dto.requests.theme.ThemeRequest;
+import com.example.morago.model.dto.requests.transactions.TransactionGetHistoryResponse;
 import com.example.morago.model.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.dto.requests.user.UserGetRequest;
+import com.example.morago.model.dto.requests.transactions.withdrawal.WithdrawalApproveRequest;
 import com.example.morago.model.dto.response.PageResponse;
 import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.model.dto.response.user.UserGetResponse;
 import com.example.morago.model.entity.Category;
+import com.example.morago.model.entity.Deposit;
 import com.example.morago.model.entity.File;
+import com.example.morago.model.entity.Withdrawal;
 import com.example.morago.model.enums.FileType;
 import com.example.morago.service.CategoryService;
+import com.example.morago.service.DepositService;
 import com.example.morago.service.ThemeService;
 import com.example.morago.service.TranslatorService;
 import com.example.morago.service.UserProfileService;
 import com.example.morago.service.UserService;
+import com.example.morago.service.WithdrawalService;
 import com.example.morago.service.file.FileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -26,6 +34,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,6 +65,8 @@ public class AdminController {
     private final CategoryService categoryService;
     private final ThemeService themeService;
     private final FileService fileService;
+    private final DepositService depositService;
+    private final WithdrawalService withdrawalService;
 
     /** Translators */
     @GetMapping("/translators")
@@ -108,27 +119,60 @@ public class AdminController {
         return ResponseEntity.ok(Page.empty());
     }
 
-    /** Deposit, Withdrawal */
-    //TODO реализовать
-    @GetMapping("/transactions/history/{userId}")
-    @Operation(description = "Get transaction history of selected user. Depends on Role")
-    public ResponseEntity<Page<UserGetResponse>> getTransactionsHistory(
-        @PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(Page.empty());
+    /** Deposit */
+    @GetMapping("/deposits/history/{userId}")
+    @Operation(description = "Get deposit history of selected user")
+    public ResponseEntity<Page<TransactionGetHistoryResponse>> getDepositHistory(
+        @PathVariable("userId") Long userId,
+        @ParameterObject PageRequest pageRequest
+    ) {
+        Page<TransactionGetHistoryResponse> page = depositService.getHistory(userId,
+            pageRequest.toPageable());
+        return ResponseEntity.ok(page);
+    }
+
+    @GetMapping("/deposits")
+    @Operation(description = "Get user's last deposit")
+    public ResponseEntity<Deposit> getDeposit(
+        @RequestParam("userId") Long userId) {
+        return ResponseEntity.ok(depositService.getLastDepositByUser(userId));
     }
 
     @PutMapping("/deposits/{id}")
-    @Operation(description = "Approve last user deposit")
-    public ResponseEntity<Page<UserGetResponse>> approveDeposit(
-        @PathVariable("id") Long id) {
-        return ResponseEntity.ok(Page.empty());
+    @Operation(description = "Approve deposit")
+    public ResponseEntity<Void> approveDeposit(
+        @PathVariable("id") Long id,
+        @Valid @RequestBody DepositApproveRequest request
+    ) {
+        depositService.approveDeposit(id, request);
+        return ResponseEntity.ok().build();
+    }
+
+    /** Withdrawal */
+    @GetMapping("/withdrawals")
+    @Operation(description = "Get translator's last withdrawal")
+    public ResponseEntity<Withdrawal> getWithdrawal(
+        @RequestParam("userId") Long userId) {
+        return ResponseEntity.ok(withdrawalService.getLastWithdrawalByUser(userId));
+    }
+
+    @GetMapping("/withdrawals/history/{userId}")
+    @Operation(description = "Get withdrawal history of selected user")
+    public ResponseEntity<Page<TransactionGetHistoryResponse>> getWithdrawalHistory(
+        @PathVariable("userId") Long userId,
+        @ParameterObject PageRequest pageRequest
+    ) {
+        Page<TransactionGetHistoryResponse> page = withdrawalService.getHistory(userId, pageRequest.toPageable());
+        return ResponseEntity.ok(page);
     }
 
     @PutMapping("/withdrawals/{id}")
-    @Operation(description = "Approve last user withdrawal")
-    public ResponseEntity<Page<UserGetResponse>> approveWithdrawal(
-        @PathVariable("id") Long id) {
-        return ResponseEntity.ok(Page.empty());
+    @Operation(description = "Approve withdrawal")
+    public ResponseEntity<Void> approveWithdrawal(
+        @PathVariable("id") Long id,
+        @Valid @RequestBody WithdrawalApproveRequest request) {
+        withdrawalService.approveWithdrawal(id, request);
+        return ResponseEntity.ok().build();
     }
 
     /** Categories */
