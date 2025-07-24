@@ -61,7 +61,7 @@ public class ProfileController {
     @PostMapping("/password/update")
     @Operation(description = "Update password")
     public void updatePassword(Authentication authentication, @RequestBody UpdatePasswordRequest request) {
-        Long userId = ((Jwt) authentication.getPrincipal()).getClaim("id");
+        Long userId = userService.extractUserId(authentication);
         userService.updatePassword(userId, request);
     }
 
@@ -73,7 +73,7 @@ public class ProfileController {
             @RequestParam("file") MultipartFile file,
             Authentication authentication
     ) {
-        Long userId = ((Jwt) authentication.getPrincipal()).getClaim("id");
+        Long userId = userService.extractUserId(authentication);
         return fileService.replaceUserAvatar(userId, file);
     }
 
@@ -81,7 +81,7 @@ public class ProfileController {
     @Operation(description = "Delete avatar image")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteAvatar(Authentication authentication) {
-        Long userId = ((Jwt) authentication.getPrincipal()).getClaim("id");
+        Long userId = userService.extractUserId(authentication);
         fileService.deleteFile(userId);
     }
 
@@ -101,7 +101,7 @@ public class ProfileController {
             Authentication auth) {
 
         Long userId = (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof Jwt)
-                ? ((Jwt) auth.getPrincipal()).getClaim("id")
+                ? userService.extractUserId(auth)
                 : null;
         return categoryService.getThemesByCategoryId(id, themePageRequest, userId);
     }

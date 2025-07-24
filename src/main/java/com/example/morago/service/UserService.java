@@ -5,8 +5,10 @@ import com.example.morago.model.entity.base.User;
 import com.example.morago.repository.UserRepository;
 import com.example.morago.util.exception.HandledException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -51,5 +53,10 @@ public class UserService {
     public User getUserById(Long id) {
         return repository.findById(id)
             .orElseThrow(()->new HandledException("User profile not found"));
+    }
+
+    public Long extractUserId(Authentication authentication) {
+        Jwt jwt = (Jwt) authentication.getPrincipal();
+        return jwt.getClaim("id");
     }
 }
