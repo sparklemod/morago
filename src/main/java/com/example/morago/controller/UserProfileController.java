@@ -33,11 +33,6 @@ public class UserProfileController {
     private final TranslatorService translatorService;
     private final UserService userService;
 
-    //TODO Саша посмотри
-    @GetMapping("/themes")
-    @Operation(description = "Get current user favorite themes")
-    public void getThemes() {
-    }
 
     @GetMapping("/translators")
     @Operation(description = "Get translators list filtered by theme")

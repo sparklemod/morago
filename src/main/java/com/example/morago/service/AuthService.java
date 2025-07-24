@@ -1,7 +1,7 @@
 package com.example.morago.service;
 
-import com.example.morago.config.security.userDetails.CustomUserDetails;
 import com.example.morago.config.security.JwtUtil;
+import com.example.morago.config.security.userDetails.CustomUserDetails;
 import com.example.morago.model.dto.requests.auth.UserCreateRequest;
 import com.example.morago.model.dto.response.auth.AuthResponse;
 import com.example.morago.model.entity.Role;
@@ -11,15 +11,17 @@ import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.RoleEnum;
 import com.example.morago.repository.RoleRepository;
 import com.example.morago.repository.UserRepository;
+import com.example.morago.service.notification.adminNotification.AdminNotificationService;
 import com.example.morago.util.exception.HandledException;
-import java.math.BigDecimal;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +33,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final UserService userService;
+    private final AdminNotificationService adminNotificationService;
 
     public AuthResponse register(UserCreateRequest req) {
         userService.checkIsExistByPhone(req.getPhone());
@@ -44,7 +47,7 @@ public class AuthService {
 
         User user = createUser(req, role);
         userRepository.save(user);
-
+        adminNotificationService.notifyRegistration(user);
         return auth(req.getPhone(), req.getPassword());
     }
 

@@ -106,4 +106,8 @@ public class ProfileController {
         return categoryService.getThemesByCategoryId(id, themePageRequest, userId);
     }
 
+    @GetMapping("/theme{id}")
+    @Operation(description = "Get current user favorite themes")
+    public void getThemes() {
+    }
 }

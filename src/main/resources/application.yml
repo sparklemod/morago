@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: s3
+    active: s3,dev # Переключение s3/local и dev/prod
   config:
     import: optional:file:.env[.properties]
   application:
@@ -33,6 +33,18 @@ spring:
       max-file-size: 20MB
       max-request-size: 20MB
 
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 587
+    username: e0516a15bdf0ed
+    password: b2e9b3d096c0b2
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 app:
   calendly: https://calendly.com/
 
@@ -55,3 +67,6 @@ springdoc:
     enabled: true
   swagger-ui:
     enabled: true
+
+admin:
+  email: admin@admin.com
