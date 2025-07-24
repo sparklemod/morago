@@ -1,6 +1,6 @@
 package com.example.morago.controller;
 
-import com.example.morago.model.dto.requests.CallHistoryRequest;
+import com.example.morago.model.dto.requests.call.CallHistoryRequest;
 import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
 import com.example.morago.model.dto.requests.theme.ThemePageRequest;
@@ -38,21 +38,25 @@ public class ProfileController {
     private final UserService userService;
     private final CategoryService categoryService;
 
+    //TODO реализовать
     @GetMapping("/balance")
     @Operation(description = "Get current user balance")
     public void getBalance() {
     }
 
+    //TODO реализовать
     @GetMapping("/calls/history")
     @Operation(description = "Get current user call history")
     public void getCallHistory(Authentication authentication, CallHistoryRequest req) {
     }
 
+    //TODO реализовать
     @GetMapping("/notifications")
     @Operation(description = "Get current user notifications")
     public void getNotifications(Authentication authentication, PageRequest req) {
     }
 
+    //TODO реализовать
     @PostMapping("/notifications/clear")
     @Operation(description = "Clear all current user notifications")
     public void clearNotifications(Authentication authentication, PageRequest req) {

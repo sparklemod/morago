@@ -1,4 +1,4 @@
-package com.example.morago.config.OpenApi;
+package com.example.morago.config.openApi;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
