@@ -17,4 +17,10 @@ public class UserGetRequest extends PageRequest {
 
     @Parameter(description = "Firstname | Lastname | phone | email", example = "sve")
     private String keyword;
+
+    @Schema(description = "Is debtor", example = "false")
+    private Boolean isDebtor;
+
+    @Schema(description = "Has deposit", example = "true")
+    private Boolean hasDeposit;
 }

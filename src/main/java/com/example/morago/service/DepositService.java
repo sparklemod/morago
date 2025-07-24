@@ -83,7 +83,7 @@ public class DepositService {
     }
 
     private void validateBankDetails(UserProfile user, DepositApproveRequest req) {
-        if (!user.getFullName().equals(req.fullName())) {
+        if (!user.getNameWithSurname().equals(req.fullName())) {
             throw new HandledException("Name does not match the deposit owner");
         }
 

@@ -32,6 +32,9 @@ public class UserProfile extends User {
     )
     private Set<Theme> favoriteThemes = new HashSet<>();
 
+    @OneToMany(mappedBy = "user")
+    private Set<Deposit> deposits;
+
     public void addFavoriteTheme(Theme theme) {
         favoriteThemes.add(theme);
     }

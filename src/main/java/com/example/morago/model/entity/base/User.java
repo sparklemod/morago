@@ -56,7 +56,7 @@ public abstract class User extends Auditable {
     @OneToOne(fetch = FetchType.LAZY)
     protected File imageFile;
 
-    public String getFullName(){
+    public String getNameWithSurname(){
         return getFirstName() + " " + getLastName();
     }
 

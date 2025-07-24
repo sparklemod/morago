@@ -81,7 +81,7 @@ public class WithdrawalService {
     }
 
     private void validateBankDetails(Translator user, WithdrawalApproveRequest req) {
-        if (!user.getFullName().equals(req.fullName())) {
+        if (!user.getNameWithSurname().equals(req.fullName())) {
             throw new HandledException("Name does not match the withdrawal owner");
         }
 
