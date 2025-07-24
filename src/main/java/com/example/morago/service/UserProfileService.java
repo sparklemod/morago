@@ -35,12 +35,10 @@ public class UserProfileService {
     }
 
     public Page<UserGetResponse> searchUsers(UserGetRequest request) {
-        Page<UserProfile> users = repository.findAll(
+        return repository.findAll(
             UserSpecification.build(request),
             request.toPageable()
-        );
-
-        return users.map(UserGetResponse::mapToDto);
+        ).map(UserGetResponse::mapToDto);
     }
 
     public UserProfile findById(Long id) {

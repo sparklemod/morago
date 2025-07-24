@@ -2,6 +2,7 @@ package com.example.morago.config.security.userDetails;
 
 import com.example.morago.model.entity.base.User;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,10 +17,16 @@ public class CustomUserDetails implements UserDetails, CredentialsContainer {
     private final User user;
     private String password;
 
-    public String getAllUserRolesToString() {
+    public String getAllUserRolesAsString() {
         return getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
+    }
+
+    public List<String> getAllUserRolesAsList() {
+        return getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
     }
 
     public CustomUserDetails(User user) {

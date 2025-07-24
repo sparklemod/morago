@@ -10,7 +10,6 @@ import com.example.morago.repository.UserRepository;
 import com.example.morago.repository.WithdrawalRepository;
 import com.example.morago.util.exception.HandledException;
 import jakarta.transaction.Transactional;
-import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +32,7 @@ public class WithdrawalService {
 
     public Page<TransactionGetHistoryResponse> getHistory(Long userId, Pageable pageable) {
         return repository.findByTranslatorId(userId, pageable)
-            .map(this::mapWithdrawalToDto);
+            .map(TransactionGetHistoryResponse::mapWithdrawalToDto);
     }
 
     @Transactional
@@ -68,16 +67,6 @@ public class WithdrawalService {
             .build();
 
         return repository.save(withdrawal);
-    }
-
-    private TransactionGetHistoryResponse mapWithdrawalToDto(Withdrawal withdrawal) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
-
-        return TransactionGetHistoryResponse.builder()
-            .date(withdrawal.getCreatedAt().format(formatter))
-            .amount(withdrawal.getSum())
-            .status(withdrawal.getStatus())
-            .build();
     }
 
     private void validateBankDetails(Translator user, WithdrawalApproveRequest req) {

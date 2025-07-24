@@ -10,7 +10,6 @@ import com.example.morago.repository.DepositRepository;
 import com.example.morago.repository.UserRepository;
 import com.example.morago.util.exception.HandledException;
 import jakarta.transaction.Transactional;
-import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +32,7 @@ public class DepositService {
 
     public Page<TransactionGetHistoryResponse> getHistory(Long userId, Pageable pageable) {
         return repository.findByUserId(userId, pageable)
-            .map(this::mapDepositToDto);
+            .map(TransactionGetHistoryResponse::mapDepositToDto);
     }
 
     @Transactional
@@ -70,16 +69,6 @@ public class DepositService {
             .build();
 
         return repository.save(deposit);
-    }
-
-    private TransactionGetHistoryResponse mapDepositToDto(Deposit deposit) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm");
-
-        return TransactionGetHistoryResponse.builder()
-            .date(deposit.getCreatedAt().format(formatter))
-            .amount(deposit.getWon())
-            .status(deposit.getStatus())
-            .build();
     }
 
     private void validateBankDetails(UserProfile user, DepositApproveRequest req) {

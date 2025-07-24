@@ -65,7 +65,7 @@ public class AuthService {
             .phone(userDetails.getUsername())
             .firstName(userDetails.getFirstName())
             .lastName(userDetails.getLastName())
-            .roles(userDetails.getAllUserRolesToString())
+            .roles(userDetails.getAllUserRolesAsString())
             .build();
     }
 

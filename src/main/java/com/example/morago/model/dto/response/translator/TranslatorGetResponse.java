@@ -32,10 +32,6 @@ public class TranslatorGetResponse {
     private Boolean hasWithdrawalRequest;
 
     public static TranslatorGetResponse mapToDto(Translator t) {
-        boolean hasPendingWithdrawal = !t.getWithdrawals().isEmpty() &&
-            t.getWithdrawals().stream()
-                .anyMatch(w -> w.getStatus() == PaymentStatusEnum.PENDING);
-
         return TranslatorGetResponse.builder()
             .id(t.getId())
             .firstName(t.getFirstName())
@@ -45,7 +41,7 @@ public class TranslatorGetResponse {
             .isOnline(t.getIsOnline())
             .levelOfKorean(t.getLevelOfKorean())
             .dateOfBirth(t.getDateOfBirth())
-            .hasWithdrawalRequest(hasPendingWithdrawal)
+            .hasWithdrawalRequest(t.hasActiveWithdrawal())
             .build();
     }
 }

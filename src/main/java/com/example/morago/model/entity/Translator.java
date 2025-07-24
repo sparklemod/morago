@@ -1,6 +1,7 @@
 package com.example.morago.model.entity;
 
 import com.example.morago.model.entity.base.User;
+import com.example.morago.model.enums.PaymentStatusEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -51,4 +52,9 @@ public class Translator extends User {
 
     @OneToMany(mappedBy = "translator")
     private Set<Withdrawal> withdrawals;
+
+    public boolean hasActiveWithdrawal() {
+        return !withdrawals.isEmpty() &&
+            withdrawals.stream().anyMatch(w -> w.getStatus() == PaymentStatusEnum.PENDING);
+    }
 }
