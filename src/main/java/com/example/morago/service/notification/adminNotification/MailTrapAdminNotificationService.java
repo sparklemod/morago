@@ -16,9 +16,9 @@ import java.math.BigDecimal;
 @Service
 @Profile("dev") // или "prod"
 @RequiredArgsConstructor
-public class EmailAdminNotificationService implements AdminNotificationService {
+public class MailTrapAdminNotificationService implements AdminNotificationService {
 
-    private static final Logger log = LoggerFactory.getLogger(EmailAdminNotificationService.class);
+    private static final Logger log = LoggerFactory.getLogger(MailTrapAdminNotificationService.class);
     private final JavaMailSender mailSender;
 
     @Value("${admin.email}")  // email Админа.

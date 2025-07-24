@@ -1,10 +1,13 @@
 spring:
   profiles:
     active: s3,dev # Переключение s3/local и dev/prod
+
   config:
     import: optional:file:.env[.properties]
+
   application:
     name: morago-backend
+
   datasource:
     url: ${DATABASE_URL}
     username: ${DB_USER}
@@ -33,40 +36,15 @@ spring:
       max-file-size: 20MB
       max-request-size: 20MB
 
-  mail:
-    host: sandbox.smtp.mailtrap.io
-    port: 587
-    username: e0516a15bdf0ed
-    password: b2e9b3d096c0b2
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-
 app:
   calendly: https://calendly.com/
 
 jwt:
-  secret: your-very-secure-secret-key-1234567890
-  expiration: 86400000
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
 
-file:
-  upload-dir: ./uploads
-  storage:
-    type: s3 # переключение на s3 с local
-    aws:
-      s3:
-        bucket: morago-files
-        region: ap-northeast-2
-        access-key: AKIAWZCVJCKYF37JDZ42
-        secret-key: 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
 springdoc:
   api-docs:
     enabled: true
   swagger-ui:
     enabled: true
-
-admin:
-  email: admin@admin.com

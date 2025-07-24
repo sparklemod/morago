@@ -1,0 +1,14 @@
+spring:
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 587
+    username: ${MAILTRAP_USERNAME}
+    password: ${MAILTRAP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+admin:
+  email: admin@admin.com
