@@ -3,9 +3,11 @@ package com.example.morago.model.entity.base;
 import ch.qos.logback.core.util.StringUtil;
 import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.Role;
+import com.example.morago.model.enums.RoleEnum;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -56,7 +58,16 @@ public abstract class User extends Auditable {
     @OneToOne(fetch = FetchType.LAZY)
     protected File imageFile;
 
-    public String getFullName(){
+    /**
+     * Позволяет использовать методы Collection
+     */
+    public Set<RoleEnum> getRolesAsEnumSet() {
+        return roles.stream()
+            .map(Role::getName)
+            .collect(Collectors.toSet());
+    }
+
+    public String getNameWithSurname(){
         return getFirstName() + " " + getLastName();
     }
 

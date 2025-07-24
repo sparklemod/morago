@@ -1,6 +1,7 @@
 package com.example.morago.model.entity;
 
 import com.example.morago.model.entity.base.User;
+import com.example.morago.model.enums.PaymentStatusEnum;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,10 +33,18 @@ public class UserProfile extends User {
     )
     private Set<Theme> favoriteThemes = new HashSet<>();
 
+    @OneToMany(mappedBy = "user")
+    private Set<Deposit> deposits;
+
     public void addFavoriteTheme(Theme theme) {
         favoriteThemes.add(theme);
     }
     public void removeFavoriteTheme(Theme theme) {
         favoriteThemes.remove(theme);
+    }
+
+    public boolean hasActiveDeposit() {
+        return !deposits.isEmpty() &&
+            deposits.stream().anyMatch(d -> d.getStatus() == PaymentStatusEnum.PENDING);
     }
 }

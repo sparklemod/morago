@@ -3,6 +3,7 @@ package com.example.morago.service;
 import com.example.morago.model.dto.requests.user.UserGetRequest;
 import com.example.morago.model.dto.requests.user.UserProfileUpdateRequest;
 import com.example.morago.model.dto.response.user.UserGetResponse;
+import com.example.morago.repository.specification.UserSpecification;
 import com.example.morago.util.exception.HandledException;
 import com.example.morago.util.exception.enums.NotFoundMessage;
 import com.example.morago.model.entity.UserProfile;
@@ -30,18 +31,14 @@ public class UserProfileService {
     public void delete(Long id) {
         UserProfile userProfile = findById(id);
         repository.delete(userProfile);
-        log.info("User {} успешно удален!", userProfile.getFullName());
+        log.info("User {} успешно удален!", userProfile.getNameWithSurname());
     }
 
     public Page<UserGetResponse> searchUsers(UserGetRequest request) {
-        Page<UserProfile> users;
-        if (request.getKeyword() == null || request.getKeyword().isEmpty()) {
-            users = repository.findAll(request.toPageable());
-        } else {
-            users = repository.findByKeyword(request.getKeyword(), request.toPageable());
-        }
-
-        return users.map(UserGetResponse::mapToDto);
+        return repository.findAll(
+            UserSpecification.build(request),
+            request.toPageable()
+        ).map(UserGetResponse::mapToDto);
     }
 
     public UserProfile findById(Long id) {

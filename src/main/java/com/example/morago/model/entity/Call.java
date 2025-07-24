@@ -2,6 +2,8 @@ package com.example.morago.model.entity;
 
 import com.example.morago.model.enums.CallStatusEnum;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -19,16 +21,25 @@ public class Call {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime createdTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private Integer duration;
+    private Boolean isEndCall;
+    //является ли первым
     private Boolean status;
     private BigDecimal sum;
     private BigDecimal commission;
     private Boolean translatorHasRated;
     private Boolean userHasRated;
-    private LocalDateTime updatedAt;
-    private Boolean isEndCall;
-    private String channelName;
+
+    @Min(1)
+    @Max(5)
+    private Byte userRating;
+
+    @Min(1)
+    @Max(5)
+    private Byte translatorRating;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "caller_id")

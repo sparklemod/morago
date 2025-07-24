@@ -10,6 +10,7 @@ import com.example.morago.model.dto.requests.transactions.withdrawal.WithdrawalA
 import com.example.morago.model.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.dto.requests.user.UserGetRequest;
 import com.example.morago.model.dto.response.PageResponse;
+import com.example.morago.model.dto.response.calls.CallsGetHistoryResponse;
 import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.dto.response.transactions.TransactionGetHistoryResponse;
 import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
@@ -52,6 +53,7 @@ public class AdminController {
     private final CategoryService categoryService;
     private final ThemeService themeService;
     private final FileService fileService;
+    private final CallService callService;
     private final DepositService depositService;
     private final WithdrawalService withdrawalService;
 
@@ -97,13 +99,14 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
-    //TODO реализовать методы
     /** Calls */
     @GetMapping("/calls/history/{userId}")
     @Operation(description = "Get call history of selected user. Depends on Role")
-    public ResponseEntity<Page<UserGetResponse>> getCallHistory(
-        @PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(Page.empty());
+    public ResponseEntity<Page<CallsGetHistoryResponse>> getCallHistory(
+        @PathVariable("userId") Long userId,
+        @ParameterObject PageRequest request
+    ) {
+        return ResponseEntity.ok(callService.getCallHistory(userId, request.toPageable()));
     }
 
     /** Deposit */

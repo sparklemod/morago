@@ -2,13 +2,15 @@ package com.example.morago.service;
 
 import com.example.morago.model.dto.requests.call.CallCreateRequest;
 import com.example.morago.model.dto.requests.call.CallPayload;
+import com.example.morago.model.dto.response.calls.CallsGetHistoryResponse;
+import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.CallStatusEnum;
 import com.example.morago.model.entity.Call;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.model.entity.UserProfile;
+import com.example.morago.model.enums.RoleEnum;
 import com.example.morago.repository.CallRepository;
-import com.example.morago.repository.ThemeRepository;
 import com.example.morago.repository.TranslatorRepository;
 import com.example.morago.repository.UserProfileRepository;
 import com.example.morago.util.exception.HandledException;
@@ -21,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -28,33 +32,47 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CallService {
 
-    private final CallRepository callRepository;
-    private final UserProfileRepository userProfileRepository;
-    private final TranslatorRepository translatorRepository;
-    private final ThemeRepository themeRepository;
     private final SimpMessagingTemplate messagingTemplate;
+    private final CallRepository repository;
+    private final UserProfileRepository userProfileRepository;
+    private final UserService userService;
+    private final ThemeService themeService;
+    private final TranslatorRepository translatorRepository;
+
+    public Page<CallsGetHistoryResponse> getCallHistory(Long userId, Pageable pageable) {
+        User user = userService.getUserById(userId);
+
+        if (user.getRolesAsEnumSet().contains(RoleEnum.ROLE_USER)) {
+            return repository.findByCallerId(userId, pageable)
+                .map(c -> CallsGetHistoryResponse.mapToDto(c, c.getCaller()));
+        } else if (user.getRolesAsEnumSet().contains(RoleEnum.ROLE_TRANSLATOR)) {
+            return repository.findByRecipientId(userId, pageable)
+                .map(c -> CallsGetHistoryResponse.mapToDto(c, c.getRecipient()));
+        }
+
+        return Page.empty();
+    }
 
     public Call createCall(CallCreateRequest request) {
         UserProfile caller = userProfileRepository.findById(request.getCallerId()).orElseThrow(()->new EntityNotFoundException("Caller not found"));
         Translator recipient = translatorRepository.findById(request.getRecipientId()).orElseThrow(()->new EntityNotFoundException("Translator not found"));
-        Theme theme = themeRepository.findById(request.getThemeId()).orElseThrow(()->new EntityNotFoundException("Theme not found"));
+        Theme theme = themeService.getThemeOrThrow(request.getThemeId());
 
         if (caller.getBalance().compareTo(BigDecimal.ZERO) < 0) {
             throw new HandledException("Caller balance is negative");
         }
 
         Call call = Call.builder()
-            .createdAt(LocalDateTime.now())
+            .createdTime(LocalDateTime.now())
             .isEndCall(false)
             .status(false)
-            .channelName(request.getChannelName())
             .callStatus(CallStatusEnum.CONNECT_NOT_SET)
             .caller(caller)
             .recipient(recipient)
             .theme(theme)
             .build();
 
-        Call saved = callRepository.save(call);
+        Call saved = repository.save(call);
 
         CallPayload payload = new CallPayload(
             caller.getId().toString(),
@@ -72,18 +90,18 @@ public class CallService {
     }
 
     public Call endCall(Long callId) {
-        Call call = callRepository.findById(callId)
+        Call call = repository.findById(callId)
             .orElseThrow(() -> new RuntimeException("Call not found"));
         LocalDateTime endTime = LocalDateTime.now();
 
         call.setIsEndCall(true);
         call.setStatus(true);
         call.setCallStatus(CallStatusEnum.COMPLETED);
-        call.setDuration((int) Duration.between(call.getCreatedAt(), endTime).getSeconds());
+        call.setDuration((int) Duration.between(call.getCreatedTime(), endTime).getSeconds());
 
         applyCallPayment(call);
 
-        return callRepository.save(call);
+        return repository.save(call);
     }
 
     @Transactional
@@ -108,23 +126,23 @@ public class CallService {
     }
 
     public Optional<Call> getCall(Long id) {
-        return callRepository.findById(id);
+        return repository.findById(id);
     }
 
     public void deleteCall(Long id) {
-        if (!callRepository.existsById(id)) {
+        if (!repository.existsById(id)) {
             throw new EntityNotFoundException("Call not found");
         }
-        callRepository.deleteById(id);
+        repository.deleteById(id);
     }
 
     public Call acceptCall(Long id) {
-        Call existingCall = callRepository.findById(id)
+        Call existingCall = repository.findById(id)
             .orElseThrow(() -> new EntityNotFoundException("Call not found"));
 
         existingCall.setCallStatus(CallStatusEnum.STARTED);
 
-        return callRepository.save(existingCall);
+        return repository.save(existingCall);
     }
 
     private static BigDecimal getTotalPrice(Call call) {
