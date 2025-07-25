@@ -24,7 +24,7 @@ public class TranslatorController {
 
     private final TranslatorService translatorService;
     private final WithdrawalService withdrawalService;
-    UserService userService;
+    private final UserService userService;
 
     @PutMapping()
     @Operation(description = "Fill translator profile")
