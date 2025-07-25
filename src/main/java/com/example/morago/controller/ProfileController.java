@@ -1,7 +1,7 @@
 package com.example.morago.controller;
 
-import com.example.morago.model.dto.requests.call.CallHistoryRequest;
 import com.example.morago.model.dto.requests.PageRequest;
+import com.example.morago.model.dto.requests.call.CallHistoryRequest;
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
 import com.example.morago.model.dto.requests.theme.ThemePageRequest;
 import com.example.morago.model.dto.requests.user.UpdatePasswordRequest;
@@ -109,7 +109,7 @@ public class ProfileController {
                 : null;
         return categoryService.getThemesByCategoryId(id, themePageRequest, userId);
     }
-
+    //TODO реализовать
     @GetMapping("/theme{id}")
     @Operation(description = "Get current user favorite themes")
     public void getThemes() {
