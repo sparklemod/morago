@@ -4,6 +4,7 @@ import com.example.morago.model.enums.CallStatusEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import java.math.RoundingMode;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -24,14 +25,17 @@ public class Call {
     private LocalDateTime createdTime;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+
+    //в секундах
     private Integer duration;
     private Boolean isEndCall;
     //является ли первым
-    private Boolean status;
+    private Boolean isFirst;
     private BigDecimal sum;
     private BigDecimal commission;
     private Boolean translatorHasRated;
     private Boolean userHasRated;
+    private String paymentError;
 
     @Min(1)
     @Max(5)
@@ -54,5 +58,11 @@ public class Call {
     private Theme theme;
 
     @Enumerated(EnumType.STRING)
-    private CallStatusEnum callStatus;
+    private CallStatusEnum status;
+
+    public BigDecimal getTotalPrice() {
+        return theme.getCurrentPrice()
+            .multiply(BigDecimal.valueOf(duration))
+            .divide(BigDecimal.valueOf(60), RoundingMode.CEILING);
+    }
 }

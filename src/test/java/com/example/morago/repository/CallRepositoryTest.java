@@ -37,7 +37,7 @@ class CallRepositoryTest {
         themeRepository.save(theme);
 
         Call call = new Call();
-        call.setCallStatus(CallStatusEnum.COMPLETED);
+        call.setStatus(CallStatusEnum.COMPLETED);
         call.setTheme(theme);
         callRepository.save(call);
 

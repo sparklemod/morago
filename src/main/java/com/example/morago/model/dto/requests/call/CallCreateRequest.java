@@ -1,11 +1,17 @@
 package com.example.morago.model.dto.requests.call;
 
+import jakarta.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
 public class CallCreateRequest {
-    private Long callerId;
+    @NotNull
     private Long recipientId;
+
+    @NotNull
     private Long themeId;
-    private String channelName;
+
+    @NotNull
+    private LocalDateTime startTime;
 }

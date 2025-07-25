@@ -1,13 +1,16 @@
 package com.example.morago.controller;
 
 import com.example.morago.model.dto.requests.call.CallCreateRequest;
+import com.example.morago.model.dto.requests.call.CallPayload;
 import com.example.morago.model.entity.Call;
 import com.example.morago.service.CallService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -23,29 +26,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class CallController {
 
     private final CallService callService;
+    private final SimpMessagingTemplate messagingTemplate;
 
-    @PostMapping("start")
-    @SendTo
-    public ResponseEntity<Call> createCall(@RequestBody CallCreateRequest request) {
-        Call call = callService.createCall(request);
+    @PostMapping("/create")
+    public ResponseEntity<Void> createCall(Authentication authentication,  @RequestBody CallCreateRequest request) {
+        Long userId = ((Jwt) authentication.getPrincipal()).getClaim("id");
+        CallPayload payload = callService.createCall(userId, request);
 
-        return ResponseEntity.ok(call);
-    }
+        messagingTemplate.convertAndSendToUser(
+            String.valueOf(payload.getTranslatorId()),
+            "/topic/incoming-call",
+            payload
+        );
 
-    //TODO реализоавть эти методы
-    @PutMapping("/accept/{id}")
-    public ResponseEntity<Call> acceptCall(@PathVariable Long id) {
-        return ResponseEntity.ok(callService.acceptCall(id));
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping("/rate/{id}")
     public ResponseEntity<Call> rateCall(@PathVariable Long id) {
         return ResponseEntity.ok(callService.rateCall(id));
-    }
-
-    @PostMapping("/end/{id}")
-    public ResponseEntity<Call> endCall(@PathVariable Long id) {
-        return ResponseEntity.ok(callService.endCall(id));
     }
 }
 
