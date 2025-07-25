@@ -9,6 +9,7 @@ import com.example.morago.model.dto.response.PageResponse;
 import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.entity.Category;
 import com.example.morago.model.entity.File;
+import com.example.morago.service.CallService;
 import com.example.morago.service.CategoryService;
 import com.example.morago.service.UserService;
 import com.example.morago.service.file.FileService;
@@ -37,6 +38,7 @@ public class ProfileController {
     private final FileService fileService;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final CallService callService;
 
     //TODO реализовать
     @GetMapping("/balance")
@@ -44,7 +46,7 @@ public class ProfileController {
     public void getBalance() {
     }
 
-    //TODO реализовать
+    //TODO реализовать Vlana
     @GetMapping("/calls/history")
     @Operation(description = "Get current user call history")
     public void getCallHistory(Authentication authentication, CallHistoryRequest req) {
@@ -109,7 +111,7 @@ public class ProfileController {
                 : null;
         return categoryService.getThemesByCategoryId(id, themePageRequest, userId);
     }
-    //TODO реализовать
+    //TODO реализовать Vlana
     @GetMapping("/theme{id}")
     @Operation(description = "Get current user favorite themes")
     public void getThemes() {
