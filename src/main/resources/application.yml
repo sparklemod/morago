@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    active: s3,dev # Переключение s3/local и dev/prod
-
   config:
     import: optional:file:.env[.properties]
 
@@ -35,6 +32,21 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+admin:
+  email: ${ADMIN_EMAIL}
 
 app:
   calendly: https://calendly.com/

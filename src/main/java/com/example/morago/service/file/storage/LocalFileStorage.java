@@ -14,8 +14,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 @Component
-@Primary
-@Profile("local")
+@Profile("!s3")
 public class LocalFileStorage implements FileStorage {
     private final Path uploadDir;
 

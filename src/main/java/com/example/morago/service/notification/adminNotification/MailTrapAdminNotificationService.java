@@ -12,9 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-
 @Service
-@Profile("dev") // или "prod"
+@Profile("!prod")
 @RequiredArgsConstructor
 public class MailTrapAdminNotificationService implements AdminNotificationService {
 
