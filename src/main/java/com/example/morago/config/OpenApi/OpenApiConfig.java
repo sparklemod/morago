@@ -41,6 +41,7 @@ public class OpenApiConfig {
                 )
             )
             .servers(List.of(
+                new Server().url("https://" + serverApiUrl).description("Https"),
                 new Server().url("http://" + serverApiUrl).description("Http")
             ));
     }
