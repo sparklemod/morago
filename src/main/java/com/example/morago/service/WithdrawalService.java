@@ -8,6 +8,8 @@ import com.example.morago.model.entity.Withdrawal;
 import com.example.morago.model.enums.PaymentStatusEnum;
 import com.example.morago.repository.UserRepository;
 import com.example.morago.repository.WithdrawalRepository;
+import com.example.morago.service.notification.NotificationService;
+import com.example.morago.service.notification.dto.NotificationDto;
 import com.example.morago.util.exception.HandledException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +24,7 @@ public class WithdrawalService {
     private final WithdrawalRepository repository;
     private final UserRepository userRepository;
     private final TranslatorService translatorService;
+    private final NotificationService notificationService;
 
     public Withdrawal getLastWithdrawalByUser(Long userId) {
         return repository.findFirstByTranslatorIdAndStatusOrderByCreatedAtDesc(
@@ -52,6 +55,13 @@ public class WithdrawalService {
             user.getBalance().subtract(req.sum())
         );
         userRepository.save(user);
+
+        NotificationDto dto = new NotificationDto(
+            "Withdrawal approved",
+            String.format("Sum: %d", withdrawal.getSum().intValue())
+        );
+
+        notificationService.createAndSendNotificationToUser(dto, user);
     }
 
     @Transactional
@@ -65,8 +75,16 @@ public class WithdrawalService {
             .nameOfBank(request.getNameOfBank())
             .status(PaymentStatusEnum.PENDING)
             .build();
+        repository.save(withdrawal);
 
-        return repository.save(withdrawal);
+        NotificationDto dto = new NotificationDto(
+            String.format("New Withdrawal [%s]", translator.getNameWithSurname()),
+            String.format("Sum: %d, user id: %d", withdrawal.getSum().intValue(), translator.getId())
+        );
+
+        notificationService.createAndSendNotificationToAdmins(dto);
+
+        return withdrawal;
     }
 
     private void validateBankDetails(Translator user, WithdrawalApproveRequest req) {

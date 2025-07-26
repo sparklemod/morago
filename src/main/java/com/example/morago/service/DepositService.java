@@ -4,10 +4,12 @@ import com.example.morago.model.dto.response.transactions.TransactionGetHistoryR
 import com.example.morago.model.dto.requests.transactions.deposit.DepositApproveRequest;
 import com.example.morago.model.dto.requests.transactions.TransactionCreateRequest;
 import com.example.morago.model.entity.Deposit;
-import com.example.morago.model.entity.UserProfile;
+import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.PaymentStatusEnum;
 import com.example.morago.repository.DepositRepository;
 import com.example.morago.repository.UserRepository;
+import com.example.morago.service.notification.NotificationService;
+import com.example.morago.service.notification.dto.NotificationDto;
 import com.example.morago.util.exception.HandledException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,8 @@ public class DepositService {
 
     private final DepositRepository repository;
     private final UserRepository userRepository;
-    private final UserProfileService userService;
+    private final UserService userService;
+    private final NotificationService notificationService;
 
     public Deposit getLastDepositByUser(Long userId) {
         return repository.findFirstByUserIdAndStatusOrderByCreatedAtDesc(
@@ -39,7 +42,7 @@ public class DepositService {
     public void approveDeposit(Long id, DepositApproveRequest req) {
         Deposit deposit = repository.findDepositById(id)
             .orElseThrow(() -> new HandledException("Deposit not found, id: " + id));
-        UserProfile user = deposit.getUser();
+        User user = deposit.getUser();
 
         validateBankDetails(user, req);
 
@@ -48,16 +51,22 @@ public class DepositService {
         deposit.setStatus(PaymentStatusEnum.COMPLETED);
         repository.save(deposit);
 
-
         user.setBalance(
             user.getBalance().add(req.sum())
         );
         userRepository.save(user);
+
+        NotificationDto dto = new NotificationDto(
+            "Deposit approved",
+            String.format("Sum: %d", deposit.getWon().intValue())
+        );
+
+        notificationService.createAndSendNotificationToUser(dto, user);
     }
 
     @Transactional
     public Deposit createDeposit(Long userId, TransactionCreateRequest request) {
-        UserProfile user = userService.findById(userId);
+        User user = userService.getUserById(userId);
 
         Deposit deposit = Deposit.builder()
             .user(user)
@@ -67,11 +76,19 @@ public class DepositService {
             .nameOfBank(request.getNameOfBank())
             .status(PaymentStatusEnum.PENDING)
             .build();
+        repository.save(deposit);
 
-        return repository.save(deposit);
+        NotificationDto dto = new NotificationDto(
+            String.format("New Deposit [%s]", user.getNameWithSurname()),
+            String.format("Sum: %d, user id: %d", deposit.getWon().intValue(), user.getId())
+        );
+
+        notificationService.createAndSendNotificationToAdmins(dto);
+
+        return deposit;
     }
 
-    private void validateBankDetails(UserProfile user, DepositApproveRequest req) {
+    private void validateBankDetails(User user, DepositApproveRequest req) {
         if (!user.getNameWithSurname().equals(req.fullName())) {
             throw new HandledException("Name does not match the deposit owner");
         }

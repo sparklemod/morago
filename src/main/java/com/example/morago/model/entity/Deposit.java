@@ -1,5 +1,6 @@
 package com.example.morago.model.entity;
 
+import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.PaymentStatusEnum;
 import com.example.morago.model.entity.base.Auditable;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -29,5 +30,5 @@ public class Deposit extends Auditable {
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    private UserProfile user;
+    private User user;
 }
