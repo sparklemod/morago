@@ -1,6 +1,7 @@
 package com.example.morago.model.dto.requests.translator;
 
 import com.example.morago.model.dto.requests.PageRequest;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,12 +15,12 @@ import lombok.Setter;
 @Schema(description = "Фильтры и параметры пагинации для получения переводчиков")
 public class TranslatorGetRequest extends PageRequest {
 
-    @Schema(description = "Firstname | Lastname | phone | email", example = "sve")
+    @Parameter(description = "Firstname | Lastname | phone | email", example = "sve")
     private String keyword;
 
-    @Schema(description = "Is Translator active", example = "true")
+    @Parameter(description = "Is Translator active", example = "true")
     private Boolean isActive;
 
-    @Schema(description = "Has translator withdrawal", example = "true")
+    @Parameter(description = "Has translator withdrawal", example = "true")
     private Boolean hasWithdrawal;
 }

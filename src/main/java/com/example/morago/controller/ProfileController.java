@@ -3,14 +3,17 @@ package com.example.morago.controller;
 import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.call.CallHistoryRequest;
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
+import com.example.morago.model.dto.requests.notification.NotificationGetCountRequest;
 import com.example.morago.model.dto.requests.theme.ThemePageRequest;
 import com.example.morago.model.dto.requests.user.UpdatePasswordRequest;
 import com.example.morago.model.dto.response.PageResponse;
 import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.entity.Category;
 import com.example.morago.model.entity.File;
+import com.example.morago.model.entity.Notification;
 import com.example.morago.service.CallService;
 import com.example.morago.service.CategoryService;
+import com.example.morago.service.notification.NotificationService;
 import com.example.morago.service.UserService;
 import com.example.morago.service.file.FileService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
@@ -39,11 +43,13 @@ public class ProfileController {
     private final UserService userService;
     private final CategoryService categoryService;
     private final CallService callService;
+    private  final NotificationService notificationService;
 
-    //TODO реализовать
     @GetMapping("/balance")
     @Operation(description = "Get current user balance")
-    public void getBalance() {
+    public ResponseEntity<Integer> getBalance(Authentication authentication) {
+        Long userId = userService.extractUserId(authentication);
+        return ResponseEntity.ok(userService.getBalance(userId));
     }
 
     //TODO реализовать Vlana
@@ -52,16 +58,35 @@ public class ProfileController {
     public void getCallHistory(Authentication authentication, CallHistoryRequest req) {
     }
 
-    //TODO реализовать
     @GetMapping("/notifications")
     @Operation(description = "Get current user notifications")
-    public void getNotifications(Authentication authentication, PageRequest req) {
+    public ResponseEntity<Page<Notification>> getNotifications(
+        Authentication authentication,
+        PageRequest req
+    ) {
+        Long userId = userService.extractUserId(authentication);
+
+        return ResponseEntity.ok(notificationService.getAllUserNotifications(userId, req.toPageable()));
     }
 
-    //TODO реализовать
+    @GetMapping("/notifications/count")
+    @Operation(description = "Get current user notifications")
+    public ResponseEntity<Integer> getNotificationsCount(
+        Authentication authentication,
+        NotificationGetCountRequest req
+    ) {
+        Long userId = userService.extractUserId(authentication);
+
+        return ResponseEntity.ok(notificationService.getCount(userId, req));
+    }
+
     @PostMapping("/notifications/clear")
     @Operation(description = "Clear all current user notifications")
-    public void clearNotifications(Authentication authentication, PageRequest req) {
+    public ResponseEntity<Void> clearNotifications(Authentication authentication) {
+        Long userId = userService.extractUserId(authentication);
+        notificationService.clearAllUserNotifications(userId);
+
+        return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/password/update")

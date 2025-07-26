@@ -1,11 +1,10 @@
 package com.example.morago.model.entity;
 
 import com.example.morago.model.entity.base.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.*;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
 
 @Entity
 @Getter
@@ -20,9 +19,10 @@ public class Notification {
 
     private String title;
     private String text;
-    private LocalDate date;
-    private LocalTime time;
+    private LocalDateTime date;
+    private Boolean isRead;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 }

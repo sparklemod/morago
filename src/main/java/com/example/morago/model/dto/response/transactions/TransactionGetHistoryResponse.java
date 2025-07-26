@@ -9,6 +9,7 @@ import lombok.Builder;
 
 @Builder
 public record TransactionGetHistoryResponse(
+    Long id,
     String date,
     BigDecimal amount,
     PaymentStatusEnum status
@@ -17,6 +18,7 @@ public record TransactionGetHistoryResponse(
 
     public static TransactionGetHistoryResponse mapDepositToDto(Deposit deposit) {
         return TransactionGetHistoryResponse.builder()
+            .id(deposit.getId())
             .date(deposit.getCreatedAt().format(FORMATTER))
             .amount(deposit.getWon())
             .status(deposit.getStatus())

@@ -18,6 +18,11 @@ public class UserService {
     private final UserRepository repository;
     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
+    public Integer getBalance(Long userId) {
+        User user = getUserById(userId);
+        return user.getBalance().intValue();
+    }
+
     public void checkIsExistByPhone(String phone) {
         if (repository.existsByPhone(phone)) {
             throw new HandledException("User profile already exists");
