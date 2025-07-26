@@ -6,7 +6,5 @@ public enum CallStatusEnum {
     COMPLETED,
     BUSY,
     REJECTED,
-
-    //TODO возможно с фронта будет приходить
-    MISSED
+    TIMEOUT
 }

@@ -2,8 +2,11 @@ package com.example.morago.config.websocket;
 
 import com.example.morago.config.security.JwtUtil;
 import io.jsonwebtoken.Claims;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -27,6 +30,11 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Value("${cors.allowed-origins}")
     private List<String> allowedOrigins;
     private final JwtUtil jwtUtil;
+
+    @Bean
+    public ScheduledExecutorService scheduledExecutorService() {
+        return Executors.newScheduledThreadPool(50);
+    }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {

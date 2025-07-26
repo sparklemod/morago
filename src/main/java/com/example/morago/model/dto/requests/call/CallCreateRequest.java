@@ -11,7 +11,4 @@ public class CallCreateRequest {
 
     @NotNull
     private Long themeId;
-
-    @NotNull
-    private LocalDateTime startTime;
 }

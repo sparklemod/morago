@@ -18,10 +18,17 @@ import jakarta.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.message.SimpleMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -34,6 +41,10 @@ public class CallService {
     private final UserService userService;
     private final ThemeService themeService;
     private final TranslatorRepository translatorRepository;
+
+    private final ScheduledExecutorService scheduler;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final Map<Long, ScheduledFuture<?>> timeoutTasks = new ConcurrentHashMap<>();
 
     public Page<CallsGetHistoryResponse> getCallHistory(Long userId, Pageable pageable) {
         User user = userService.getUserById(userId);
@@ -70,7 +81,7 @@ public class CallService {
             .recipient(translator)
             .theme(theme)
             .status(CallStatusEnum.INCOMING)
-            .createdTime(request.getStartTime())
+            .createdTime(LocalDateTime.now())
             .build();
 
         if (repository.hasActiveCall(translator.getId())) {
@@ -82,6 +93,9 @@ public class CallService {
         }
 
         repository.save(call);
+
+        ScheduledFuture<?> timeout = scheduler.schedule(() -> handleCallTimeout(call), 60, TimeUnit.SECONDS);
+        timeoutTasks.put(call.getId(), timeout);
 
         log.info("Call created: caller={}, translator={}, status={}",
             caller.getId(),
@@ -97,6 +111,11 @@ public class CallService {
         call.setStatus(CallStatusEnum.STARTED);
         call.setStartTime(LocalDateTime.now());
         repository.save(call);
+
+        ScheduledFuture<?> task = timeoutTasks.remove(call.getId());
+        if (task != null && !task.isDone()) {
+            task.cancel(true);
+        }
 
         log.info("Call accepted: caller={}, translator={}, status={}",
             call.getCaller().getId(),
@@ -166,10 +185,31 @@ public class CallService {
             .orElseThrow(() -> new RuntimeException("Call " + id + " not found"));
     }
 
-    //TODO сделать
+    //TODO сделать Vlana
     public Call rateCall(Long id) {
 
         return new Call();
+    }
+
+    private void handleCallTimeout(Call call) {
+        if (call.getStatus() == CallStatusEnum.INCOMING) {
+            call.setStatus(CallStatusEnum.TIMEOUT);
+            call.setEndTime(LocalDateTime.now());
+            call.setIsEndCall(true);
+            repository.save(call);
+
+            messagingTemplate.convertAndSendToUser(
+                String.valueOf(call.getCaller().getId()),
+                "/topic/call-timeout",
+                new SimpleMessage("timeout")
+            );
+
+            messagingTemplate.convertAndSendToUser(
+                String.valueOf(call.getRecipient().getId()),
+                "/topic/call-timeout",
+                new SimpleMessage("missed")
+            );
+        }
     }
 
     private void applyCallPayment(Call call) {
