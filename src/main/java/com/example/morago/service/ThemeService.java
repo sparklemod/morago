@@ -13,6 +13,7 @@ import com.example.morago.repository.ThemeRepository;
 import com.example.morago.repository.UserProfileRepository;
 import com.example.morago.repository.specification.ThemeSpecifications;
 import com.example.morago.service.file.FileService;
+import com.example.morago.util.exception.HandledException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ public class ThemeService {
     private final FileService fileService;
     private CategoryService categoryService;
     private final UserProfileRepository userProfileRepository;
+    private final UserProfileService userProfileService;
 
 
     @Autowired
@@ -153,8 +155,7 @@ public class ThemeService {
 
     //Список любимых тем пользователя
     public UserThemesResponse getUserThemes(Long userId) {
-        UserProfile user = userProfileRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
+        UserProfile user = userProfileService.findById(userId);
 
         List<Theme> favoriteThemes = user.getFavoriteThemes()
                 .stream()
@@ -182,11 +183,10 @@ public class ThemeService {
     //Добавление темы в список любимых
     @Transactional
     public void addFavoriteTheme(Long userId, Long themeId) {
-        UserProfile user = userProfileRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
+        UserProfile user = userProfileService.findById(userId);
 
-        Theme theme = themeRepository.findById(themeId)git add .
-                .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + themeId));
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new HandledException("Theme not found: " + themeId));
 
         user.addFavoriteTheme(theme);
         userProfileRepository.save(user);
@@ -195,15 +195,13 @@ public class ThemeService {
     //Удаление темы из списка любимых
     @Transactional
     public void removeFavoriteTheme(Long userId, Long themeId) {
-        UserProfile user = userProfileRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
+        UserProfile user = userProfileService.findById(userId);
 
         Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + themeId));
+                .orElseThrow(() -> new HandledException("Theme not found: " + themeId));
 
         user.removeFavoriteTheme(theme);
         userProfileRepository.save(user);
     }
-
 
 }

@@ -12,10 +12,12 @@ import java.util.List;
 @Repository
 public interface ThemeRepository extends JpaRepository<Theme, Long>,
         JpaSpecificationExecutor<Theme> {
+
     List<Theme> findAllByIdIn(List<Long> ids);
     List<Theme> findAllByIsActiveTrue();
+
     @Query("SELECT t FROM Theme t WHERE t.isActive = true " +
-            "AND (t.id NOT IN :favoriteIds OR :favoriteIds IS EMPTY) " +
+            "AND (:favoriteIds IS NULL OR t.id NOT IN :favoriteIds) " +
             "ORDER BY t.name ASC")
     List<Theme> findActiveThemesExcludingFavorites(@Param("favoriteIds") List<Long> favoriteIds);
 }
