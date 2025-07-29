@@ -2,9 +2,6 @@ package com.example.morago.service;
 
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
 import com.example.morago.model.dto.requests.category.CategoryRequest;
-import com.example.morago.model.dto.requests.theme.ThemePageRequest;
-import com.example.morago.model.dto.response.PageResponse;
-import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.entity.Category;
 import com.example.morago.repository.CategoryRepository;
 import com.example.morago.repository.specification.CategorySpecification;
@@ -19,7 +16,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
-    private final ThemeService themeService;
 
     // Создание
     public Category createCategory(CategoryRequest categoryRequest) {
@@ -62,15 +58,6 @@ public class CategoryService {
     public Category getCategoryByIdOrThrow(Long id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
-    }
-
-    // Получение тем по категории
-    public PageResponse<ThemeResponse> getThemesByCategoryId(
-            Long categoryId,
-            ThemePageRequest themePageRequest,
-            Long userId) {
-        getCategoryByIdOrThrow(categoryId);
-        return themeService.getPublicThemes(themePageRequest, userId, categoryId);
     }
 
     // Маппинг и валидация

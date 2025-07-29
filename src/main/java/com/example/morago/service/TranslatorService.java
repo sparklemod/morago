@@ -3,19 +3,21 @@ package com.example.morago.service;
 import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.dto.requests.translator.TranslatorUpdateRequest;
-import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.model.dto.response.translator.TranslatorGetByThemesResponse;
+import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.model.entity.Language;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.repository.TranslatorRepository;
 import com.example.morago.repository.specification.TranslatorSpecification;
 import jakarta.persistence.EntityNotFoundException;
-import java.util.HashSet;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -71,5 +73,13 @@ public class TranslatorService {
 
     public Translator findById(Long id) {
         return translatorRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+    }
+
+    @Transactional
+    public void selectThemeForTranslators(Long translatorId, Long themeId) {
+        Translator translator = findById(translatorId);
+        Theme theme = themeService.getThemeOrThrow(themeId);
+        translator.getThemes().add(theme);
+        translatorRepository.save(translator);
     }
 }

@@ -1,28 +1,21 @@
 package com.example.morago.service;
 
+import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.call.CallCreateRequest;
 import com.example.morago.model.dto.requests.call.CallPayload;
 import com.example.morago.model.dto.response.calls.CallsGetHistoryResponse;
-import com.example.morago.model.entity.base.User;
-import com.example.morago.model.enums.CallStatusEnum;
 import com.example.morago.model.entity.Call;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.model.entity.Translator;
 import com.example.morago.model.entity.UserProfile;
+import com.example.morago.model.entity.base.User;
+import com.example.morago.model.enums.CallStatusEnum;
 import com.example.morago.model.enums.RoleEnum;
 import com.example.morago.repository.CallRepository;
 import com.example.morago.repository.TranslatorRepository;
 import com.example.morago.repository.UserProfileRepository;
 import com.example.morago.util.exception.HandledException;
 import jakarta.transaction.Transactional;
-import java.math.BigDecimal;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.message.SimpleMessage;
@@ -30,6 +23,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -183,6 +186,10 @@ public class CallService {
     public Call getById(Long id) {
         return repository.findById(id)
             .orElseThrow(() -> new RuntimeException("Call " + id + " not found"));
+    }
+
+    public List<Long> getLastCalledThemeIdsByUser(Long userId, PageRequest pageRequest) {
+        return repository.findTopThemeIdsByUserIdOrderByCallDateDesc(userId, (Pageable) pageRequest);
     }
 
     //TODO сделать Vlana

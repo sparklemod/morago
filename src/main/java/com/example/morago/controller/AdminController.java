@@ -3,9 +3,9 @@ package com.example.morago.controller;
 import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
 import com.example.morago.model.dto.requests.category.CategoryRequest;
-import com.example.morago.model.dto.requests.transactions.deposit.DepositApproveRequest;
 import com.example.morago.model.dto.requests.theme.ThemePageRequest;
 import com.example.morago.model.dto.requests.theme.ThemeRequest;
+import com.example.morago.model.dto.requests.transactions.deposit.DepositApproveRequest;
 import com.example.morago.model.dto.requests.transactions.withdrawal.WithdrawalApproveRequest;
 import com.example.morago.model.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.dto.requests.user.UserGetRequest;
@@ -19,7 +19,6 @@ import com.example.morago.model.entity.Category;
 import com.example.morago.model.entity.Deposit;
 import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.Withdrawal;
-import com.example.morago.model.entity.base.User;
 import com.example.morago.model.enums.FileType;
 import com.example.morago.service.*;
 import com.example.morago.service.file.FileService;
@@ -36,7 +35,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -224,15 +222,6 @@ public class AdminController {
     @PostMapping(value = "/themes/{id}/icon", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ThemeResponse updateThemeIcon(@PathVariable Long id, @RequestParam("icon") MultipartFile iconFile) {
         return themeService.updateThemeIcon(id, iconFile);
-    }
-
-    @PutMapping("/themes/update-popular")
-    @Operation(description = "Recalculate popular theme")
-    public PageResponse<ThemeResponse> updatePopularThemes(@Valid @ModelAttribute ThemePageRequest themePageRequest,
-                                                           @AuthenticationPrincipal User user) {
-        Long userId = user != null ? user.getId() : null;
-        return themeService.getPublicThemes(themePageRequest, userId, themePageRequest.getCategoryId());
-
     }
 
     @PutMapping("/themes/update/{id}")

@@ -4,7 +4,6 @@ import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.call.CallHistoryRequest;
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
 import com.example.morago.model.dto.requests.notification.NotificationGetCountRequest;
-import com.example.morago.model.dto.requests.theme.ThemePageRequest;
 import com.example.morago.model.dto.requests.user.UpdatePasswordRequest;
 import com.example.morago.model.dto.response.PageResponse;
 import com.example.morago.model.dto.response.calls.CallsGetHistoryResponse;
@@ -16,9 +15,9 @@ import com.example.morago.model.entity.Notification;
 import com.example.morago.service.CallService;
 import com.example.morago.service.CategoryService;
 import com.example.morago.service.ThemeService;
-import com.example.morago.service.notification.NotificationService;
 import com.example.morago.service.UserService;
 import com.example.morago.service.file.FileService;
+import com.example.morago.service.notification.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -33,7 +32,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,8 +46,8 @@ public class ProfileController {
     private final UserService userService;
     private final CategoryService categoryService;
     private final CallService callService;
-    private  final NotificationService notificationService;
-    private  final ThemeService themeService;
+    private final NotificationService notificationService;
+    private final ThemeService themeService;
 
     @GetMapping("/balance")
     @Operation(description = "Get current user balance")
@@ -70,8 +68,8 @@ public class ProfileController {
     @GetMapping("/notifications")
     @Operation(description = "Get current user notifications")
     public ResponseEntity<Page<Notification>> getNotifications(
-        Authentication authentication,
-        PageRequest req
+            Authentication authentication,
+            PageRequest req
     ) {
         Long userId = userService.extractUserId(authentication);
 
@@ -81,8 +79,8 @@ public class ProfileController {
     @GetMapping("/notifications/count")
     @Operation(description = "Get current user notifications")
     public ResponseEntity<Integer> getNotificationsCount(
-        Authentication authentication,
-        NotificationGetCountRequest req
+            Authentication authentication,
+            NotificationGetCountRequest req
     ) {
         Long userId = userService.extractUserId(authentication);
 
@@ -129,23 +127,32 @@ public class ProfileController {
 
     @GetMapping("/categories")
     @Operation(description = "Get public list of categories")
-    public Page<Category> getPublicCategories(@ModelAttribute CategoryPageRequest categoryPageRequest) {
+    public Page<Category> getAllCategories(@ModelAttribute CategoryPageRequest categoryPageRequest) {
         return categoryService.getPublicCategories(categoryPageRequest);
     }
-    //TODO доделать-переделать связи с Call и Translator
-    @GetMapping("/category{id}/themes")
-    @Operation(description = "Get public themes by category")
-    public PageResponse<ThemeResponse> getPublicThemesByCategory(
-            @PathVariable Long id,
-            @ModelAttribute ThemePageRequest themePageRequest,
-            Authentication auth) {
 
-        Long userId = (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof Jwt)
-                ? userService.extractUserId(auth)
-                : null;
-        return categoryService.getThemesByCategoryId(id, themePageRequest, userId);
+    @GetMapping("/categories/{categoryId}/themes")
+    @Operation(description = "Get themes by category")
+
+    public PageResponse<ThemeResponse> getThemesByCategory(
+            @PathVariable Long categoryId, @ModelAttribute CategoryPageRequest categoryPageRequest
+    ) {
+        return themeService.getThemesByCategoryId(categoryId, categoryPageRequest);
     }
-    //TODO реализовать Vlana
+
+    @GetMapping("/themes/popular")
+    @Operation(description = "Get popular themes")
+    public PageResponse<ThemeResponse> getPopularThemes(@ModelAttribute PageRequest pageRequest) {
+        return themeService.getPopularThemes(pageRequest);
+    }
+
+    @GetMapping("/themes/recent-calls")
+    public PageResponse<ThemeResponse> getThemesByRecentCalls(@ModelAttribute PageRequest pageRequest, Authentication authentication) {
+        Long userId = userService.extractUserId(authentication);
+        return themeService.getLastCalledTheme(userId, pageRequest);
+    }
+
+
     @GetMapping("/themes")
     @Operation(description = "Get current user favorite themes")
     public ResponseEntity<UserThemesResponse> getThemes(Authentication authentication) {

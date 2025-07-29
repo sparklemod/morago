@@ -1,5 +1,6 @@
 package com.example.morago.service;
 
+import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.theme.ThemePageRequest;
 import com.example.morago.model.dto.requests.theme.ThemeRequest;
 import com.example.morago.model.dto.response.PageResponse;
@@ -17,6 +18,8 @@ import com.example.morago.util.exception.HandledException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,28 +40,46 @@ public class ThemeService {
     private CategoryService categoryService;
     private final UserProfileRepository userProfileRepository;
     private final UserProfileService userProfileService;
+    private CallService callService;
 
+    @Autowired
+    public void setCallService(@Lazy CallService callService) {
+        this.callService = callService;
+    }
 
     @Autowired
     public void setCategoryService(@Lazy CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
+    // Получение всех активных тем
 
-    // Создание Theme
-    public ThemeResponse createTheme(ThemeRequest themeRequest) {
-        Theme theme = new Theme();
-        fillThemeFields(theme, themeRequest);
-        return toThemeResponse(themeRepository.save(theme));
+    public PageResponse<ThemeResponse> getAllActiveThemes(PageRequest pageRequest) {
+        Page<Theme> page = themeRepository.findAllByIsActiveTrue((Pageable) pageRequest);
+        return new PageResponse<>(page.map(this::toThemeResponse));
     }
 
-    // Обновление Theme
+    // Получение тем по категории
+    public PageResponse<ThemeResponse> getThemesByCategoryId(Long categoryId, PageRequest pageRequest) {
+        Page<Theme> page = themeRepository.findByCategoryIdAndIsActiveTrue(categoryId, pageRequest.toPageable());
+        return new PageResponse<>(page.map(this::toThemeResponse));
+    }
 
-    public ThemeResponse updateTheme(Long id, ThemeRequest themeRequest) {
-        Theme theme = getThemeOrThrow(id);
-        fillThemeFields(theme, themeRequest);
-        Theme updatedTheme = themeRepository.save(theme);
-        return toThemeResponse(updatedTheme);
+    // Получение популярных тем
+    @Cacheable("popularThemes")
+    public PageResponse<ThemeResponse> getPopularThemes(PageRequest pageRequest) {
+        Page<Theme> page = themeRepository.findByIsPopularTrueAndIsActiveTrue(pageRequest.toPageable());
+        return new PageResponse<>(page.map(this::toThemeResponse));
+    }
+
+    // Получение по последним звонкам
+    public PageResponse<ThemeResponse> getLastCalledTheme(Long userId, PageRequest pageRequest) {
+        List<Long> themesIds = callService.getLastCalledThemeIdsByUser(userId, pageRequest);
+        if (themesIds.isEmpty()) {
+            return new PageResponse<>(Page.empty());
+        }
+        Page<Theme> page = themeRepository.findByIdInAndIsActiveTrue(themesIds, pageRequest.toPageable());
+        return new PageResponse<>(page.map(this::toThemeResponse));
     }
 
     // Обновление иконки Theme
@@ -73,84 +94,17 @@ public class ThemeService {
         return toThemeResponse(theme);
     }
 
-    // Удаление Theme
-    public void deleteTheme(Long id) {
-        Theme theme = getThemeOrThrow(id);
-        // Удаляем связанный файл, если есть
-        if (theme.getIcon() != null) {
-            fileService.deleteFile(theme.getIcon().getId());
-        }
-        themeRepository.delete(theme);
-    }
-
     // Получение тем по переводчику
     public List<Theme> getByIds(Set<Long> ids) {
         return themeRepository.findAllByIdIn(new ArrayList<>(ids));
     }
 
-    // Публичный список тем
-    public PageResponse<ThemeResponse> getPublicThemes(
-            ThemePageRequest themePageRequest,
-            Long userId,
-            Long categoryId) {
-        Specification<Theme> spec = userId != null // Сортировка в Specification
-                ? ThemeSpecifications.forAuthenticated(themePageRequest.getKeyword(), userId)
-                .and(ThemeSpecifications.hasCategory(categoryId))
-                : ThemeSpecifications.forAnonymous().and(ThemeSpecifications.hasCategory(categoryId));
-        Pageable pageable = themePageRequest.toPageableWithoutSort();
-        Page<Theme> page = themeRepository.findAll(spec, pageable);
-        return mapToPageResponse(page);
-    }
-
     //Список тем для Админа
     public PageResponse<ThemeResponse> getAdminThemes(ThemePageRequest themePageRequest) {
-        Specification<Theme> spec = ThemeSpecifications.combineForAdmin(
+        Specification<Theme> spec = ThemeSpecifications.adminFilter(
                 themePageRequest.getKeyword(), themePageRequest.getIsActive(), themePageRequest.getCategoryId());
-        Pageable pageable = themePageRequest.toPageable();
-
-        Page<Theme> themePage = themeRepository.findAll(spec, pageable);
-        return mapToPageResponse(themePage);
-    }
-
-    public ThemeResponse getThemeById(Long id) {
-        Theme theme = getThemeOrThrow(id);
-        return toThemeResponse(theme);
-    }
-
-    // Маппинг Page<Theme> в PageResponse<ThemeResponse>
-    private PageResponse<ThemeResponse> mapToPageResponse(Page<Theme> themePage) {
-        Page<ThemeResponse> responsePage = themePage.map(this::toThemeResponse);
-        return new PageResponse<>(responsePage);
-    }
-
-    // Маппинг Theme в ThemeResponse
-    private ThemeResponse toThemeResponse(Theme theme) {
-        ThemeResponse response = new ThemeResponse();
-        response.setId(theme.getId());
-        response.setName(theme.getName());
-        response.setIsActive(theme.getIsActive());
-        response.setIsPopular(theme.getIsPopular());
-        response.setCategoryId(theme.getCategory() != null ? theme.getCategory().getId() : null);
-        response.setIconId(theme.getIcon() != null ? theme.getIcon().getId() : null);
-        return response;
-    }
-
-    // Обновление полей
-    private void fillThemeFields(Theme theme, ThemeRequest themeRequest) {
-        theme.setName(themeRequest.getName());
-        theme.setTitle(themeRequest.getTitle());
-        theme.setDescription(themeRequest.getDescription());
-        theme.setPrice(themeRequest.getPrice());
-        theme.setNightPrice(themeRequest.getNightPrice());
-        theme.setIsActive(themeRequest.getIsActive() != null ? themeRequest.getIsActive() : false);
-        theme.setIsPopular(themeRequest.getIsPopular() != null ? themeRequest.getIsPopular() : false);
-        theme.setIcon(themeRequest.getIconId() != null && themeRequest.getIconId() > 0 ? fileService.getFileById(themeRequest.getIconId()) : null);
-        theme.setCategory(categoryService.getCategoryByIdOrThrow(themeRequest.getCategoryId()));
-    }
-
-    public Theme getThemeOrThrow(Long id) {
-        return themeRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + id));
+        Page<Theme> page = themeRepository.findAll(spec, themePageRequest.toPageable());
+        return new PageResponse<>(page.map(this::toThemeResponse));
     }
 
     //Список любимых тем пользователя
@@ -204,4 +158,62 @@ public class ThemeService {
         userProfileRepository.save(user);
     }
 
+    // CRUD
+    public ThemeResponse getThemeById(Long id) {
+        Theme theme = getThemeOrThrow(id);
+        return toThemeResponse(theme);
+    }
+
+    public ThemeResponse createTheme(ThemeRequest themeRequest) {
+        Theme theme = new Theme();
+        fillThemeFields(theme, themeRequest);
+        return toThemeResponse(themeRepository.save(theme));
+    }
+
+    @CacheEvict(value = "popularThemes", allEntries = true)
+    public ThemeResponse updateTheme(Long id, ThemeRequest themeRequest) {
+        Theme theme = getThemeOrThrow(id);
+        fillThemeFields(theme, themeRequest);
+        Theme updatedTheme = themeRepository.save(theme);
+        return toThemeResponse(updatedTheme);
+    }
+
+    public void deleteTheme(Long id) {
+        Theme theme = getThemeOrThrow(id);
+        // Удаляем связанный файл, если есть
+        if (theme.getIcon() != null) {
+            fileService.deleteFile(theme.getIcon().getId());
+        }
+        themeRepository.delete(theme);
+    }
+
+    // Маппинг Theme в ThemeResponse
+    private ThemeResponse toThemeResponse(Theme theme) {
+        ThemeResponse response = new ThemeResponse();
+        response.setId(theme.getId());
+        response.setName(theme.getName());
+        response.setIsActive(theme.getIsActive());
+        response.setIsPopular(theme.getIsPopular());
+        response.setCategoryId(theme.getCategory() != null ? theme.getCategory().getId() : null);
+        response.setIconId(theme.getIcon() != null ? theme.getIcon().getId() : null);
+        return response;
+    }
+
+    // Обновление полей
+    private void fillThemeFields(Theme theme, ThemeRequest themeRequest) {
+        theme.setName(themeRequest.getName());
+        theme.setTitle(themeRequest.getTitle());
+        theme.setDescription(themeRequest.getDescription());
+        theme.setPrice(themeRequest.getPrice());
+        theme.setNightPrice(themeRequest.getNightPrice());
+        theme.setIsActive(themeRequest.getIsActive() != null ? themeRequest.getIsActive() : false);
+        theme.setIsPopular(themeRequest.getIsPopular() != null ? themeRequest.getIsPopular() : false);
+        theme.setIcon(themeRequest.getIconId() != null && themeRequest.getIconId() > 0 ? fileService.getFileById(themeRequest.getIconId()) : null);
+        theme.setCategory(categoryService.getCategoryByIdOrThrow(themeRequest.getCategoryId()));
+    }
+
+    public Theme getThemeOrThrow(Long id) {
+        return themeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + id));
+    }
 }

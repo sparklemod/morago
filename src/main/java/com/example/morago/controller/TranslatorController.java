@@ -1,9 +1,13 @@
 package com.example.morago.controller;
 
+import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.transactions.TransactionCreateRequest;
 import com.example.morago.model.dto.requests.translator.TranslatorUpdateRequest;
+import com.example.morago.model.dto.response.PageResponse;
+import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.model.entity.Withdrawal;
+import com.example.morago.service.ThemeService;
 import com.example.morago.service.TranslatorService;
 import com.example.morago.service.UserService;
 import com.example.morago.service.WithdrawalService;
@@ -25,12 +29,13 @@ public class TranslatorController {
     private final TranslatorService translatorService;
     private final WithdrawalService withdrawalService;
     private final UserService userService;
+    private final ThemeService themeService;
 
     @PutMapping()
     @Operation(description = "Fill translator profile")
     public ResponseEntity<TranslatorGetResponse> updateTranslator(
-        Authentication authentication,
-        @RequestBody TranslatorUpdateRequest request) {
+            Authentication authentication,
+            @RequestBody TranslatorUpdateRequest request) {
         Long userId = userService.extractUserId(authentication);
 
         return ResponseEntity.ok(TranslatorGetResponse.mapToDto(translatorService.update(userId, request)));
@@ -39,8 +44,8 @@ public class TranslatorController {
     @PostMapping("/withdrawal")
     @Operation(description = "Create withdrawal")
     public ResponseEntity<Withdrawal> createWithdrawal(
-        Authentication authentication,
-        @RequestBody TransactionCreateRequest request) {
+            Authentication authentication,
+            @RequestBody TransactionCreateRequest request) {
         Long userId = userService.extractUserId(authentication);
         Withdrawal withdrawal = withdrawalService.createWithdrawal(userId, request);
         return ResponseEntity.ok(withdrawal);
@@ -52,6 +57,23 @@ public class TranslatorController {
     public ResponseEntity<Void> switchStatus(Authentication authentication) {
         Long userId = userService.extractUserId(authentication);
         translatorService.switchStatus(userId);
+        return ResponseEntity.ok().build();
+    }
+
+    /** Themes  */
+    // Получить ВСЕ доступные темы (чтобы выбрать свои)
+    @GetMapping("/themes")
+    @Operation(description = "Get all available themes")
+    public PageResponse<ThemeResponse> getAllThemesForTranslator(@ModelAttribute PageRequest pageRequest) {
+        return themeService.getAllActiveThemes(pageRequest);
+    }
+
+    // Отметить тему как "моя" (выбор темы переводчиком)
+    @PostMapping("/themes/{themeId}/select")
+    @Operation(description = "Select theme to translators set")
+    public ResponseEntity<Void> selectTheme(@PathVariable Long themeId, Authentication authentication) {
+        Long userId = userService.extractUserId(authentication);
+        translatorService.selectThemeForTranslators(userId, themeId);
         return ResponseEntity.ok().build();
     }
 }

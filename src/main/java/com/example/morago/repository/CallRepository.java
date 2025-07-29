@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface CallRepository extends JpaRepository<Call, Long> {
     Page<Call> findByCallerId(Long userId, Pageable pageable);
@@ -30,4 +32,14 @@ public interface CallRepository extends JpaRepository<Call, Long> {
               AND c.isEndCall = false
         """)
     boolean hasActiveCall(@Param("translatorId") Long translatorId);
+
+    @Query("""
+                SELECT DISTINCT c.theme.id 
+                FROM Call c 
+                WHERE c.caller.id = :userId 
+                   OR c.recipient.id = :userId 
+                ORDER BY c.createdTime DESC
+            """)
+    List<Long> findTopThemeIdsByUserIdOrderByCallDateDesc(@Param("userId") Long userId, Pageable pageable);
+
 }
