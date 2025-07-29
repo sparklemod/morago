@@ -7,12 +7,15 @@ import com.example.morago.model.dto.requests.notification.NotificationGetCountRe
 import com.example.morago.model.dto.requests.theme.ThemePageRequest;
 import com.example.morago.model.dto.requests.user.UpdatePasswordRequest;
 import com.example.morago.model.dto.response.PageResponse;
+import com.example.morago.model.dto.response.calls.CallsGetHistoryResponse;
 import com.example.morago.model.dto.response.theme.ThemeResponse;
+import com.example.morago.model.dto.response.theme.UserThemesResponse;
 import com.example.morago.model.entity.Category;
 import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.Notification;
 import com.example.morago.service.CallService;
 import com.example.morago.service.CategoryService;
+import com.example.morago.service.ThemeService;
 import com.example.morago.service.notification.NotificationService;
 import com.example.morago.service.UserService;
 import com.example.morago.service.file.FileService;
@@ -23,7 +26,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -44,6 +49,7 @@ public class ProfileController {
     private final CategoryService categoryService;
     private final CallService callService;
     private  final NotificationService notificationService;
+    private  final ThemeService themeService;
 
     @GetMapping("/balance")
     @Operation(description = "Get current user balance")
@@ -55,7 +61,10 @@ public class ProfileController {
     //TODO реализовать Vlana
     @GetMapping("/calls/history")
     @Operation(description = "Get current user call history")
-    public void getCallHistory(Authentication authentication, CallHistoryRequest req) {
+    public ResponseEntity<Page<CallsGetHistoryResponse>> getCallHistory(Authentication authentication, @ParameterObject CallHistoryRequest req) {
+        Long userId = userService.extractUserId(authentication);
+        Pageable pageable = req.toPageable();
+        return ResponseEntity.ok(callService.getCallHistory(userId, pageable));
     }
 
     @GetMapping("/notifications")
@@ -137,8 +146,27 @@ public class ProfileController {
         return categoryService.getThemesByCategoryId(id, themePageRequest, userId);
     }
     //TODO реализовать Vlana
-    @GetMapping("/theme{id}")
+    @GetMapping("/themes")
     @Operation(description = "Get current user favorite themes")
-    public void getThemes() {
+    public ResponseEntity<UserThemesResponse> getThemes(Authentication authentication) {
+        Long userId = userService.extractUserId(authentication);
+        UserThemesResponse themes = themeService.getUserThemes(userId);
+        return ResponseEntity.ok(themes);
+    }
+
+    @PostMapping("/themes/{id}/favorite")
+    @Operation(description = "Add theme to favorites")
+    public ResponseEntity<Void> addFavoriteTheme(@PathVariable Long id, Authentication authentication) {
+        Long userId = userService.extractUserId(authentication);
+        themeService.addFavoriteTheme(userId, id);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/themes/{id}/favorite")
+    @Operation(description = "Remove theme from favorites")
+    public ResponseEntity<Void> removeFavoriteTheme(@PathVariable Long id, Authentication authentication) {
+        Long userId = userService.extractUserId(authentication);
+        themeService.removeFavoriteTheme(userId, id);
+        return ResponseEntity.ok().build();
     }
 }

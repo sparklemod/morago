@@ -4,10 +4,13 @@ import com.example.morago.model.dto.requests.theme.ThemePageRequest;
 import com.example.morago.model.dto.requests.theme.ThemeRequest;
 import com.example.morago.model.dto.response.PageResponse;
 import com.example.morago.model.dto.response.theme.ThemeResponse;
+import com.example.morago.model.dto.response.theme.UserThemesResponse;
 import com.example.morago.model.entity.File;
 import com.example.morago.model.entity.Theme;
+import com.example.morago.model.entity.UserProfile;
 import com.example.morago.model.enums.FileType;
 import com.example.morago.repository.ThemeRepository;
+import com.example.morago.repository.UserProfileRepository;
 import com.example.morago.repository.specification.ThemeSpecifications;
 import com.example.morago.service.file.FileService;
 import jakarta.persistence.EntityNotFoundException;
@@ -18,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
@@ -30,6 +34,8 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final FileService fileService;
     private CategoryService categoryService;
+    private final UserProfileRepository userProfileRepository;
+
 
     @Autowired
     public void setCategoryService(@Lazy CategoryService categoryService) {
@@ -144,4 +150,60 @@ public class ThemeService {
         return themeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + id));
     }
+
+    //Список любимых тем пользователя
+    public UserThemesResponse getUserThemes(Long userId) {
+        UserProfile user = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
+
+        List<Theme> favoriteThemes = user.getFavoriteThemes()
+                .stream()
+                .filter(Theme::getIsActive)
+                .toList();
+
+        List<Theme> defaultThemes;
+
+        if (favoriteThemes.isEmpty()) {
+            defaultThemes = themeRepository.findAllByIsActiveTrue();
+        } else {
+            List<Long> favoriteIds = favoriteThemes.stream()
+                    .map(Theme::getId)
+                    .toList();
+
+            defaultThemes = themeRepository.findActiveThemesExcludingFavorites(favoriteIds);
+        }
+
+        return new UserThemesResponse(
+                favoriteThemes.stream().map(this::toThemeResponse).toList(),
+                defaultThemes.stream().map(this::toThemeResponse).toList()
+        );
+    }
+
+    //Добавление темы в список любимых
+    @Transactional
+    public void addFavoriteTheme(Long userId, Long themeId) {
+        UserProfile user = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
+
+        Theme theme = themeRepository.findById(themeId)git add .
+                .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + themeId));
+
+        user.addFavoriteTheme(theme);
+        userProfileRepository.save(user);
+    }
+
+    //Удаление темы из списка любимых
+    @Transactional
+    public void removeFavoriteTheme(Long userId, Long themeId) {
+        UserProfile user = userProfileRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found: " + userId));
+
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new EntityNotFoundException("Theme not found: " + themeId));
+
+        user.removeFavoriteTheme(theme);
+        userProfileRepository.save(user);
+    }
+
+
 }
