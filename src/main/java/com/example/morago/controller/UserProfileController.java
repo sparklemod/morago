@@ -4,8 +4,10 @@ import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.transactions.TransactionCreateRequest;
 import com.example.morago.model.dto.requests.user.UserProfileUpdateRequest;
 import com.example.morago.model.dto.response.translator.TranslatorGetByThemesResponse;
+import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.model.dto.response.user.UserGetResponse;
 import com.example.morago.model.entity.Deposit;
+import com.example.morago.model.entity.Translator;
 import com.example.morago.service.DepositService;
 import com.example.morago.service.TranslatorService;
 import com.example.morago.service.UserProfileService;
@@ -37,21 +39,23 @@ public class UserProfileController {
     @GetMapping("/translators")
     @Operation(description = "Get translators list filtered by theme")
     public ResponseEntity<Page<TranslatorGetByThemesResponse>> getTranslators(
-        @RequestParam(value = "themeId", required = false) Long themeId,
-        PageRequest request
+            @RequestParam(value = "themeId", required = false) Long themeId,
+            PageRequest request
     ) {
         return ResponseEntity.ok(translatorService.searchTranslatorsByTheme(themeId, request));
     }
 
     @GetMapping("/translators/{translatorId}")
     @Operation(description = "Get translator info by Id")
-    public void getTranslator(@PathVariable Long translatorId) {
+    public ResponseEntity<TranslatorGetResponse> getTranslator(@PathVariable Long translatorId) {
+        Translator translator = translatorService.findById(translatorId);
+        return ResponseEntity.ok(TranslatorGetResponse.mapToDto(translator));
     }
 
     @PostMapping("/deposit")
     @Operation(description = "Create deposit")
     public ResponseEntity<Deposit> createDeposit(Authentication authentication,
-        @RequestBody TransactionCreateRequest request) {
+                                                 @RequestBody TransactionCreateRequest request) {
         Long userId = userService.extractUserId(authentication);
         Deposit deposit = depositService.createDeposit(userId, request);
         return ResponseEntity.ok(deposit);
@@ -60,8 +64,8 @@ public class UserProfileController {
     @PutMapping()
     @Operation(description = "Update user profile")
     public ResponseEntity<UserGetResponse> updateUserProfile(
-        Authentication authentication,
-        @RequestBody UserProfileUpdateRequest request) {
+            Authentication authentication,
+            @RequestBody UserProfileUpdateRequest request) {
         Long userId = userService.extractUserId(authentication);
         return ResponseEntity.ok(UserGetResponse.mapToDto(service.update(userId, request)));
     }

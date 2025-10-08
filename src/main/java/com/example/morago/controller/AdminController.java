@@ -15,10 +15,7 @@ import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.dto.response.transactions.TransactionGetHistoryResponse;
 import com.example.morago.model.dto.response.translator.TranslatorGetResponse;
 import com.example.morago.model.dto.response.user.UserGetResponse;
-import com.example.morago.model.entity.Category;
-import com.example.morago.model.entity.Deposit;
-import com.example.morago.model.entity.File;
-import com.example.morago.model.entity.Withdrawal;
+import com.example.morago.model.entity.*;
 import com.example.morago.model.enums.FileType;
 import com.example.morago.service.*;
 import com.example.morago.service.file.FileService;
@@ -54,6 +51,7 @@ public class AdminController {
     private final CallService callService;
     private final DepositService depositService;
     private final WithdrawalService withdrawalService;
+    private final LanguageService languageService;
 
     /** Translators */
     @GetMapping("/translators")
@@ -256,5 +254,22 @@ public class AdminController {
     @Operation(description = "Delete file by Id [ADMIN]")
     public void deleteFile(@PathVariable Long id) {
         fileService.deleteFile(id);
+    }
+
+    /** Languages */
+    @PostMapping("/languages")
+    public ResponseEntity<Language> createLanguage(@RequestBody @Valid Language language) {
+        return new ResponseEntity<>(languageService.create(language), HttpStatus.CREATED);
+    }
+
+    @PutMapping("/languages/{id}")
+    public ResponseEntity<Language> updateLanguage(@PathVariable Long id, @RequestBody @Valid Language language) {
+        return ResponseEntity.ok(languageService.update(id, language));
+    }
+
+    @DeleteMapping("/languages/{id}")
+    public ResponseEntity<Void> deleteLanguage(@PathVariable Long id) {
+        languageService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }

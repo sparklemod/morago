@@ -11,11 +11,9 @@ import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.dto.response.theme.UserThemesResponse;
 import com.example.morago.model.entity.Category;
 import com.example.morago.model.entity.File;
+import com.example.morago.model.entity.Language;
 import com.example.morago.model.entity.Notification;
-import com.example.morago.service.CallService;
-import com.example.morago.service.CategoryService;
-import com.example.morago.service.ThemeService;
-import com.example.morago.service.UserService;
+import com.example.morago.service.*;
 import com.example.morago.service.file.FileService;
 import com.example.morago.service.notification.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +33,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -48,6 +48,7 @@ public class ProfileController {
     private final CallService callService;
     private final NotificationService notificationService;
     private final ThemeService themeService;
+    private final LanguageService languageService;
 
     @GetMapping("/balance")
     @Operation(description = "Get current user balance")
@@ -56,7 +57,6 @@ public class ProfileController {
         return ResponseEntity.ok(userService.getBalance(userId));
     }
 
-    //TODO реализовать Vlana
     @GetMapping("/calls/history")
     @Operation(description = "Get current user call history")
     public ResponseEntity<Page<CallsGetHistoryResponse>> getCallHistory(Authentication authentication, @ParameterObject CallHistoryRequest req) {
@@ -152,7 +152,6 @@ public class ProfileController {
         return themeService.getLastCalledTheme(userId, pageRequest);
     }
 
-
     @GetMapping("/themes")
     @Operation(description = "Get current user favorite themes")
     public ResponseEntity<UserThemesResponse> getThemes(Authentication authentication) {
@@ -175,5 +174,10 @@ public class ProfileController {
         Long userId = userService.extractUserId(authentication);
         themeService.removeFavoriteTheme(userId, id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/languages")
+    public List<Language> getAllLanguages() {
+        return languageService.getAll();
     }
 }
