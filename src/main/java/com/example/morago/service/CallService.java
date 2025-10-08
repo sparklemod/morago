@@ -3,7 +3,9 @@ package com.example.morago.service;
 import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.call.CallCreateRequest;
 import com.example.morago.model.dto.requests.call.CallPayload;
+import com.example.morago.model.dto.requests.call.CallRateRequest;
 import com.example.morago.model.dto.response.calls.CallsGetHistoryResponse;
+import com.example.morago.model.dto.response.calls.RatedCallResponse;
 import com.example.morago.model.entity.Call;
 import com.example.morago.model.entity.Theme;
 import com.example.morago.model.entity.Translator;
@@ -15,6 +17,7 @@ import com.example.morago.repository.CallRepository;
 import com.example.morago.repository.TranslatorRepository;
 import com.example.morago.repository.UserProfileRepository;
 import com.example.morago.util.exception.HandledException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -192,10 +195,48 @@ public class CallService {
         return repository.findTopThemeIdsByUserIdOrderByCallDateDesc(userId, (Pageable) pageRequest);
     }
 
-    //TODO сделать Vlana
-    public Call rateCall(Long id) {
+    @Transactional
+    public RatedCallResponse rateCall(Long callId, Long raterId, CallRateRequest request) {
+        log.info("Attempting to rate call with id={} by userId={} with rating={}", callId, raterId, request.getRating());
 
-        return new Call();
+        Call call = repository.findById(callId).orElseThrow(() -> {
+            log.error("Call not found with id={}", callId);
+            return new EntityNotFoundException("Call not found");
+        });
+
+        if (call.getCaller().getId().equals(raterId)) {
+            if (Boolean.TRUE.equals(call.getUserHasRated())) {
+                log.warn("User with id={} has already rated call id={}", raterId, callId);
+                throw new IllegalStateException("User already rated this call");
+            }
+            call.setUserRating(request.getRating());
+            call.setUserHasRated(true);
+            log.info("User with id={} rated call id={} with {}", raterId, callId, request.getRating());
+
+        } else if (call.getRecipient().getId().equals(raterId)) {
+            if (Boolean.TRUE.equals(call.getTranslatorHasRated())) {
+                log.warn("Translator with id={} has already rated call id={}", raterId, callId);
+                throw new IllegalStateException("Translator already rated this call");
+            }
+            call.setTranslatorRating(request.getRating());
+            call.setTranslatorHasRated(true);
+            log.info("Translator with id={} rated call id={} with {}", raterId, callId, request.getRating());
+
+        } else {
+            log.error("Unauthorized rating attempt: userId={} is neither caller nor recipient of call id={}", raterId, callId);
+            throw new SecurityException("You are not allowed to rate this call");
+        }
+
+        Call savedCall = repository.save(call);
+
+        Double avgUserRatingObj = repository.getAverageUserRatingForTranslator(savedCall.getRecipient().getId());
+        Double avgTranslatorRatingObj = repository.getAverageTranslatorRatingForUser(savedCall.getCaller().getId());
+
+        return new RatedCallResponse(
+                savedCall,
+                avgUserRatingObj != null ? avgUserRatingObj.doubleValue() : 0.0,
+                avgTranslatorRatingObj != null ? avgTranslatorRatingObj.doubleValue() : 0.0
+        );
     }
 
     private void handleCallTimeout(Call call) {

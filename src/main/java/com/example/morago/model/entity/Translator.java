@@ -31,6 +31,8 @@ public class Translator extends User {
     @Size(max = 500, message = "Memo must be less than 500 characters")
     private String memo;
 
+    private Double averageRating;
+
     @ManyToMany
     @JoinTable(
             name = "translator_theme",

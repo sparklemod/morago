@@ -259,19 +259,26 @@ public class AdminController {
     }
 
     /** Languages */
+    @Operation(description = "Create new language [ADMIN]")
     @PostMapping("/languages")
-    public ResponseEntity<LanguageResponse> createLanguage(@RequestBody @Valid LanguageRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(languageService.create(request));
+    @ResponseStatus(HttpStatus.CREATED)
+    public LanguageResponse createLanguage(@Valid @RequestBody LanguageRequest request) {
+        return languageService.create(request);
     }
 
+    @Operation(description = "Update language [ADMIN]")
     @PutMapping("/languages/{id}")
-    public ResponseEntity<LanguageResponse> updateLanguage(@PathVariable Long id, @RequestBody @Valid LanguageRequest request) {
-        return ResponseEntity.ok(languageService.update(id, request));
+    public LanguageResponse updateLanguage(
+            @PathVariable Long id,
+            @Valid @RequestBody LanguageRequest request
+    ) {
+        return languageService.update(id, request);
     }
 
+    @Operation(description = "Delete (soft) language [ADMIN]")
     @DeleteMapping("/languages/{id}")
-    public ResponseEntity<Void> deleteLanguage(@PathVariable Long id) {
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteLanguage(@PathVariable Long id) {
         languageService.softDelete(id);
-        return ResponseEntity.noContent().build();
     }
 }

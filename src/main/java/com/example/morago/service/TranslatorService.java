@@ -54,9 +54,10 @@ public class TranslatorService {
 
         if (themeId == null) {
             translators = translatorRepository.findAll(request.toPageable());
-        } else {
-            translators = translatorRepository.findAllByThemesId(themeId, request.toPageable());
+            return translators.map(t -> TranslatorGetByThemesResponse.mapToDto(t, null));
         }
+
+        translators = translatorRepository.findAllByThemesId(themeId, request.toPageable());
 
         Theme theme = themeService.getThemeOrThrow(themeId);
         return translators.map(t -> TranslatorGetByThemesResponse.mapToDto(t, theme.getName()));

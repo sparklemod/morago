@@ -2,10 +2,13 @@ package com.example.morago.controller;
 
 import com.example.morago.model.dto.requests.call.CallCreateRequest;
 import com.example.morago.model.dto.requests.call.CallPayload;
+import com.example.morago.model.dto.requests.call.CallRateRequest;
+import com.example.morago.model.dto.response.calls.RatedCallResponse;
 import com.example.morago.model.entity.Call;
 import com.example.morago.service.CallService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -43,8 +46,13 @@ public class CallController {
     }
 
     @PutMapping("/rate/{id}")
-    public ResponseEntity<Call> rateCall(@PathVariable Long id) {
-        return ResponseEntity.ok(callService.rateCall(id));
+    public ResponseEntity<RatedCallResponse> rateCall(
+            @PathVariable Long id,
+            Authentication authentication,
+            @RequestBody @Valid CallRateRequest request) {
+
+        Long raterId = ((Jwt) authentication.getPrincipal()).getClaim("id");
+        return ResponseEntity.ok(callService.rateCall(id, raterId, request));
     }
 }
 

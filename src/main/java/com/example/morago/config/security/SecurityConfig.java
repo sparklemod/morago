@@ -62,7 +62,6 @@ public class SecurityConfig {
                                 "/profile/**",
                                 "/themes/**",
                                 "/categories/**",
-                                "/languages/**",
                                 "/call/end"
                         ).hasAnyAuthority("ROLE_USER", "ROLE_TRANSLATOR")
                         .requestMatchers(
@@ -71,7 +70,7 @@ public class SecurityConfig {
                                 "/call/**"
                         ).hasAuthority("ROLE_USER")
                         .requestMatchers("/translator/**", "/call/accept").hasAuthority("ROLE_TRANSLATOR")
-                        .requestMatchers("/admin/**").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers("/admin/**", "/languages/**").hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex

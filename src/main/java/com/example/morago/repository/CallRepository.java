@@ -23,7 +23,7 @@ public interface CallRepository extends JpaRepository<Call, Long> {
               AND c.isEndCall = true
         """)
     boolean isFirstCall(@Param("translatorId") Long translatorId,
-        @Param("callerId") Long callerId);
+                        @Param("callerId") Long callerId);
 
     @Query("""
             SELECT COUNT(c) > 0
@@ -41,5 +41,19 @@ public interface CallRepository extends JpaRepository<Call, Long> {
                 ORDER BY c.createdTime DESC
             """)
     List<Long> findTopThemeIdsByUserIdOrderByCallDateDesc(@Param("userId") Long userId, Pageable pageable);
+
+    @Query("""
+    SELECT AVG(c.userRating)
+    FROM Call c
+    WHERE c.recipient.id = :translatorId AND c.userRating IS NOT NULL
+""")
+    Double getAverageUserRatingForTranslator(@Param("translatorId") Long translatorId);
+
+    @Query("""
+    SELECT AVG(c.translatorRating)
+    FROM Call c
+    WHERE c.caller.id = :userId AND c.translatorRating IS NOT NULL
+""")
+    Double getAverageTranslatorRatingForUser(@Param("userId") Long userId);
 
 }

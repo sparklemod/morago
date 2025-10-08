@@ -1,13 +1,9 @@
 package com.example.morago.controller;
 
-import com.example.morago.model.dto.requests.LanguageRequest;
 import com.example.morago.model.dto.response.LanguageResponse;
 import com.example.morago.model.entity.Language;
 import com.example.morago.service.LanguageService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,21 +34,5 @@ public class LanguageController {
                 language.getId(),
                 language.getName()
         );
-    }
-
-    @PostMapping
-    public ResponseEntity<LanguageResponse> createLanguage(@RequestBody @Valid LanguageRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.create(request));
-    }
-
-    @PutMapping("/{id}")
-    public LanguageResponse updateLanguage(@PathVariable Long id, @RequestBody @Valid LanguageRequest request) {
-        return service.update(id, request);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteLanguage(@PathVariable Long id) {
-        service.softDelete(id);
-        return ResponseEntity.noContent().build();
     }
 }
