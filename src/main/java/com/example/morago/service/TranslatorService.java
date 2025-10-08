@@ -43,7 +43,7 @@ public class TranslatorService {
 
         Set<Language> languages = new HashSet<>();
         if (!request.getLanguageIds().isEmpty()) {
-            languages = new HashSet<>(languageService.getByIds(request.getLanguageIds()));
+            languages = languageService.getActiveByIds(request.getLanguageIds());
         }
 
         return translatorRepository.save(request.build(translator, themes, languages));
@@ -64,8 +64,8 @@ public class TranslatorService {
 
     public Page<TranslatorGetResponse> searchTranslators(TranslatorGetRequest request) {
         Page<Translator> translators = translatorRepository.findAll(
-            TranslatorSpecification.build(request),
-            request.toPageable()
+                TranslatorSpecification.build(request),
+                request.toPageable()
         );
 
         return translators.map(TranslatorGetResponse::mapToDto);

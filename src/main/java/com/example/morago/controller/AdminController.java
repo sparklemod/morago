@@ -1,5 +1,6 @@
 package com.example.morago.controller;
 
+import com.example.morago.model.dto.requests.LanguageRequest;
 import com.example.morago.model.dto.requests.PageRequest;
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
 import com.example.morago.model.dto.requests.category.CategoryRequest;
@@ -9,6 +10,7 @@ import com.example.morago.model.dto.requests.transactions.deposit.DepositApprove
 import com.example.morago.model.dto.requests.transactions.withdrawal.WithdrawalApproveRequest;
 import com.example.morago.model.dto.requests.translator.TranslatorGetRequest;
 import com.example.morago.model.dto.requests.user.UserGetRequest;
+import com.example.morago.model.dto.response.LanguageResponse;
 import com.example.morago.model.dto.response.PageResponse;
 import com.example.morago.model.dto.response.calls.CallsGetHistoryResponse;
 import com.example.morago.model.dto.response.theme.ThemeResponse;
@@ -258,18 +260,18 @@ public class AdminController {
 
     /** Languages */
     @PostMapping("/languages")
-    public ResponseEntity<Language> createLanguage(@RequestBody @Valid Language language) {
-        return new ResponseEntity<>(languageService.create(language), HttpStatus.CREATED);
+    public ResponseEntity<LanguageResponse> createLanguage(@RequestBody @Valid LanguageRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(languageService.create(request));
     }
 
     @PutMapping("/languages/{id}")
-    public ResponseEntity<Language> updateLanguage(@PathVariable Long id, @RequestBody @Valid Language language) {
-        return ResponseEntity.ok(languageService.update(id, language));
+    public ResponseEntity<LanguageResponse> updateLanguage(@PathVariable Long id, @RequestBody @Valid LanguageRequest request) {
+        return ResponseEntity.ok(languageService.update(id, request));
     }
 
     @DeleteMapping("/languages/{id}")
     public ResponseEntity<Void> deleteLanguage(@PathVariable Long id) {
-        languageService.delete(id);
+        languageService.softDelete(id);
         return ResponseEntity.noContent().build();
     }
 }

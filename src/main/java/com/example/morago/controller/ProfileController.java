@@ -5,13 +5,13 @@ import com.example.morago.model.dto.requests.call.CallHistoryRequest;
 import com.example.morago.model.dto.requests.category.CategoryPageRequest;
 import com.example.morago.model.dto.requests.notification.NotificationGetCountRequest;
 import com.example.morago.model.dto.requests.user.UpdatePasswordRequest;
+import com.example.morago.model.dto.response.LanguageResponse;
 import com.example.morago.model.dto.response.PageResponse;
 import com.example.morago.model.dto.response.calls.CallsGetHistoryResponse;
 import com.example.morago.model.dto.response.theme.ThemeResponse;
 import com.example.morago.model.dto.response.theme.UserThemesResponse;
 import com.example.morago.model.entity.Category;
 import com.example.morago.model.entity.File;
-import com.example.morago.model.entity.Language;
 import com.example.morago.model.entity.Notification;
 import com.example.morago.service.*;
 import com.example.morago.service.file.FileService;
@@ -177,7 +177,7 @@ public class ProfileController {
     }
 
     @GetMapping("/languages")
-    public List<Language> getAllLanguages() {
-        return languageService.getAll();
+    public List<LanguageResponse> getAllLanguages() {
+        return languageService.getAllActive();
     }
 }
