@@ -1,8 +1,35 @@
-## Api
-https://moragobackendmay7-production.up.railway.app/swagger-ui/index.html#/
+# Morago
+A service for calling translators on various topics in real time
 
-#### Local launching
-- Run container with the DB `docker-compose up -d --build`
-- Run the command `mvn clean install -DskipTests spring-boot:run`
-- Run the SQL command in [init.sql](/init/init.sql)
-- Go to http://localhost:8080/swagger-ui/index.html#/
+### Features
+
+- Build profiles: local, prod
+- File storage support: Local, S3
+- Balance management services: Deposit and Withdrawal
+- Role-based access control: Admin, Translator, User
+- Dedicated endpoints and services per role
+- Real-time communication via WebSocket API (calls & notifications)
+
+## Prerequisites
+
+Docker and Docker Compose
+
+Maven
+## Quick Start
+
+- Start the Database
+
+```
+docker-compose up -d --build
+```
+
+- Add initial data with the SQL command in [data.sql](/init/data.sql)
+
+- Start the Application
+
+```
+mvn clean install -DskipTests spring-boot:run
+```
+
+## API
+http://localhost:8080/swagger-ui/index.html#/
